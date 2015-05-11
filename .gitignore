@@ -1,0 +1,12 @@
+dependency-reduced-pom.xml
+*.log
+nbactions.xml
+nb-configuration.xml
+pom.xml.next
+pom.xml.releaseBackup
+pom.xml.tag
+pom.xml.versionsBackup
+release.properties
+*.swo
+*.swp
+target/
