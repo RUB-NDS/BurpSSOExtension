@@ -22,7 +22,6 @@ import burp.IParameter;
 import java.util.List;
 import java.util.Set;
 
-
 final public class ParameterUtilities {
 
 	public static boolean parameterListContainsParameterName(List<IParameter> parameterList, String parameterName) {

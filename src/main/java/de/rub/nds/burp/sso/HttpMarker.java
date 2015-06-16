@@ -88,7 +88,6 @@ public class HttpMarker implements IHttpListener {
 		checkRequestForSaml(requestInfo, httpRequestResponse);
 	}
 
-
 	public void checkRequestForOpenId(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
 		if (parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_OPENID2_TOKEN_PARAMETER)) {
 			httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
