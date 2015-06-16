@@ -25,6 +25,7 @@ import burp.IHttpRequestResponse;
 import burp.IParameter;
 import burp.IRequestInfo;
 import burp.IResponseInfo;
+import static de.rub.nds.burp.utilities.ParameterUtilities.parameterListContainsParameterName;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -87,27 +88,6 @@ public class HttpMarker implements IHttpListener {
 		checkRequestForSaml(requestInfo, httpRequestResponse);
 	}
 
-	private boolean parameterListContainsParameterName(List<IParameter> parameterList, String parameterName) {
-		boolean result = false;
-		for (IParameter p : parameterList) {
-			if (parameterName.equals(p.getName())) {
-				result = true;
-				break;
-			}
-		}
-		return result;
-	}
-
-	private boolean parameterListContainsParameterName(List<IParameter> parameterList, Set<String> parameterNames) {
-		boolean result = false;
-		for (IParameter p : parameterList) {
-			if (parameterNames.contains(p.getName())) {
-				result = true;
-				break;
-			}
-		}
-		return result;
-	}
 
 	public void checkRequestForOpenId(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
 		if (parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_OPENID2_TOKEN_PARAMETER)) {
