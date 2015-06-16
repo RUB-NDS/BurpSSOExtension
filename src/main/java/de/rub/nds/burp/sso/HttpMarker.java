@@ -35,19 +35,19 @@ public class HttpMarker implements IHttpListener {
 	private String[] OPENID_TOKEN_PARAMETER = {"openid.return_to"};
 
 	private static final Set<String> IN_REQUEST_OPENID2_TOKEN_PARAMETER = new HashSet<String>(Arrays.asList(
-		new String[] {"openid.claimed_id", "openid.op_endpoint"}
+		new String[]{"openid.claimed_id", "openid.op_endpoint"}
 	));
 
 	private static final Set<String> IN_REQUEST_OAUTH_TOKEN_PARAMETER = new HashSet<String>(Arrays.asList(
-		new String[] {"redirect_uri", "scope", "client_id"}
+		new String[]{"redirect_uri", "scope", "client_id"}
 	));
 
 	private static final Set<String> IN_REQUEST_SAML_TOKEN_PARAMETER = new HashSet<String>(Arrays.asList(
-		new String[] {"SAMLResponse"}
+		new String[]{"SAMLResponse"}
 	));
 
 	private static final Set<String> IN_REQUEST_SAML_REQUEST_PARAMETER = new HashSet<String>(Arrays.asList(
-		new String[] {"SAMLRequest"}
+		new String[]{"SAMLRequest"}
 	));
 
 	private static final String HIGHLIGHT_COLOR = "yellow";
@@ -81,32 +81,58 @@ public class HttpMarker implements IHttpListener {
 
 	private void processHttpRequest(int flag, IHttpRequestResponse httpRequestResponse) {
 		IRequestInfo requestInfo = helpers.analyzeRequest(httpRequestResponse);
-		final List<IParameter> parameters = requestInfo.getParameters();
-		for (IParameter p : parameters) {
-			final String parameterName = p.getName();
-			if (IN_REQUEST_OPENID2_TOKEN_PARAMETER.contains(parameterName)) {
-				httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
-				httpRequestResponse.setComment("OpenID v2 Token");
-				break;
-			}
 
-			if (IN_REQUEST_OAUTH_TOKEN_PARAMETER.contains(parameterName)) {
-				httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
-				httpRequestResponse.setComment("OAuth Token");
-				break;
-			}
+		checkRequestForOpenId(requestInfo, httpRequestResponse);
+		checkRequestHasOAuthParameters(requestInfo, httpRequestResponse);
+		checkRequestForSaml(requestInfo, httpRequestResponse);
+	}
 
-			if (IN_REQUEST_SAML_REQUEST_PARAMETER.contains(parameterName)) {
-				httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
-				httpRequestResponse.setComment("SAML Authentication Request");
+	private boolean parameterListContainsParameterName(List<IParameter> parameterList, String parameterName) {
+		boolean result = false;
+		for (IParameter p : parameterList) {
+			if (parameterName.equals(p.getName())) {
+				result = true;
 				break;
 			}
+		}
+		return result;
+	}
 
-			if (IN_REQUEST_SAML_TOKEN_PARAMETER.contains(parameterName)) {
-				httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
-				httpRequestResponse.setComment("SAML Token");
+	private boolean parameterListContainsParameterName(List<IParameter> parameterList, Set<String> parameterNames) {
+		boolean result = false;
+		for (IParameter p : parameterList) {
+			if (parameterNames.contains(p.getName())) {
+				result = true;
 				break;
 			}
+		}
+		return result;
+	}
+
+	public void checkRequestForOpenId(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
+		if (parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_OPENID2_TOKEN_PARAMETER)) {
+			httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
+			httpRequestResponse.setComment("OpenID v2 Token");
+		}
+	}
+
+	public void checkRequestHasOAuthParameters(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
+		if (parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_OAUTH_TOKEN_PARAMETER)) {
+			httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
+			httpRequestResponse.setComment("OAuth");
+		}
+	}
+
+	public void checkRequestForSaml(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
+		final List<IParameter> parameterList = requestInfo.getParameters();
+		if (parameterListContainsParameterName(parameterList, IN_REQUEST_SAML_TOKEN_PARAMETER)) {
+			httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
+			httpRequestResponse.setComment("SAML Authentication Request");
+		}
+
+		if (parameterListContainsParameterName(parameterList, IN_REQUEST_SAML_REQUEST_PARAMETER)) {
+			httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
+			httpRequestResponse.setComment("SAML Token");
 		}
 	}
 }
