@@ -21,7 +21,7 @@ package burp;
 import de.rub.nds.burp.sso.HttpMarker;
 
 public class BurpExtender implements IBurpExtender {
-	private static final String EXTENSION_NAME = "Burp's SSO Extension v0.1";
+	private static final String EXTENSION_NAME = "Burp's SSO Extension v0.2";
 
 	IBurpExtenderCallbacks callbacks;
 
