@@ -25,6 +25,7 @@ import burp.IHttpRequestResponse;
 import burp.IParameter;
 import burp.IRequestInfo;
 import burp.IResponseInfo;
+import static de.rub.nds.burp.utilities.ParameterUtilities.getFirstParameterByName;
 import static de.rub.nds.burp.utilities.ParameterUtilities.parameterListContainsParameterName;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -89,9 +90,20 @@ public class HttpMarker implements IHttpListener {
 	}
 
 	public void checkRequestForOpenId(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
-		if (parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_OPENID2_TOKEN_PARAMETER)) {
+		final List<IParameter> parameterList = requestInfo.getParameters();
+		IParameter openidMode = getFirstParameterByName(parameterList, "openid.mode");
+		if (openidMode != null) {
 			httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
-			httpRequestResponse.setComment("OpenID v2 Token");
+			if (openidMode.getValue().equals("checkid_setup")) {
+				httpRequestResponse.setComment("OpenID Request");
+			} else if (openidMode.getValue().equals("id_res")) {
+
+				if (parameterListContainsParameterName(parameterList, IN_REQUEST_OPENID2_TOKEN_PARAMETER)) {
+					httpRequestResponse.setComment("OpenID v2 Token");
+				} else {
+					httpRequestResponse.setComment("OpenID v1 Token");
+				}
+			}
 		}
 	}
 
