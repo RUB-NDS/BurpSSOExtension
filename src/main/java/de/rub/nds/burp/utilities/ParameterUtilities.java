@@ -45,4 +45,22 @@ final public class ParameterUtilities {
 		}
 		return result;
 	}
+
+	/**
+	 * Returns the first parameter with the given name found in the
+	 * parameter list, or null, if parametername is not found.
+	 * @param parameterList
+	 * @param parameterName
+	 * @return
+	 */
+	public static IParameter getFirstParameterByName(List<IParameter> parameterList, String parameterName) {
+		IParameter result = null;
+		for (IParameter p : parameterList) {
+			if (parameterName.equals(p.getName())) {
+				result = p;
+				break;
+			}
+		}
+		return result;
+	}
 }
