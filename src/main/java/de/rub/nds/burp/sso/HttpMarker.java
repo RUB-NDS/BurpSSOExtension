@@ -98,7 +98,7 @@ public class HttpMarker implements IHttpListener {
 
 			if (IN_REQUEST_SAML_REQUEST_PARAMETER.contains(parameterName)) {
 				httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
-				httpRequestResponse.setComment("SAML Authenticaiton Request");
+				httpRequestResponse.setComment("SAML Authentication Request");
 				break;
 			}
 
