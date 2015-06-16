@@ -31,6 +31,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class HttpMarker implements IHttpListener {
 
@@ -79,6 +81,7 @@ public class HttpMarker implements IHttpListener {
 //			httpResponse.setComment("Flagged by me with " + flag);
 		final byte[] responseBytes = httpRequestResponse.getResponse();
 		IResponseInfo responseInfo = helpers.analyzeResponse(responseBytes);
+		checkRequestForOpenIdLogin(responseInfo, httpRequestResponse);
 	}
 
 	private void processHttpRequest(int flag, IHttpRequestResponse httpRequestResponse) {
@@ -89,41 +92,64 @@ public class HttpMarker implements IHttpListener {
 		checkRequestForSaml(requestInfo, httpRequestResponse);
 	}
 
-	public void checkRequestForOpenId(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
+	private void checkRequestForOpenId(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
 		final List<IParameter> parameterList = requestInfo.getParameters();
 		IParameter openidMode = getFirstParameterByName(parameterList, "openid.mode");
 		if (openidMode != null) {
-			httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
 			if (openidMode.getValue().equals("checkid_setup")) {
-				httpRequestResponse.setComment("OpenID Request");
+				markRequestResponse(httpRequestResponse, "OpenID Request");
 			} else if (openidMode.getValue().equals("id_res")) {
 
 				if (parameterListContainsParameterName(parameterList, IN_REQUEST_OPENID2_TOKEN_PARAMETER)) {
-					httpRequestResponse.setComment("OpenID v2 Token");
+					markRequestResponse(httpRequestResponse, "OpenID v2 Token");
 				} else {
-					httpRequestResponse.setComment("OpenID v1 Token");
+					markRequestResponse(httpRequestResponse, "OpenID v1 Token");
 				}
 			}
 		}
 	}
 
-	public void checkRequestHasOAuthParameters(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
+	private void checkRequestHasOAuthParameters(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
 		if (parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_OAUTH_TOKEN_PARAMETER)) {
-			httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
-			httpRequestResponse.setComment("OAuth");
+			markRequestResponse(httpRequestResponse, "OAuth");
 		}
 	}
 
-	public void checkRequestForSaml(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
+	private void checkRequestForSaml(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
 		final List<IParameter> parameterList = requestInfo.getParameters();
 		if (parameterListContainsParameterName(parameterList, IN_REQUEST_SAML_TOKEN_PARAMETER)) {
-			httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
-			httpRequestResponse.setComment("SAML Authentication Request");
+			markRequestResponse(httpRequestResponse, "SAML Authentication Request");
 		}
 
 		if (parameterListContainsParameterName(parameterList, IN_REQUEST_SAML_REQUEST_PARAMETER)) {
-			httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
-			httpRequestResponse.setComment("SAML Token");
+			markRequestResponse(httpRequestResponse, "SAML Token");
 		}
 	}
+
+	private void checkRequestForOpenIdLogin(IResponseInfo responseInfo, IHttpRequestResponse httpRequestResponse) {
+		if (responseInfo.getStatusCode() == STATUS_OK && MIMETYPE_HTML.equals(responseInfo.getStatedMimeType())) {
+			final byte[] responseBytes = httpRequestResponse.getResponse();
+			final int bodyOffset = responseInfo.getBodyOffset();
+			final String responseBody = (new String(responseBytes)).substring(bodyOffset);
+			Pattern p = Pattern.compile("=[\"'][^\"']*openid[^\"']*[\"']");
+			Matcher m = p.matcher(responseBody);
+			if (m.find()) {
+				markRequestResponse(httpRequestResponse, "OpenID Login Possibility");
+			}
+		}
+	}
+
+	private void markRequestResponse(IHttpRequestResponse httpRequestResponse, String message) {
+				httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
+		final String oldComment = httpRequestResponse.getComment();
+		if (oldComment != null && !oldComment.isEmpty()) {
+			httpRequestResponse.setComment(String.format("%s, %s", oldComment, message));
+		} else {
+			httpRequestResponse.setComment(message);
+		}
+
+	}
+
+	private static final String MIMETYPE_HTML = "HTML";
+	private static final int STATUS_OK = 200;
 }
