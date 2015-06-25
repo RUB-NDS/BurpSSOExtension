@@ -117,11 +117,11 @@ public class HttpMarker implements IHttpListener {
 
 	private void checkRequestForSaml(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
 		final List<IParameter> parameterList = requestInfo.getParameters();
-		if (parameterListContainsParameterName(parameterList, IN_REQUEST_SAML_TOKEN_PARAMETER)) {
+		if (parameterListContainsParameterName(parameterList, IN_REQUEST_SAML_REQUEST_PARAMETER)) {
 			markRequestResponse(httpRequestResponse, "SAML Authentication Request");
 		}
 
-		if (parameterListContainsParameterName(parameterList, IN_REQUEST_SAML_REQUEST_PARAMETER)) {
+		if (parameterListContainsParameterName(parameterList, IN_REQUEST_SAML_TOKEN_PARAMETER)) {
 			markRequestResponse(httpRequestResponse, "SAML Token");
 		}
 	}
