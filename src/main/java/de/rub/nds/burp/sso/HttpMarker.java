@@ -54,6 +54,10 @@ public class HttpMarker implements IHttpListener {
 		new String[]{"SAMLRequest"}
 	));
 
+	private static final Set<String> IN_REQUEST_BROWSERID_PARAMETER = new HashSet<String>(Arrays.asList(
+		new String[]{"browserid_state", "assertion"}
+	));
+
 	private static final String HIGHLIGHT_COLOR = "yellow";
 
 	private IBurpExtenderCallbacks callbacks;
@@ -142,13 +146,13 @@ public class HttpMarker implements IHttpListener {
 
 	private void checkRequestForBrowserId(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
 		final List<IParameter> parameterList = requestInfo.getParameters();
-		if (parameterListContainsParameterName(parameterList, "browserid_state")) {
+		if (parameterListContainsParameterName(parameterList, IN_REQUEST_BROWSERID_PARAMETER)) {
 			markRequestResponse(httpRequestResponse, "BrowserId");
 		}
 	}
 
 	private void markRequestResponse(IHttpRequestResponse httpRequestResponse, String message) {
-				httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
+		httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
 		final String oldComment = httpRequestResponse.getComment();
 		if (oldComment != null && !oldComment.isEmpty()) {
 			httpRequestResponse.setComment(String.format("%s, %s", oldComment, message));
