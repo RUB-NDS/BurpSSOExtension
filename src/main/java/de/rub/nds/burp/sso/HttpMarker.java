@@ -90,6 +90,7 @@ public class HttpMarker implements IHttpListener {
 		checkRequestForOpenId(requestInfo, httpRequestResponse);
 		checkRequestHasOAuthParameters(requestInfo, httpRequestResponse);
 		checkRequestForSaml(requestInfo, httpRequestResponse);
+		checkRequestForBrowserId(requestInfo, httpRequestResponse);
 	}
 
 	private void checkRequestForOpenId(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
@@ -136,6 +137,13 @@ public class HttpMarker implements IHttpListener {
 			if (m.find()) {
 				markRequestResponse(httpRequestResponse, "OpenID Login Possibility");
 			}
+		}
+	}
+
+	private void checkRequestForBrowserId(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
+		final List<IParameter> parameterList = requestInfo.getParameters();
+		if (parameterListContainsParameterName(parameterList, "browserid_state")) {
+			markRequestResponse(httpRequestResponse, "BrowserId");
 		}
 	}
 
