@@ -19,6 +19,8 @@
 package burp;
 
 import de.rub.nds.burp.sso.HttpMarker;
+import de.rub.nds.burp.sso.editor.SamlRequestEditor;
+import de.rub.nds.burp.sso.editor.SamlResponseEditor;
 
 public class BurpExtender implements IBurpExtender {
 
@@ -32,5 +34,7 @@ public class BurpExtender implements IBurpExtender {
 		callbacks.setExtensionName(EXTENSION_NAME);
 		final HttpMarker httpMarker = new HttpMarker(callbacks);
 		callbacks.registerHttpListener(httpMarker);
+		callbacks.registerMessageEditorTabFactory(new SamlResponseEditor(callbacks));
+		callbacks.registerMessageEditorTabFactory(new SamlRequestEditor(callbacks));
 	}
 }
