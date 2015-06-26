@@ -24,7 +24,7 @@ import de.rub.nds.burp.sso.editor.SamlResponseEditor;
 
 public class BurpExtender implements IBurpExtender {
 
-	private static final String EXTENSION_NAME = "Burp's SSO Extension v0.2";
+	private static final String EXTENSION_NAME = "Burp's SSO Extension v1.0";
 
 	IBurpExtenderCallbacks callbacks;
 
