@@ -18,6 +18,7 @@
  */
 package de.rub.nds.burp.sso.editor;
 
+import de.rub.guenther.tim.espresso.utilities.XMLHelper;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IMessageEditorController;
@@ -102,7 +103,10 @@ public class SamlResponseEditor implements IMessageEditorTabFactory {
 				parameter = getSamlResponse(content);
 
 				// deserialize the parameter value
-				txtInput.setText(helpers.base64Decode(helpers.urlDecode(parameter.getValue())));
+                                //Pretty print XML
+                                String xml = helpers.bytesToString(helpers.base64Decode(helpers.urlDecode(parameter.getValue())));
+                                String xmlpretty = XMLHelper.format(xml, 2);
+                                txtInput.setText(xmlpretty.getBytes());
 				txtInput.setEditable(editable);
 			}
 

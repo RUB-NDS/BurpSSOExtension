@@ -2,21 +2,29 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>burp</groupId>
-    <artifactId>BurpExtensionSSO</artifactId>
+    <!-- formaly kown as BurpExtensionSSO -->
+    <artifactId>EsPReSSO</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
     <inceptionYear>2015/</inceptionYear>
     <dependencies>
+        <!-- Burp Suite Extension API -->
         <dependency>
             <groupId>com.h3xstream.retirejs</groupId>
             <artifactId>burp-api</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <!-- Syntax Highlighting -->
+        <dependency>
+            <groupId>com.fifesoft</groupId>
+            <artifactId>rsyntaxtextarea</artifactId>
+            <version>2.5.7</version>
+        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     
     <build>
@@ -30,11 +38,36 @@
                     <header>${basedir}/license_header.txt</header>
                     <strictCheck>true</strictCheck>
                     <includes>
-                        <include>src/**/*.java</include>
+                        <include>src/main/java/de/rub/nds/**/*.java</include>
                     </includes>
                     <properties>
                         <year>${project.inceptionYear}</year>
                         <owner>Christian Mainka</owner>
+                    </properties>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Use a Licence Header for Tim Guenther-->
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>2.11</version>
+                <configuration>
+                    <header>${basedir}/license_header.txt</header>
+                    <strictCheck>true</strictCheck>
+                    <includes>
+                        <include>src/main/java/de/rub/guenter/**/*.java</include>
+                    </includes>
+                    <properties>
+                        <year>${project.inceptionYear}</year>
+                        <owner>Tim Guenther</owner>
                     </properties>
                 </configuration>
 
