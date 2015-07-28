@@ -1,6 +1,6 @@
 /**
- * BurpSSOExtension - An extension for BurpSuite that highlights SSO messages.
- * Copyright (C) 2015/ Christian Mainka
+ * EsPReSSO - Extension for Processing and Recognition of Single Sign-On Protocols.
+ * Copyright (C) 2015/ Tim Guenther and Christian Mainka
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -23,6 +23,11 @@ import java.io.IOException;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
+
+/**
+ *
+ * @author Christian Mainka
+ */
 
 // Thanks to
 // http://qupera.blogspot.de/2013/02/howto-compress-and-uncompress-java-byte.html

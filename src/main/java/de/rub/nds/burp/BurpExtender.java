@@ -1,27 +1,31 @@
-/*
- * Copyright (C) 2015 Tim Guenther and Christian Mainka
+/**
+ * EsPReSSO - Extension for Processing and Recognition of Single Sign-On Protocols.
+ * Copyright (C) 2015/ Tim Guenther and Christian Mainka
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111null307, USA.
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 51
+ * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package burp;
+package de.rub.nds.burp;
 
-import de.rub.guenther.tim.espresso.gui.UITab;
-import de.rub.guenther.tim.espresso.scanner.SSOScanner;
-import de.rub.nds.burp.sso.HttpMarker;
-import de.rub.nds.burp.sso.editor.SamlRequestEditor;
-import de.rub.nds.burp.sso.editor.SamlResponseEditor;
+import burp.IBurpExtender;
+import burp.IBurpExtenderCallbacks;
+import burp.IExtensionStateListener;
+import de.rub.nds.burp.espresso.gui.UITab;
+import de.rub.nds.burp.espresso.scanner.SSOScanner;
+import de.rub.nds.burp.espresso.HttpMarker;
+import de.rub.nds.burp.espresso.editor.SamlRequestEditor;
+import de.rub.nds.burp.espresso.editor.SamlResponseEditor;
 import java.io.PrintWriter;
 
 

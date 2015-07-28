@@ -1,4 +1,4 @@
-BurpSSOExtension - An extension for BurpSuite that highlights SSO messages.
+EsPReSSO - Extension for Processing and Recognition of Single Sign-On Protocols.
 Copyright (C) ${year} ${owner}
 
 This program is free software; you can redistribute it and/or modify it under

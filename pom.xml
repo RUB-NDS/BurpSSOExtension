@@ -38,36 +38,11 @@
                     <header>${basedir}/license_header.txt</header>
                     <strictCheck>true</strictCheck>
                     <includes>
-                        <include>src/main/java/de/rub/nds/**/*.java</include>
+                        <include>src/**/*.java</include>
                     </includes>
                     <properties>
                         <year>${project.inceptionYear}</year>
-                        <owner>Christian Mainka</owner>
-                    </properties>
-                </configuration>
-
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Use a Licence Header for Tim Guenther-->
-            <plugin>
-                <groupId>com.mycila</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <version>2.11</version>
-                <configuration>
-                    <header>${basedir}/license_header.txt</header>
-                    <strictCheck>true</strictCheck>
-                    <includes>
-                        <include>src/main/java/de/rub/guenter/**/*.java</include>
-                    </includes>
-                    <properties>
-                        <year>${project.inceptionYear}</year>
-                        <owner>Tim Guenther</owner>
+                        <owner>Tim Guenther and Christian Mainka</owner>
                     </properties>
                 </configuration>
 
