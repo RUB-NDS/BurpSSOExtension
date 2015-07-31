@@ -22,30 +22,27 @@ import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IParameter;
 import de.rub.nds.burp.utilities.Compression;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.DataFormatException;
 
 /**
  *
  * @author Tim Guenther
  */
-public class SAML {
-    
-    private String saml = null;
+public class SAML extends SSOProtocol{
+    private String content = null;
     private String paramName = null;
     private String id = null;
     private IBurpExtenderCallbacks callbacks;
     private IExtensionHelpers helpers;
     
-    public SAML(){;
+    public SAML(){
     }
     
     public SAML(String saml, String paramName){
-        this.saml = saml;
+        this.content = saml;
         this.paramName = paramName;
         this.id = findID();
     }
@@ -54,13 +51,7 @@ public class SAML {
         this.paramName = param.getName();
         this.callbacks = callbacks;
         this.helpers = callbacks.getHelpers();
-        try {
-            this.saml = decodeRedirectFormat(param.getValue());
-        } catch (IOException ex) {
-            Logger.getLogger(SAML.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (DataFormatException ex) {
-            Logger.getLogger(SAML.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.content = decode(param.getValue());
         this.id = findID();
     }
     
@@ -69,41 +60,52 @@ public class SAML {
         return id;
     }
     
-    private String findID(){
+    public String findID(){
         Matcher m;
         Pattern p;
         switch (paramName) {
-            case "SAMLRequest":
+            case SSOProtocol.SAML_REQUEST:
                 p = Pattern.compile("ID=\"(.*?)\"");
                 break;
-            case "SAMLResponse":
+            case SSOProtocol.SAML_RESPONSE:
                 p = Pattern.compile("InResponseTo=\"(.*?)\"");
                 break;
             default:
                 return null;
         }
-        
-        m = p.matcher(saml);
-        if(m.find()){
-            return m.group(1);
+        if(content != null){
+            m = p.matcher(content);
+            if(m.find()){
+                return m.group(1);
+            }
         }
         return null;
     }
      
-    private String decodeRedirectFormat(String input) throws IOException, DataFormatException {
-        if(paramName.equals("SAMLRequest")){
-            String urlDecoded = helpers.urlDecode(input);
-            byte[] base64decoded = helpers.base64Decode(urlDecoded);
-            byte[] decompressed = Compression.decompress(base64decoded);
-            String result = new String(decompressed);
-            return result;
-        } else if(paramName.equals("SAMLResponse")){
-            return helpers.bytesToString(helpers.base64Decode(helpers.urlDecode(input)));
+    @Override
+    public String decode(String input){
+        switch (paramName) {
+            case SSOProtocol.SAML_REQUEST:
+                String urlDecoded = helpers.urlDecode(input);
+                byte[] base64decoded = helpers.base64Decode(urlDecoded);
+                byte[] decompressed = null;
+                try{
+                    decompressed = Compression.decompress(base64decoded);
+                }catch(Exception ex){
+                    Logger.getLogger(SAML.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                if(decompressed != null){
+                    String result = new String(decompressed);
+                    return result;
+                }
+            case SSOProtocol.SAML_RESPONSE:
+                return helpers.bytesToString(helpers.base64Decode(helpers.urlDecode(input)));
         }
         return null;
     }
     
+    @Override
     public String toString(){
-        return id+" "+paramName+"="+saml;
+        return id+" "+paramName+"="+content;
     }
 }
