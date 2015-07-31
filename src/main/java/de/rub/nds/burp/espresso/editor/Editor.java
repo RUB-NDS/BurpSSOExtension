@@ -18,7 +18,6 @@
  */
 package de.rub.nds.burp.espresso.editor;
 
-import de.rub.nds.burp.utilities.XMLHelper;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IMessageEditorController;
@@ -28,6 +27,7 @@ import burp.IParameter;
 import burp.ITextEditor;
 import de.rub.nds.burp.espresso.gui.UISourceViewer;
 import de.rub.nds.burp.utilities.Compression;
+import de.rub.nds.burp.utilities.XMLHelper;
 import java.awt.Component;
 import java.io.IOException;
 import java.util.zip.DataFormatException;
@@ -35,16 +35,21 @@ import javax.swing.JTabbedPane;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 
 /**
+ * TODO:
+ * Create a new Template Class for the SSO protocol editors.
+ * This is not used yet!
+ */ 
+
+/**
  *
- * @author Christian Mainka
+ * @author Tim Guenther
  */
+public class Editor implements IMessageEditorTabFactory{
 
-public class SamlRequestEditor implements IMessageEditorTabFactory {
-
-	private IBurpExtenderCallbacks callbacks;
+    private IBurpExtenderCallbacks callbacks;
 	private IExtensionHelpers helpers;
 
-	public SamlRequestEditor(IBurpExtenderCallbacks callbacks) {
+	public Editor(IBurpExtenderCallbacks callbacks) {
 		this.callbacks = callbacks;
 		this.helpers = callbacks.getHelpers();
 	}
@@ -192,4 +197,5 @@ public class SamlRequestEditor implements IMessageEditorTabFactory {
 		}
 
 	}
+    
 }

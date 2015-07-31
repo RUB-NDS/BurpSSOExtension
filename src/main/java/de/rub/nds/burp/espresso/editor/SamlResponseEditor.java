@@ -26,7 +26,10 @@ import burp.IMessageEditorTab;
 import burp.IMessageEditorTabFactory;
 import burp.IParameter;
 import burp.ITextEditor;
+import de.rub.nds.burp.espresso.gui.UISourceViewer;
 import java.awt.Component;
+import javax.swing.JTabbedPane;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 
 /**
  *
@@ -59,15 +62,26 @@ public class SamlResponseEditor implements IMessageEditorTabFactory {
 
 		private boolean editable;
 		private ITextEditor txtInput;
+                private JTabbedPane editor;
+                private UISourceViewer sourceViewer;
+                
 		private byte[] currentMessage;
+                
 		final String parameterName = "SAMLResponse";
 
 		public Base64InputTab(IMessageEditorController controller, boolean editable) {
 			this.editable = editable;
+                        
+                        editor = new JTabbedPane();
 
 			// create an instance of Burp's text editor, to display our deserialized data
 			txtInput = callbacks.createTextEditor();
 			txtInput.setEditable(editable);
+                        
+                        // create a source code viewer
+                        sourceViewer = new UISourceViewer();
+                        editor.addTab("Source Code Viewer", sourceViewer);
+                        editor.addTab("Raw", txtInput.getComponent());
 		}
 
 		//
@@ -80,7 +94,7 @@ public class SamlResponseEditor implements IMessageEditorTabFactory {
 
 		@Override
 		public Component getUiComponent() {
-			return txtInput.getComponent();
+			return editor;
 		}
 
 		@Override
@@ -111,8 +125,9 @@ public class SamlResponseEditor implements IMessageEditorTabFactory {
                                 //Pretty print XML
                                 String xml = helpers.bytesToString(helpers.base64Decode(helpers.urlDecode(parameter.getValue())));
                                 String xmlpretty = XMLHelper.format(xml, 2);
-                                txtInput.setText(xmlpretty.getBytes());
-				txtInput.setEditable(editable);
+                                txtInput.setText(xml.getBytes());
+                                txtInput.setEditable(editable);
+                                sourceViewer.setText(xmlpretty, SyntaxConstants.SYNTAX_STYLE_XML);
 			}
 
 			// remember the displayed content
