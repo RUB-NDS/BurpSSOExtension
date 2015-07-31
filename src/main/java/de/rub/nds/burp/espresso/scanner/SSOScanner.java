@@ -25,7 +25,7 @@ import burp.IHttpRequestResponse;
 import burp.IParameter;
 import burp.IRequestInfo;
 import de.rub.nds.burp.espresso.gui.UITab;
-import de.rub.nds.burp.utilities.protocols.Protocol;
+import de.rub.nds.burp.utilities.protocols.SSOProtocol;
 import de.rub.nds.burp.utilities.table.TableDB;
 import de.rub.nds.burp.utilities.table.TableEntry;
 import de.rub.nds.burp.utilities.protocols.SAML;
@@ -96,10 +96,10 @@ public class SSOScanner implements IHttpListener{
 
         for(IParameter param : parameterList){
             switch(param.getName()){
-                case Protocol.SAML_REQUEST:
+                case SSOProtocol.SAML_REQUEST:
                     npt = makeSAML(param);
                     break;
-                case Protocol.SAML_RESPONSE:
+                case SSOProtocol.SAML_RESPONSE:
                     npt = makeSAML(param);
                     break;
                 default:
@@ -113,10 +113,10 @@ public class SSOScanner implements IHttpListener{
     
     private String[] makeSAML(IParameter param){
         SAML saml = new SAML();
-        if(param.getName().equals(Protocol.SAML_REQUEST)){
+        if(param.getName().equals(SSOProtocol.SAML_REQUEST)){
             saml = new SAML(param, callbacks);
-        } else if(param.getName().equals(Protocol.SAML_RESPONSE)){
-            saml = new SAML(helpers.getRequestParameter(messageInfo.getRequest(), Protocol.SAML_RESPONSE), callbacks);
+        } else if(param.getName().equals(SSOProtocol.SAML_RESPONSE)){
+            saml = new SAML(helpers.getRequestParameter(messageInfo.getRequest(), SSOProtocol.SAML_RESPONSE), callbacks);
         }
         if(saml.getID() != null){
             String[] res = {"SAML",saml.getID()};
