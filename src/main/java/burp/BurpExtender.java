@@ -18,9 +18,6 @@
  */
 package burp;
 
-import burp.IBurpExtender;
-import burp.IBurpExtenderCallbacks;
-import burp.IExtensionStateListener;
 import de.rub.nds.burp.espresso.gui.UITab;
 import de.rub.nds.burp.espresso.scanner.SSOScanner;
 import de.rub.nds.burp.espresso.HttpMarker;
@@ -62,7 +59,7 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener{
 	callbacks.registerHttpListener(httpMarker);
 	callbacks.registerMessageEditorTabFactory(new SamlResponseEditor(callbacks));
 	callbacks.registerMessageEditorTabFactory(new SamlRequestEditor(callbacks));
-
+        
     }
 
     @Override
