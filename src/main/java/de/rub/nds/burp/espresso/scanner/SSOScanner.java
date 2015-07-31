@@ -25,6 +25,7 @@ import burp.IHttpRequestResponse;
 import burp.IParameter;
 import burp.IRequestInfo;
 import de.rub.nds.burp.espresso.gui.UITab;
+import de.rub.nds.burp.utilities.protocols.Protocol;
 import de.rub.nds.burp.utilities.table.TableDB;
 import de.rub.nds.burp.utilities.table.TableEntry;
 import de.rub.nds.burp.utilities.protocols.SAML;
@@ -41,6 +42,7 @@ public class SSOScanner implements IHttpListener{
     private IExtensionHelpers helpers;
     private PrintWriter stderr;
     private UITab tab;
+    private IHttpRequestResponse messageInfo;
     
     private static int counter = 0;
     private static int number = 0;
@@ -87,34 +89,39 @@ public class SSOScanner implements IHttpListener{
     }
     
     private String[] checkForProtocol(IHttpRequestResponse messageInfo){
+        this.messageInfo = messageInfo;
         IRequestInfo requestInfo = helpers.analyzeRequest(messageInfo);
         final List<IParameter> parameterList = requestInfo.getParameters();
         String[] npt = {"",""}; 
 
-        if(true){
-            npt[0] = "SAML";
-            SAML saml = new SAML();
-            for(IParameter param : parameterList){
-                switch(param.getName()){
-                    case "SAMLRequest":
-                        saml = new SAML(param, callbacks);
-                        stderr.println(saml.toString());
-                        break;
-                    case "SAMLResponse":
-                        saml = new SAML(helpers.getRequestParameter(messageInfo.getRequest(), "SAMLResponse"), callbacks);
-                        stderr.println(saml.toString());
-                        break;
-                    default:
-                }
-            }
-            if(saml.getID() != null){
-                npt[1] = saml.getID();
-                return npt;
+        for(IParameter param : parameterList){
+            switch(param.getName()){
+                case Protocol.SAML_REQUEST:
+                    npt = makeSAML(param);
+                    break;
+                case Protocol.SAML_RESPONSE:
+                    npt = makeSAML(param);
+                    break;
+                default:
             }
         }
         //checkRequestForOpenId(requestInfo, messageInfo);
         //checkRequestHasOAuthParameters(requestInfo, messageInfo);
         // checkRequestForBrowserId(requestInfo, messageInfo);
+        return npt;
+    }
+    
+    private String[] makeSAML(IParameter param){
+        SAML saml = new SAML();
+        if(param.getName().equals(Protocol.SAML_REQUEST)){
+            saml = new SAML(param, callbacks);
+        } else if(param.getName().equals(Protocol.SAML_RESPONSE)){
+            saml = new SAML(helpers.getRequestParameter(messageInfo.getRequest(), Protocol.SAML_RESPONSE), callbacks);
+        }
+        if(saml.getID() != null){
+            String[] res = {"SAML",saml.getID()};
+            return res;
+        }
         return null;
     }
 }

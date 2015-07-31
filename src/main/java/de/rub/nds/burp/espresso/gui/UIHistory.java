@@ -68,7 +68,7 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
         responseViewer = callbacks.createMessageEditor(this, false);
         tab.addTab("Request", requestViewer.getComponent());
         tab.addTab("Response", responseViewer.getComponent());
-        //tab.addTab("Source Viewer",new UISourceViewer(callbacks));
+        
         this.setBottomComponent(tab);
         
         TableDB.addTable(ssoHistoryTable);

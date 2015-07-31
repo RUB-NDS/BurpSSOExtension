@@ -80,7 +80,7 @@ public class SamlResponseEditor implements IMessageEditorTabFactory {
                         
                         // create a source code viewer
                         sourceViewer = new UISourceViewer();
-                        editor.addTab("Source Code Viewer", sourceViewer);
+                        editor.addTab("Source Code", sourceViewer);
                         editor.addTab("Raw", txtInput.getComponent());
 		}
 
