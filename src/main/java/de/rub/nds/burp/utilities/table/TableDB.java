@@ -44,7 +44,12 @@ public abstract class TableDB {
         return tableList.get(index);
     }
     
-    public static void addTable(Table t){
-        tableList.add(t);
+    public static boolean addTable(Table t){
+        try{
+            tableList.add(t);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 }

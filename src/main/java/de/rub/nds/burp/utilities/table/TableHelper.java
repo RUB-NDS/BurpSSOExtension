@@ -38,10 +38,15 @@ public class TableHelper extends AbstractTableModel{
     public ArrayList<TableEntry> getTableList(){
         return list;
     }
-    public void addRow(TableEntry entry){
-        int row = list.size();
-        list.add(entry);
-        fireTableRowsInserted(row,row);
+    public boolean addRow(TableEntry entry){
+        try{
+            int row = list.size();
+            list.add(entry);
+            fireTableRowsInserted(row,row);
+        } catch(Exception e) {
+            return false;
+        }
+        return true;
     }
     
     @Override
