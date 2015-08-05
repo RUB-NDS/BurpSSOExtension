@@ -20,7 +20,29 @@
             <artifactId>rsyntaxtextarea</artifactId>
             <version>2.5.7</version>
         </dependency>
+        <!-- Signature Faking Library -->
+        <dependency>
+            <groupId>wsattacker.library</groupId>
+            <artifactId>Signature_Faking_Library</artifactId>
+            <version>1.7</version>
+        </dependency>
     </dependencies>
+    
+    <repositories>
+        <!-- WS-Attacker Repository -->
+        <repository>
+          <id>wsattacker-repos</id>
+          <name>wsattacker</name>
+          <url>https://repo.nds.rub.de/repository/wsattacker-repos/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+    </repositories>
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
