@@ -106,6 +106,34 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- include LaTeX doclet-->
+<!--            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <doclet>org.stfm.texdoclet.TeXDoclet</doclet>
+                    <docletArtifact>
+                        <groupId>org.stfm</groupId>
+                        <artifactId>texdoclet</artifactId>
+                        <version>0.9-SNAPSHOT</version>
+                    </docletArtifact>
+                    <sourcepath>src/main/java:src/test/java</sourcepath>
+                    <useStandardDocletOptions>false</useStandardDocletOptions> important ! 
+                    <destDir>apidocs_tex</destDir>
+                    <additionalparam>
+                        -tree
+                        -hyperref
+                        -output TeXDoclet.tex
+                        -createpdf
+                        -title "TeXDoclet Java Documentation"
+                        -subtitle "Created with Javadoc TeXDoclet Doclet"
+                        -author "Greg Wonderly \and S{\"o}ren Caspersen \and Stefan Marx"
+                        -subpackages org
+                        -shortinherited
+                    </additionalparam>
+                </configuration>
+            </plugin>-->
         </plugins>
     </build>
 </project>
