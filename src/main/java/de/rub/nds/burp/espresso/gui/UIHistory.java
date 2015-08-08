@@ -23,11 +23,18 @@ import burp.IHttpRequestResponse;
 import burp.IHttpService;
 import burp.IMessageEditor;
 import burp.IMessageEditorController;
+import de.rub.nds.burp.espresso.gui.contextmenu.FollowProtocol;
 import de.rub.nds.burp.utilities.table.Table;
 import de.rub.nds.burp.utilities.table.TableDB;
 import de.rub.nds.burp.utilities.table.TableEntry;
 import de.rub.nds.burp.utilities.table.TableHelper;
+import de.rub.nds.burp.utilities.table.TableMouseListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
@@ -78,6 +85,39 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
         tab.addTab("Response", responseViewer.getComponent());
         
         this.setBottomComponent(tab);
+        
+        //context menu
+        ssoHistoryTable.addMouseListener(new TableMouseListener(ssoHistoryTable));
+        JPopupMenu menu = new JPopupMenu();
+        JMenuItem item = new JMenuItem(FollowProtocol.CAPTION);
+        item.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                JMenuItem menu = (JMenuItem) ae.getSource();
+                if (menu == item) {
+                    int row = ssoHistoryTable.getSelectedRow();
+                    String id = (String) ssoHistoryTable.getValueAt(row, 6);
+                    if(addNewTable(id)){
+                        try {
+                            //a little race condition with the new tab
+                            Thread.sleep(500);
+                        } catch (InterruptedException ex) {
+                        }
+                        new PrintWriter(callbacks.getStdout(), true).println("test");
+                        ArrayList<TableEntry> list = ssoHistoryTable.getTableList();
+                        for(TableEntry e : list){
+                            if(e.getToken().equals(id)){
+                                new PrintWriter(callbacks.getStdout(), true).println("1");
+                                TableDB.getTable(id).getTableHelper().addRow(e);
+                            }
+                        }
+                    }
+		}
+            }
+        });
+        menu.add(item);
+        ssoHistoryTable.setComponentPopupMenu(menu);
         
         TableDB.addTable(ssoHistoryTable);
     }
