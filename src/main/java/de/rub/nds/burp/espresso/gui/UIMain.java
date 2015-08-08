@@ -22,8 +22,9 @@ import burp.IBurpExtenderCallbacks;
 import javax.swing.JTabbedPane;
 
 /**
- *
+ * The main window, the parent window for all tabs.
  * @author Tim Guenther
+ * @version 1.0
  */
 public class UIMain extends JTabbedPane{
     private IBurpExtenderCallbacks callbacks;
@@ -33,20 +34,35 @@ public class UIMain extends JTabbedPane{
     private UIOptions options;
     private UIHelp help;
 
+    /**
+     * Construct the main UI.
+     * @param callbacks Provided by the Burp Suite api.
+     */
     public UIMain(IBurpExtenderCallbacks callbacks) {
         this.callbacks = callbacks;
         initComponents();
         
     }
-    
+    /**
+     * 
+     * @return Get the history tab.
+     */
     public UIHistory getHistory(){
         return history;
     }
 
+    /**
+     * 
+     * @return Get the help tab.
+     */
     public UIHelp getHelp() {
         return help;
     }
 
+    /**
+     * 
+     * @return Get the options tab. 
+     */
     public UIOptions getOptions() {
         return options;
     }

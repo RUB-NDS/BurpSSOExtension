@@ -33,8 +33,9 @@ import java.io.PrintWriter;
 import java.util.List;
 
 /**
- *
+ * Scan for Single Sign-On protocols in requests.
  * @author Tim Guenther
+ * @version 1.0
  */
 public class SSOScanner implements IHttpListener{
     
@@ -46,7 +47,12 @@ public class SSOScanner implements IHttpListener{
     
     private static int counter = 0;
     private static int number = 0;
-
+    
+    /**
+     * Create a new SSOScanner.
+     * @param callbacks Provided by the Burp Suite api.
+     * @param tab A tab for the Burp Suite GUI.
+     */
     public SSOScanner(IBurpExtenderCallbacks callbacks, UITab tab) {
         this.callbacks = callbacks;
         this.helpers = callbacks.getHelpers();
@@ -54,19 +60,26 @@ public class SSOScanner implements IHttpListener{
         this.tab = tab;
     }
 
+    /**
+    * Implementation of the IHttpListener interface.
+    * Is called every time a request/response is processed by Burp Suite.
+    * @param toolFlag A numeric identifier for the Burp Suite tool that calls. 
+    * @param isRequest True for a request, false for a response.
+    * @param httpRequestResponse The request/response that should processed.
+    */
     @Override
-    public void processHttpMessage(int toolFlag, boolean messageIsRequest, IHttpRequestResponse messageInfo) {
-        if (toolFlag == IBurpExtenderCallbacks.TOOL_PROXY && !messageIsRequest) {
+    public void processHttpMessage(int toolFlag, boolean isRequest, IHttpRequestResponse httpRequestResponse) {
+        if (toolFlag == IBurpExtenderCallbacks.TOOL_PROXY && !isRequest) {
             
             //num.,protoc.,token
-            String[] npt = checkForProtocol(messageInfo);
+            String[] npt = checkForProtocol(httpRequestResponse);
             if(npt != null){
                 String count = Integer.toString(++counter);
                 String num = "NaN";
                 String protocol = npt[0];
                 String token = npt[1];
 
-                TableEntry e = new TableEntry(count,num,protocol,token,callbacks.saveBuffersToTempFiles(messageInfo),callbacks);
+                TableEntry e = new TableEntry(count,num,protocol,token,callbacks.saveBuffersToTempFiles(httpRequestResponse),callbacks);
                 
                 //add new tab/table to history
                 if(protocol.equals("SAML")){

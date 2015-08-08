@@ -35,8 +35,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
+ * Highlight request in the proxy history.
+ * The protocols OpenID, OpenID Connect, OAuth, BrowserID and SAML are highlighted.
  * @author Christian Mainka
+ * @version 1.0
  */
 
 public class HttpMarker implements IHttpListener {
@@ -68,20 +70,31 @@ public class HttpMarker implements IHttpListener {
 	private IBurpExtenderCallbacks callbacks;
 
 	private IExtensionHelpers helpers;
-
+        
+        /**
+         * Create a new HttpMarker.
+         * @param callbacks IPC for the Burp Suite api.
+         */
 	public HttpMarker(IBurpExtenderCallbacks callbacks) {
 		this.callbacks = callbacks;
 		this.helpers = callbacks.getHelpers();
 	}
-
+        
+        /**
+         * Implementation of the IHttpListener interface.
+         * Is called every time a request/response is processed by Burp Suite.
+         * @param toolFlag A numeric identifier for the Burp Suite tool that calls. 
+         * @param isRequest True for a request, false for a response.
+         * @param httpRequestResponse The request/response that should processed.
+         */
 	@Override
-	public void processHttpMessage(int flag, boolean isRequest, IHttpRequestResponse httpRequestResponse) {
+	public void processHttpMessage(int toolFlag, boolean isRequest, IHttpRequestResponse httpRequestResponse) {
 		// only flag messages sent/received by the proxy
-		if (flag == IBurpExtenderCallbacks.TOOL_PROXY) {
+		if (toolFlag == IBurpExtenderCallbacks.TOOL_PROXY) {
 			if (isRequest) {
-				processHttpRequest(flag, httpRequestResponse);
+				processHttpRequest(toolFlag, httpRequestResponse);
 			} else {
-				processHttpResponse(flag, httpRequestResponse);
+				processHttpResponse(toolFlag, httpRequestResponse);
 			}
 		}
 	}

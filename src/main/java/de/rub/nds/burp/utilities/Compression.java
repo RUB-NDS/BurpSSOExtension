@@ -25,13 +25,21 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 /**
- *
+ * Functions to decompress and compress Base64 content with zip deflate/inflate.
  * @author Christian Mainka
+ * @version 1.0
  */
 
 // Thanks to
 // http://qupera.blogspot.de/2013/02/howto-compress-and-uncompress-java-byte.html
 public class Compression {
+    
+        /**
+	 * Compress given bytes with zip deflate.
+	 * @param data The content to compress.
+         * @throws IOException For the ByteArrayOutputStream().
+	 * @return The compressed content.
+	 */
 
 	public static byte[] compress(byte[] data) throws IOException {
 		Deflater deflater = new Deflater(9, Boolean.TRUE);
@@ -52,6 +60,14 @@ public class Compression {
 
 		return output;
 	}
+        
+        /**
+	 * Decompress given bytes with zip inflate.
+	 * @param data The content to decompress.
+         * @throws IOException For the ByteArrayOutputStream().
+         * @throws DataFormatException For the Inflater().
+	 * @return The decompressed content.
+	 */
 
 	public static byte[] decompress(byte[] data) throws IOException, DataFormatException {
 		Inflater inflater = new Inflater(Boolean.TRUE);

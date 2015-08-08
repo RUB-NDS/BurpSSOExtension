@@ -27,8 +27,9 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 /**
- *
+ * Source Code Viewer.
  * @author Tim Guenther
+ * @version 1.0
  */
 public class UISourceViewer extends JPanel{
     
@@ -37,6 +38,10 @@ public class UISourceViewer extends JPanel{
     private String codeStyle = SyntaxConstants.SYNTAX_STYLE_XML;
     private RSyntaxTextArea textArea;
 
+    /**
+     * Create a new Source Code Viewer.
+     * @param callbacks Provided by the Burp Suite api.
+     */
     public UISourceViewer(IBurpExtenderCallbacks callbacks) {
         super(new BorderLayout());
         this.callbacks = callbacks;
@@ -48,6 +53,11 @@ public class UISourceViewer extends JPanel{
         initComponent();
     }
 
+    /**
+     * Create a new Source Code Viewer.
+     * @param sourceCode The Code that should be highlighted.
+     * @param codeStyle The kind of highlighting.
+     */
     public UISourceViewer(String sourceCode, String codeStyle) {
         super(new BorderLayout());
         this.sourceCode = sourceCode;
@@ -55,6 +65,9 @@ public class UISourceViewer extends JPanel{
         initComponent();
     }
     
+    /**
+     * Create a new Source Code Viewer.
+     */
     public UISourceViewer(){
         super(new BorderLayout());
         initComponent();
@@ -69,6 +82,11 @@ public class UISourceViewer extends JPanel{
         this.add(sp);
     }
     
+    /**
+     * Set the source code and highlighting.
+     * @param sourceCode The Code that should be highlighted.
+     * @param codeStyle The kind of highlighting.
+     */
     public void setText(String sourceCode, String codeStyle){
         this.sourceCode = sourceCode;
         this.codeStyle = codeStyle;

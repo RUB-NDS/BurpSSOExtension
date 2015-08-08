@@ -28,8 +28,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
+ * Object containing all information about a SAML message.
  * @author Tim Guenther
+ * @version 1.0
  */
 public class SAML extends SSOProtocol{
     private String content = null;
@@ -38,15 +39,28 @@ public class SAML extends SSOProtocol{
     private IBurpExtenderCallbacks callbacks;
     private IExtensionHelpers helpers;
     
+    /**
+     * Default constructor.
+     */
     public SAML(){
     }
     
+    /**
+     * Construct a SAML message.
+     * @param saml SAML message.
+     * @param paramName Parameter Name.
+     */
     public SAML(String saml, String paramName){
         this.content = saml;
         this.paramName = paramName;
         this.id = findID();
     }
     
+    /**
+     * Construct a SAML message.
+     * @param param A Burp Suite api for parameters. 
+     * @param callbacks Provided by the Burp Suite api.
+     */
     public SAML(IParameter param, IBurpExtenderCallbacks callbacks){
         this.paramName = param.getName();
         this.callbacks = callbacks;
@@ -60,6 +74,10 @@ public class SAML extends SSOProtocol{
         return id;
     }
     
+    /**
+     * Find the ID associated to the request/response.
+     * @return ID
+     */
     public String findID(){
         Matcher m;
         Pattern p;
@@ -81,7 +99,12 @@ public class SAML extends SSOProtocol{
         }
         return null;
     }
-     
+    
+    /**
+     * Decode inflated Base64 encoded data.
+     * @param input Encoded data.
+     * @return Decoded data.
+     */
     @Override
     public String decode(String input){
         switch (paramName) {

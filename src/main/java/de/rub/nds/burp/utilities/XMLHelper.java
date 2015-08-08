@@ -25,15 +25,23 @@ import java.io.StringWriter;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.*;
 /**
- *
+ * Help pretty print XML content
  * @author Tim Guenther
+ * @version 1.0
  */
 public abstract class XMLHelper {
-    private XMLHelper() {
-    }
+
+    /**
+    * Create an indention to pretty print the XML.
+    * Attention: Pretty printed XML doesn't work for requests. 
+    * @param input The XML raw data.
+    * @param indent The indents width.
+    * @return Indented XML or null if an Exception is thrown.
+    */
 
     public static String format(String input, int indent) {
         try {
@@ -48,7 +56,7 @@ public abstract class XMLHelper {
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", String.valueOf(indent));
             transformer.transform(xmlInput, xmlOutput);
             return xmlOutput.getWriter().toString();
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | TransformerException e) {
             return null;
         }
     }

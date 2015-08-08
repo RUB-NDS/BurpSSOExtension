@@ -19,13 +19,14 @@
 package de.rub.nds.burp.espresso.gui;
 
 /**
- *
+ * Detail information to api and supported protocols.
  * @author Tim Guenther
+ * @version 1.0
  */
 public class UIHelp extends javax.swing.JPanel {
 
     /**
-     * Creates new form UIHelp
+     * Creates new form UIHelp.
      */
     public UIHelp() {
         initComponents();

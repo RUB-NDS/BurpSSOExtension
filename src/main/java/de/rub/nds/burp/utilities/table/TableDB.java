@@ -23,14 +23,20 @@ import de.rub.nds.burp.utilities.table.TableEntry;
 import java.util.ArrayList;
 
 /**
- *
+ * A database for all Tables.
  * @author Tim Guenther
+ * @version 1.0
  */
 public abstract class TableDB {
     
     //Tables - add a new table for each
     private final static ArrayList<Table> tableList = new ArrayList<Table>();
     
+    /**
+     * Get the table by name.
+     * @param name The name of the table.
+     * @return The table with the given name, otherwise null.
+     */
     public static Table getTable(String name){
         for(Table t : tableList){
             if(t.getName().equals(name)){
@@ -40,10 +46,20 @@ public abstract class TableDB {
         return null;
     }
     
+    /**
+     * Get the table by index.
+     * @param index Index of the table.
+     * @return The table at the position of the index.
+     */
     public static Table getTable(int index){
         return tableList.get(index);
     }
     
+    /**
+     * Add new table to the list.
+     * @param t The new table.
+     * @return True if successfully, false otherwise.
+     */
     public static boolean addTable(Table t){
         try{
             tableList.add(t);

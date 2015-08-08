@@ -19,8 +19,9 @@
 package de.rub.nds.burp.espresso.attacker;
 
 /**
- *
+ * Interface for external libraries.
  * @author Tim Guenther
+ * @version 1.0
  */
 public class SSOAttacker {
     

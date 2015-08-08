@@ -34,8 +34,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
 /**
- *
+ * SSO History displays all Single Sign-On related messages.
  * @author Tim Guenther
+ * @version 1.0
  */
 public class UIHistory extends JSplitPane implements IMessageEditorController{
     
@@ -47,12 +48,19 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
     public static IMessageEditor responseViewer;
     public static IHttpRequestResponse currentlyDisplayedItem;
 
+    /**
+     * Create a vertical split history window.
+     * @param callbacks 
+     */
     public UIHistory(IBurpExtenderCallbacks callbacks) {
         super(JSplitPane.VERTICAL_SPLIT);
         this.callbacks = callbacks;
         initComponent();
     }
     
+    /**
+     * Initialise all components. 
+     */
     private void initComponent(){
         //top part
         historyContainer = new JTabbedPane();
@@ -74,6 +82,11 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
         TableDB.addTable(ssoHistoryTable);
     }
     
+    /**
+     * Add a table to the history UI.
+     * @param tableName Name of the table, is displayed in the new tab. 
+     * @return 
+     */
     public boolean addNewTable(String tableName){
         //find tables with same name
         if(TableDB.getTable(tableName) != null){

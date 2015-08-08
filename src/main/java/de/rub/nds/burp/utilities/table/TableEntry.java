@@ -24,8 +24,9 @@ import burp.IHttpRequestResponsePersisted;
 import java.time.LocalTime;
 
 /**
- *
+ * A table entry for the class Table.
  * @author Tim Guenther
+ * @version 1.0
  */
 public class TableEntry {
     private String counter = "";
@@ -40,22 +41,30 @@ public class TableEntry {
     private String comment = "";
     private IHttpRequestResponsePersisted fullMessage = null;
 
-    //Constructor
-    public TableEntry(String counter, String number, String protocol, String token, IHttpRequestResponsePersisted messageInfo, IBurpExtenderCallbacks callbacks) {
+    /**
+     * Construct a new table entry.
+     * @param counter The number of the entry position in the history. 
+     * @param number The number of the entry position in the protocol.
+     * @param protocol The single sign-on protocol.
+     * @param token The token or unique id for the protocol flow.
+     * @param requestResponse The content of the request/response.
+     * @param callbacks Helper provided by the Burp Suite api.
+     */
+    public TableEntry(String counter, String number, String protocol, String token, IHttpRequestResponsePersisted requestResponse, IBurpExtenderCallbacks callbacks) {
         IExtensionHelpers helpers = callbacks.getHelpers();
         
         this.counter = counter;
         this.number = number;
         this.protocol = protocol;
-        this.host = helpers.analyzeRequest(messageInfo).getUrl().getHost();
-        this.method = helpers.analyzeRequest(messageInfo).getMethod();
-        this.url = helpers.analyzeRequest(messageInfo).getUrl().getPath();
+        this.host = helpers.analyzeRequest(requestResponse).getUrl().getHost();
+        this.method = helpers.analyzeRequest(requestResponse).getMethod();
+        this.url = helpers.analyzeRequest(requestResponse).getUrl().getPath();
         this.token = token;
         LocalTime t = LocalTime.now();
         this.time = t.toString();
-        this.length = (new Integer(messageInfo.getResponse().length)).toString();
-        this.comment = messageInfo.getComment();
-        this.fullMessage = messageInfo;
+        this.length = (new Integer(requestResponse.getResponse().length)).toString();
+        this.comment = requestResponse.getComment();
+        this.fullMessage = requestResponse;
     }
 
     //Getter

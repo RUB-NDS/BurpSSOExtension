@@ -41,8 +41,9 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
  */ 
 
 /**
- *
+ * Abstract class for Editors.
  * @author Tim Guenther
+ * @version 0.0
  */
 public class Editor implements IMessageEditorTabFactory{
 

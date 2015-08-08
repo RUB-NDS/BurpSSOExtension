@@ -50,7 +50,7 @@ public abstract class SSOProtocol {
     
     public SSOProtocol(){        
     }
-    
+
     public SSOProtocol(IParameter param, IBurpExtenderCallbacks callbacks){
         this.callbacks = callbacks;
         this.helpers = callbacks.getHelpers();

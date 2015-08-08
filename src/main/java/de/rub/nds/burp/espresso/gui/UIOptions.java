@@ -21,8 +21,9 @@ package de.rub.nds.burp.espresso.gui;
 import javax.swing.JPanel;
 
 /**
- *
+ * The options to control the extension.
  * @author Tim Guenther
+ * @version 1.0
  */
 public class UIOptions extends JPanel {
 

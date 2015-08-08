@@ -27,17 +27,27 @@ import java.io.PrintWriter;
 
 
 /**
- *
+ * The first class called by Burp Suite.
+ * This is the starting class for all other functionalities.
  * @author Tim Guenther
+ * @version 1.0
  */
 
 public class BurpExtender implements IBurpExtender, IExtensionStateListener{
-    
+    /**
+     * {@value #EXTENSION_NAME}
+     */
     public static final String EXTENSION_NAME = "EsPReSSO - Extension for Processing and Recognition of Single Sign-On";
     
     private UITab tab;
     private PrintWriter stdout;
-            
+    
+    /**
+     * Register all new functions like for the internals and GUI.
+     * Registered are Editors, a Tab and HttpListners
+     * @param callbacks Provided by the Burp Suite api.
+     */
+    
     @Override
     public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {
 
@@ -61,6 +71,9 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener{
 	callbacks.registerMessageEditorTabFactory(new SamlRequestEditor(callbacks));
         
     }
+    /**
+     * Print a notification on the standard output when extension is unloaded.
+     */
 
     @Override
     public void extensionUnloaded() {

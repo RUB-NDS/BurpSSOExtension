@@ -23,21 +23,36 @@ import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
 /**
- *
+ * Helper class for the class Table.
  * @author Tim Guenther
+ * @version 1.0
  */
 public class TableHelper extends AbstractTableModel{
     
     private ArrayList<TableEntry> list;
     private String[] colName = {"#","No.","SSO Protocol","Host","Method","URL","Token","Time","Length","Comment"};
 
+    /**
+     * Construct a new Table Helper
+     * @param list A list of table entries.
+     */
     public TableHelper(ArrayList<TableEntry> list) {
         this.list = list;
     }
 
+    /**
+     * 
+     * @return The list saved during the construction.
+     */
     public ArrayList<TableEntry> getTableList(){
         return list;
     }
+    
+    /**
+     * Add a row to the list and the table.
+     * @param entry The new row.
+     * @return True if successfully, false otherwise.
+     */
     public boolean addRow(TableEntry entry){
         try{
             int row = list.size();
@@ -49,18 +64,31 @@ public class TableHelper extends AbstractTableModel{
         return true;
     }
     
+    /**
+     * 
+     * @return Number of rows.
+     */
     @Override
     public int getRowCount()
     {
         return list.size();
     }
 
+    /**
+     * 
+     * @return Number of columns. (10)
+     */
     @Override
     public int getColumnCount()
     {
         return 10;
     }
 
+    /**
+     * 
+     * @param columnIndex Index of the column.
+     * @return The name of the column.
+     */
     @Override
     public String getColumnName(int columnIndex)
     {
@@ -71,12 +99,23 @@ public class TableHelper extends AbstractTableModel{
         }
     }
 
+    /**
+     * 
+     * @param columnIndex Index of the column.
+     * @return The class of the column.
+     */
     @Override
     public Class<?> getColumnClass(int columnIndex)
     {
         return String.class;
     }
 
+    /**
+     * 
+     * @param rowIndex The row.
+     * @param columnIndex The column.
+     * @return Value for the specified entry. Null if not found.
+     */
     @Override
     public Object getValueAt(int rowIndex, int columnIndex)
     {
@@ -105,7 +144,7 @@ public class TableHelper extends AbstractTableModel{
             case 9:
                 return entry.getComment();
             default:
-                return "";
+                return null;
         }
     }
 }

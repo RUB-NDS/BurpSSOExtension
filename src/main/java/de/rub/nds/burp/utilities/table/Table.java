@@ -24,44 +24,69 @@ import java.util.ArrayList;
 import javax.swing.JTable;
 
 /**
- *
+ * A Table for the SSOHistory.
  * @author Tim Guenther
+ * @version 1.0
  */
-public class Table extends JTable
-    {
-        private TableHelper th;
-        private ArrayList<TableEntry> list;
-        private String name;
+public class Table extends JTable{
+    private TableHelper th;
+    private ArrayList<TableEntry> list;
+    private String name;
     
-        public Table(TableHelper th, String name)
-        {
-            super(th); 
-            this.th = th;
-            this.list = th.getTableList();
-            this.name = name;
-        }
-        
-        public String getName(){
-            return name;
-        }
-        
-        public TableHelper getTableHelper(){
-            return th;
-        }
-        
-        public ArrayList<TableEntry> getTableList(){
-            return list;
-        }
-        
-        @Override
-        public void changeSelection(int row, int col, boolean toggle, boolean extend)
-        {
-            // show the entry for the selected row
-            TableEntry entry = list.get(row);
-            UIHistory.requestViewer.setMessage(entry.getFullMessage().getRequest(), true);
-            UIHistory.responseViewer.setMessage(entry.getFullMessage().getResponse(), false);
-            UIHistory.currentlyDisplayedItem = entry.getFullMessage();
-            
-            super.changeSelection(row, col, toggle, extend);
-        }        
+    /**
+     * Create a new Table.
+     * @param th The helper to organise your table entries.
+     * @param name The table name.
+     */
+    public Table(TableHelper th, String name)
+    {
+        super(th); 
+        this.th = th;
+        this.list = th.getTableList();
+        this.name = name;
     }
+
+    /**
+     * 
+     * @return The name of the table. 
+     */
+    public String getName(){
+        return name;
+    }
+    
+    /**
+     * 
+     * @return The TableHelper related to the table. 
+     */
+    public TableHelper getTableHelper(){
+        return th;
+    }
+
+    /**
+     * 
+     * @return Get a list of table entries.
+     */
+    public ArrayList<TableEntry> getTableList(){
+        return list;
+    }
+
+    /**
+     * Controls the current displayed item in the detail view.
+     * The item is displayed below the SSO history window.
+     * @param row The current row.
+     * @param col The current column.
+     * @param toggle Should the entry be toggled. 
+     * @param extend Should the entry be extended.
+     */
+    @Override
+    public void changeSelection(int row, int col, boolean toggle, boolean extend)
+    {
+        // show the entry for the selected row
+        TableEntry entry = list.get(row);
+        UIHistory.requestViewer.setMessage(entry.getFullMessage().getRequest(), true);
+        UIHistory.responseViewer.setMessage(entry.getFullMessage().getResponse(), false);
+        UIHistory.currentlyDisplayedItem = entry.getFullMessage();
+
+        super.changeSelection(row, col, toggle, extend);
+    }        
+}
