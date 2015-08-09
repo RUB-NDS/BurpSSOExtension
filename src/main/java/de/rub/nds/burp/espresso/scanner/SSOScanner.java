@@ -24,6 +24,7 @@ import burp.IHttpListener;
 import burp.IHttpRequestResponse;
 import burp.IParameter;
 import burp.IRequestInfo;
+import de.rub.nds.burp.espresso.gui.UIOptions;
 import de.rub.nds.burp.espresso.gui.UITab;
 import de.rub.nds.burp.utilities.protocols.SSOProtocol;
 import de.rub.nds.burp.utilities.table.TableDB;
@@ -80,20 +81,6 @@ public class SSOScanner implements IHttpListener{
                 String token = npt[1];
 
                 TableEntry e = new TableEntry(count,num,protocol,token,callbacks.saveBuffersToTempFiles(httpRequestResponse),callbacks);
-                
-                //add new tab/table to history
-                if(protocol.equals("SAML")){
-                    if(tab.getUiMain().getHistory().addNewTable(protocol+token)){
-                        try {
-                            //a little race condition with the new tab
-                            Thread.sleep(500);
-                        } catch (InterruptedException ex) {
-                            stderr.println("Sleep: "+ex.toString());
-                        }
-                    }
-                    //add new entry to new 
-                    TableDB.getTable(protocol+token).getTableHelper().addRow(e);
-                }
 
                 //Full History
                 TableDB.getTable(0).getTableHelper().addRow(e);
@@ -105,22 +92,52 @@ public class SSOScanner implements IHttpListener{
         this.messageInfo = messageInfo;
         IRequestInfo requestInfo = helpers.analyzeRequest(messageInfo);
         final List<IParameter> parameterList = requestInfo.getParameters();
-        String[] npt = {"",""}; 
+        String[] npt = null; 
 
         for(IParameter param : parameterList){
-            switch(param.getName()){
-                case SSOProtocol.SAML_REQUEST:
-                    npt = makeSAML(param);
-                    break;
-                case SSOProtocol.SAML_RESPONSE:
-                    npt = makeSAML(param);
-                    break;
-                default:
+            if(UIOptions.samlBool){
+                npt = checkForSAML(param);
+                if(npt != null){
+                    break;   
+                }
+            }
+            if(UIOptions.openID1Bool){
+                npt = checkForSAML(param);
+                if(npt != null){
+                    break;   
+                }
+            }
+            if(UIOptions.openID2Bool){
+                npt = checkForSAML(param);
+                if(npt != null){
+                    break;   
+                }
+            }
+            if(UIOptions.openIDConnectBool){
+                npt = checkForSAML(param);
+                if(npt != null){
+                    break;   
+                }
+            }
+            if(UIOptions.oAuthv1Bool){
+               npt = checkForSAML(param);
+                if(npt != null){
+                    break;   
+                }
+            }
+            if(UIOptions.oAuthv2Bool){
+                npt = checkForSAML(param);
+                if(npt != null){
+                    break;   
+                }
+            }
+            if(UIOptions.browserIDBool){
+                npt = checkForSAML(param);
+                if(npt != null){
+                    break;   
+                }
             }
         }
-        //checkRequestForOpenId(requestInfo, messageInfo);
-        //checkRequestHasOAuthParameters(requestInfo, messageInfo);
-        // checkRequestForBrowserId(requestInfo, messageInfo);
         return npt;
     }
     
@@ -136,5 +153,109 @@ public class SSOScanner implements IHttpListener{
             return res;
         }
         return null;
+    }
+    
+    private String[] checkForSAML(IParameter param){
+        String[] npt = null; 
+        switch(param.getName()){
+            case SSOProtocol.SAML_REQUEST:
+                npt = makeSAML(param);
+                break;
+            case SSOProtocol.SAML_RESPONSE:
+                npt = makeSAML(param);
+                break;
+            default:
+        }
+        return npt;
+    }
+    
+    //TODO: Implement protocol.
+    private String[] checkForOpenIDv1(IParameter param){
+        String[] npt = null; 
+        switch(param.getName()){
+            case SSOProtocol.SAML_REQUEST:
+                npt = makeSAML(param);
+                break;
+            case SSOProtocol.SAML_RESPONSE:
+                npt = makeSAML(param);
+                break;
+            default:
+        }
+        return npt;
+    }
+    
+    //TODO: Implement protocol.
+    private String[] checkForOpenIDv2(IParameter param){
+        String[] npt = null; 
+        switch(param.getName()){
+            case SSOProtocol.SAML_REQUEST:
+                npt = makeSAML(param);
+                break;
+            case SSOProtocol.SAML_RESPONSE:
+                npt = makeSAML(param);
+                break;
+            default:
+        }
+        return npt;
+    }
+    
+    //TODO: Implement protocol.
+    private String[] checkForOpenIdConnect(IParameter param){
+        String[] npt = null; 
+        switch(param.getName()){
+            case SSOProtocol.SAML_REQUEST:
+                npt = makeSAML(param);
+                break;
+            case SSOProtocol.SAML_RESPONSE:
+                npt = makeSAML(param);
+                break;
+            default:
+        }
+        return npt;
+    }
+    
+    //TODO: Implement protocol.
+    private String[] checkForOAuthv1(IParameter param){
+        String[] npt = null; 
+        switch(param.getName()){
+            case SSOProtocol.SAML_REQUEST:
+                npt = makeSAML(param);
+                break;
+            case SSOProtocol.SAML_RESPONSE:
+                npt = makeSAML(param);
+                break;
+            default:
+        }
+        return npt;
+    }
+    
+    //TODO: Implement protocol.
+    private String[] checkForOAuthv2(IParameter param){
+        String[] npt = null; 
+        switch(param.getName()){
+            case SSOProtocol.SAML_REQUEST:
+                npt = makeSAML(param);
+                break;
+            case SSOProtocol.SAML_RESPONSE:
+                npt = makeSAML(param);
+                break;
+            default:
+        }
+        return npt;
+    }
+    
+    //TODO: Implement protocol.
+    private String[] checkForBrowserID(IParameter param){
+        String[] npt = null; 
+        switch(param.getName()){
+            case SSOProtocol.SAML_REQUEST:
+                npt = makeSAML(param);
+                break;
+            case SSOProtocol.SAML_RESPONSE:
+                npt = makeSAML(param);
+                break;
+            default:
+        }
+        return npt;
     }
 }

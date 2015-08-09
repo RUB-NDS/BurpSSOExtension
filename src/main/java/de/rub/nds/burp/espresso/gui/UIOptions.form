@@ -63,18 +63,18 @@
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="OpenIDConnect1" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="OpenID1" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="openIDConnect1" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="openID1" alignment="0" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" alignment="0" attributes="0">
-                                          <Component id="oAuthv3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="oAuthv1" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace type="separate" max="-2" attributes="0"/>
                                           <Component id="browserID1" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <Group type="102" alignment="0" attributes="0">
-                                          <Component id="oAuthv4" min="-2" max="-2" attributes="0"/>
+                                          <Component id="oAuthv2" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace type="separate" max="-2" attributes="0"/>
                                           <Component id="saml1" min="-2" max="-2" attributes="0"/>
                                       </Group>
@@ -167,16 +167,14 @@
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                                  <Component id="browserID1" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="oAuthv3" alignment="3" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <Component id="OpenID1" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="browserID1" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="oAuthv1" min="-2" max="-2" attributes="0"/>
+                              <Component id="openID1" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="OpenIDConnect1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="oAuthv4" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="openIDConnect1" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="oAuthv2" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="saml1" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -268,7 +266,7 @@
                 <Property name="text" type="java.lang.String" value="Active SSO Protocols"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JCheckBox" name="OpenID1">
+            <Component class="javax.swing.JCheckBox" name="openID1">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
@@ -276,13 +274,12 @@
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" value="OpenID"/>
                 <Property name="toolTipText" type="java.lang.String" value="Disable/Enable OpenID"/>
-                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="OpenID1ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="openID1ActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JCheckBox" name="OpenIDConnect1">
+            <Component class="javax.swing.JCheckBox" name="openIDConnect1">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
@@ -290,10 +287,9 @@
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" value="OpenID Connect"/>
                 <Property name="toolTipText" type="java.lang.String" value="Disable/Enable OpenID Connect"/>
-                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JCheckBox" name="oAuthv3">
+            <Component class="javax.swing.JCheckBox" name="oAuthv1">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
@@ -301,10 +297,12 @@
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" value="OAuth v1.0"/>
                 <Property name="toolTipText" type="java.lang.String" value="Disable/Enable OAuth v1.0"/>
-                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="oAuthv1ActionPerformed"/>
+              </Events>
             </Component>
-            <Component class="javax.swing.JCheckBox" name="oAuthv4">
+            <Component class="javax.swing.JCheckBox" name="oAuthv2">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
@@ -312,8 +310,10 @@
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" value="OAuth v2.0"/>
                 <Property name="toolTipText" type="java.lang.String" value="Disable/Enable OAuth v2.0"/>
-                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="oAuthv2ActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JCheckBox" name="browserID1">
               <Properties>
@@ -323,7 +323,6 @@
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" value="BrowserID"/>
                 <Property name="toolTipText" type="java.lang.String" value="Disable/Enable BrowserID"/>
-                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="browserID1ActionPerformed"/>

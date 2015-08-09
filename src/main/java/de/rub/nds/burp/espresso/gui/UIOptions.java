@@ -22,8 +22,6 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.filechooser.FileFilter;
 
 /**
  * The options to control the extension.
@@ -32,9 +30,20 @@ import javax.swing.filechooser.FileFilter;
  */
 public class UIOptions extends JPanel {
     private JFileChooser fc;
+    
     private File schema, cert, privkey, pubkey;
     private File scriptOut, scriptIn;
     private File extLib, config;
+    
+    public static boolean samlBool=true;
+    public static boolean openID1Bool=true;
+    public static boolean openID2Bool=true;
+    public static boolean openIDConnectBool=true;
+    public static boolean browserIDBool=true;
+    public static boolean oAuthv1Bool=true;
+    public static boolean oAuthv2Bool=true;
+    
+    
 
     /**
      * Creates new form UIOptions
@@ -56,10 +65,10 @@ public class UIOptions extends JPanel {
         scrollPanel = new javax.swing.JPanel();
         ssoSeparator1 = new javax.swing.JSeparator();
         ssoLabel1 = new javax.swing.JLabel();
-        OpenID1 = new javax.swing.JCheckBox();
-        OpenIDConnect1 = new javax.swing.JCheckBox();
-        oAuthv3 = new javax.swing.JCheckBox();
-        oAuthv4 = new javax.swing.JCheckBox();
+        openID1 = new javax.swing.JCheckBox();
+        openIDConnect1 = new javax.swing.JCheckBox();
+        oAuthv1 = new javax.swing.JCheckBox();
+        oAuthv2 = new javax.swing.JCheckBox();
         browserID1 = new javax.swing.JCheckBox();
         saml1 = new javax.swing.JCheckBox();
         cryptoSeparator1 = new javax.swing.JSeparator();
@@ -100,40 +109,45 @@ public class UIOptions extends JPanel {
 
         ssoLabel1.setText("Active SSO Protocols");
 
-        OpenID1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        OpenID1.setSelected(true);
-        OpenID1.setText("OpenID");
-        OpenID1.setToolTipText("Disable/Enable OpenID");
-        OpenID1.setEnabled(false);
-        OpenID1.addActionListener(new java.awt.event.ActionListener() {
+        openID1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        openID1.setSelected(true);
+        openID1.setText("OpenID");
+        openID1.setToolTipText("Disable/Enable OpenID");
+        openID1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                OpenID1ActionPerformed(evt);
+                openID1ActionPerformed(evt);
             }
         });
 
-        OpenIDConnect1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        OpenIDConnect1.setSelected(true);
-        OpenIDConnect1.setText("OpenID Connect");
-        OpenIDConnect1.setToolTipText("Disable/Enable OpenID Connect");
-        OpenIDConnect1.setEnabled(false);
+        openIDConnect1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        openIDConnect1.setSelected(true);
+        openIDConnect1.setText("OpenID Connect");
+        openIDConnect1.setToolTipText("Disable/Enable OpenID Connect");
 
-        oAuthv3.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        oAuthv3.setSelected(true);
-        oAuthv3.setText("OAuth v1.0");
-        oAuthv3.setToolTipText("Disable/Enable OAuth v1.0");
-        oAuthv3.setEnabled(false);
+        oAuthv1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        oAuthv1.setSelected(true);
+        oAuthv1.setText("OAuth v1.0");
+        oAuthv1.setToolTipText("Disable/Enable OAuth v1.0");
+        oAuthv1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                oAuthv1ActionPerformed(evt);
+            }
+        });
 
-        oAuthv4.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        oAuthv4.setSelected(true);
-        oAuthv4.setText("OAuth v2.0");
-        oAuthv4.setToolTipText("Disable/Enable OAuth v2.0");
-        oAuthv4.setEnabled(false);
+        oAuthv2.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        oAuthv2.setSelected(true);
+        oAuthv2.setText("OAuth v2.0");
+        oAuthv2.setToolTipText("Disable/Enable OAuth v2.0");
+        oAuthv2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                oAuthv2ActionPerformed(evt);
+            }
+        });
 
         browserID1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         browserID1.setSelected(true);
         browserID1.setText("BrowserID");
         browserID1.setToolTipText("Disable/Enable BrowserID");
-        browserID1.setEnabled(false);
         browserID1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 browserID1ActionPerformed(evt);
@@ -363,16 +377,16 @@ public class UIOptions extends JPanel {
                             .addComponent(scriptingSeperator1))
                         .addGroup(scrollPanelLayout.createSequentialGroup()
                             .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(OpenIDConnect1)
-                                .addComponent(OpenID1))
+                                .addComponent(openIDConnect1)
+                                .addComponent(openID1))
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                             .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(scrollPanelLayout.createSequentialGroup()
-                                    .addComponent(oAuthv3)
+                                    .addComponent(oAuthv1)
                                     .addGap(18, 18, 18)
                                     .addComponent(browserID1))
                                 .addGroup(scrollPanelLayout.createSequentialGroup()
-                                    .addComponent(oAuthv4)
+                                    .addComponent(oAuthv2)
                                     .addGap(18, 18, 18)
                                     .addComponent(saml1)))
                             .addGap(0, 0, Short.MAX_VALUE))
@@ -443,14 +457,13 @@ public class UIOptions extends JPanel {
                             .addComponent(ssoSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(browserID1)
-                            .addComponent(oAuthv3))
-                        .addComponent(OpenID1))
+                        .addComponent(browserID1)
+                        .addComponent(oAuthv1)
+                        .addComponent(openID1))
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(OpenIDConnect1)
-                        .addComponent(oAuthv4)
+                        .addComponent(openIDConnect1)
+                        .addComponent(oAuthv2)
                         .addComponent(saml1))
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                     .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -531,16 +544,16 @@ public class UIOptions extends JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void OpenID1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenID1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_OpenID1ActionPerformed
+    private void openID1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openID1ActionPerformed
+        openID1Bool = openID1.isSelected();
+    }//GEN-LAST:event_openID1ActionPerformed
 
     private void browserID1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browserID1ActionPerformed
-        // TODO add your handling code here:
+        browserIDBool = browserID1.isSelected();
     }//GEN-LAST:event_browserID1ActionPerformed
 
     private void saml1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saml1ActionPerformed
-        // TODO add your handling code here:
+        samlBool = saml1.isSelected();
     }//GEN-LAST:event_saml1ActionPerformed
 
     private void schemaText1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_schemaText1ActionPerformed
@@ -683,10 +696,16 @@ public class UIOptions extends JPanel {
         }
     }//GEN-LAST:event_scriptOutOpen1ActionPerformed
 
+    private void oAuthv1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_oAuthv1ActionPerformed
+        oAuthv1Bool = oAuthv1.isSelected();
+    }//GEN-LAST:event_oAuthv1ActionPerformed
+
+    private void oAuthv2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_oAuthv2ActionPerformed
+        oAuthv2Bool = oAuthv2.isSelected();
+    }//GEN-LAST:event_oAuthv2ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JCheckBox OpenID1;
-    private javax.swing.JCheckBox OpenIDConnect1;
     private javax.swing.JCheckBox browserID1;
     private javax.swing.JLabel certLabel1;
     private javax.swing.JButton certOpen1;
@@ -704,8 +723,10 @@ public class UIOptions extends JPanel {
     private javax.swing.JLabel libLabel1;
     private javax.swing.JButton libOpen1;
     private javax.swing.JTextField libText1;
-    private javax.swing.JCheckBox oAuthv3;
-    private javax.swing.JCheckBox oAuthv4;
+    private javax.swing.JCheckBox oAuthv1;
+    private javax.swing.JCheckBox oAuthv2;
+    private javax.swing.JCheckBox openID1;
+    private javax.swing.JCheckBox openIDConnect1;
     private javax.swing.JLabel privKeyLabel1;
     private javax.swing.JButton privKeyOpen1;
     private javax.swing.JTextField privKeyText1;
