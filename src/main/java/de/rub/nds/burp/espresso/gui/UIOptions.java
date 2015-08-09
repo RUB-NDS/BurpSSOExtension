@@ -18,7 +18,12 @@
  */
 package de.rub.nds.burp.espresso.gui;
 
+import java.io.File;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.filechooser.FileFilter;
 
 /**
  * The options to control the extension.
@@ -26,6 +31,10 @@ import javax.swing.JPanel;
  * @version 1.0
  */
 public class UIOptions extends JPanel {
+    private JFileChooser fc;
+    private File schema, cert, privkey, pubkey;
+    private File scriptOut, scriptIn;
+    private File extLib, config;
 
     /**
      * Creates new form UIOptions
@@ -43,386 +52,683 @@ public class UIOptions extends JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel3 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jSeparator1 = new javax.swing.JSeparator();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jTextField5 = new javax.swing.JTextField();
-        jTextField6 = new javax.swing.JTextField();
-        jButton6 = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
-        jLabel11 = new javax.swing.JLabel();
-        jSeparator3 = new javax.swing.JSeparator();
-        jLabel12 = new javax.swing.JLabel();
-        OpenID = new javax.swing.JCheckBox();
-        jSeparator4 = new javax.swing.JSeparator();
-        jLabel13 = new javax.swing.JLabel();
-        OpenIDConnect = new javax.swing.JCheckBox();
-        jCheckBox3 = new javax.swing.JCheckBox();
-        jCheckBox4 = new javax.swing.JCheckBox();
-        jCheckBox1 = new javax.swing.JCheckBox();
-        jCheckBox5 = new javax.swing.JCheckBox();
-        jLabel9 = new javax.swing.JLabel();
-        jButton8 = new javax.swing.JButton();
+        jScrollPane = new javax.swing.JScrollPane();
+        scrollPanel = new javax.swing.JPanel();
+        ssoSeparator1 = new javax.swing.JSeparator();
+        ssoLabel1 = new javax.swing.JLabel();
+        OpenID1 = new javax.swing.JCheckBox();
+        OpenIDConnect1 = new javax.swing.JCheckBox();
+        oAuthv3 = new javax.swing.JCheckBox();
+        oAuthv4 = new javax.swing.JCheckBox();
+        browserID1 = new javax.swing.JCheckBox();
+        saml1 = new javax.swing.JCheckBox();
+        cryptoSeparator1 = new javax.swing.JSeparator();
+        cryptoLabel1 = new javax.swing.JLabel();
+        schemaLabel1 = new javax.swing.JLabel();
+        schemaText1 = new javax.swing.JTextField();
+        schemaOpen1 = new javax.swing.JButton();
+        certLabel1 = new javax.swing.JLabel();
+        certText1 = new javax.swing.JTextField();
+        certOpen1 = new javax.swing.JButton();
+        privKeyLabel1 = new javax.swing.JLabel();
+        privKeyText1 = new javax.swing.JTextField();
+        privKeyOpen1 = new javax.swing.JButton();
+        pubKeyLabel1 = new javax.swing.JLabel();
+        pubKeyText1 = new javax.swing.JTextField();
+        pubKeyOpen1 = new javax.swing.JButton();
+        scriptingSeperator1 = new javax.swing.JSeparator();
+        scriptingLabel1 = new javax.swing.JLabel();
+        scriptingDescription1 = new javax.swing.JLabel();
+        scriptInLabel1 = new javax.swing.JLabel();
+        scriptInText1 = new javax.swing.JTextField();
+        scriptInOpen1 = new javax.swing.JButton();
+        scriptOutLabel1 = new javax.swing.JLabel();
+        scriptOutText1 = new javax.swing.JTextField();
+        scriptOutOpen1 = new javax.swing.JButton();
+        extLibSeparator1 = new javax.swing.JSeparator();
+        extLibLabel1 = new javax.swing.JLabel();
+        libLabel1 = new javax.swing.JLabel();
+        libText1 = new javax.swing.JTextField();
+        libOpen1 = new javax.swing.JButton();
+        saveConfSeparator1 = new javax.swing.JSeparator();
+        saveConfLabel1 = new javax.swing.JLabel();
+        configLabel1 = new javax.swing.JLabel();
+        configText1 = new javax.swing.JTextField();
+        configOpen1 = new javax.swing.JButton();
+        configSave1 = new javax.swing.JButton();
+        configApply1 = new javax.swing.JButton();
 
-        jLabel3.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        jLabel3.setText("Input Processing Script:");
+        ssoLabel1.setText("Active SSO Protocols");
 
-        jLabel5.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        jLabel5.setText("Output Processing Script:");
-
-        jTextField1.setText("/path/to/script");
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        OpenID1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        OpenID1.setSelected(true);
+        OpenID1.setText("OpenID");
+        OpenID1.setToolTipText("Disable/Enable OpenID");
+        OpenID1.setEnabled(false);
+        OpenID1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                OpenID1ActionPerformed(evt);
             }
         });
 
-        jTextField2.setText("/path/to/script");
+        OpenIDConnect1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        OpenIDConnect1.setSelected(true);
+        OpenIDConnect1.setText("OpenID Connect");
+        OpenIDConnect1.setToolTipText("Disable/Enable OpenID Connect");
+        OpenIDConnect1.setEnabled(false);
 
-        jButton2.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        jButton2.setText("open");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        oAuthv3.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        oAuthv3.setSelected(true);
+        oAuthv3.setText("OAuth v1.0");
+        oAuthv3.setToolTipText("Disable/Enable OAuth v1.0");
+        oAuthv3.setEnabled(false);
+
+        oAuthv4.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        oAuthv4.setSelected(true);
+        oAuthv4.setText("OAuth v2.0");
+        oAuthv4.setToolTipText("Disable/Enable OAuth v2.0");
+        oAuthv4.setEnabled(false);
+
+        browserID1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        browserID1.setSelected(true);
+        browserID1.setText("BrowserID");
+        browserID1.setToolTipText("Disable/Enable BrowserID");
+        browserID1.setEnabled(false);
+        browserID1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                browserID1ActionPerformed(evt);
             }
         });
 
-        jButton3.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        jButton3.setText("open");
-
-        jLabel6.setText("Scripting");
-
-        jLabel7.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        jLabel7.setText("Public Key:");
-
-        jTextField3.setText("/path/");
-        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+        saml1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        saml1.setSelected(true);
+        saml1.setText("SAML");
+        saml1.setToolTipText("Disable/Enable SAML");
+        saml1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField3ActionPerformed(evt);
+                saml1ActionPerformed(evt);
             }
         });
 
-        jTextField4.setText("/path/");
+        cryptoLabel1.setText("Cryptography");
 
-        jButton4.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        jButton4.setText("open");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        schemaLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        schemaLabel1.setText("Schema:");
+
+        schemaText1.setToolTipText("Insert a path to a schema file.");
+        schemaText1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                schemaText1ActionPerformed(evt);
             }
         });
 
-        jButton5.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        jButton5.setText("open");
-
-        jLabel8.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        jLabel8.setText("Private Key:");
-
-        jLabel10.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        jLabel10.setText("Certificat:");
-
-        jTextField5.setText("/path/");
-        jTextField5.addActionListener(new java.awt.event.ActionListener() {
+        schemaOpen1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        schemaOpen1.setText("...");
+        schemaOpen1.setToolTipText("open file");
+        schemaOpen1.setMargin(new java.awt.Insets(0, 10, 0, 10));
+        schemaOpen1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField5ActionPerformed(evt);
+                schemaOpen1ActionPerformed(evt);
             }
         });
 
-        jTextField6.setText("/path/");
+        certLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        certLabel1.setText("Certificat:");
 
-        jButton6.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        jButton6.setText("open");
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
+        certText1.setToolTipText("Insert a path to a certificat file.");
+        certText1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+                certText1ActionPerformed(evt);
             }
         });
 
-        jButton7.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        jButton7.setText("open");
-
-        jLabel11.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        jLabel11.setText("Schema:");
-
-        jLabel12.setText("Cryptography");
-
-        OpenID.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        OpenID.setText("OpenID");
-        OpenID.addActionListener(new java.awt.event.ActionListener() {
+        certOpen1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        certOpen1.setText("...");
+        certOpen1.setToolTipText("open file");
+        certOpen1.setMargin(new java.awt.Insets(0, 10, 0, 10));
+        certOpen1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                OpenIDActionPerformed(evt);
+                certOpen1ActionPerformed(evt);
             }
         });
 
-        jLabel13.setText("Active SSO Protocols");
+        privKeyLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        privKeyLabel1.setText("Private Key:");
 
-        OpenIDConnect.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        OpenIDConnect.setText("OpenID Connect");
-
-        jCheckBox3.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        jCheckBox3.setText("OAuth v1.0");
-
-        jCheckBox4.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        jCheckBox4.setText("OAuth v2.0");
-
-        jCheckBox1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        jCheckBox1.setText("BrowserID");
-        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+        privKeyText1.setToolTipText("Insert a path to a private key file.");
+        privKeyText1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox1ActionPerformed(evt);
+                privKeyText1ActionPerformed(evt);
             }
         });
 
-        jCheckBox5.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        jCheckBox5.setText("SAML");
-        jCheckBox5.addActionListener(new java.awt.event.ActionListener() {
+        privKeyOpen1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        privKeyOpen1.setText("...");
+        privKeyOpen1.setToolTipText("open file");
+        privKeyOpen1.setMargin(new java.awt.Insets(0, 10, 0, 10));
+        privKeyOpen1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox5ActionPerformed(evt);
+                privKeyOpen1ActionPerformed(evt);
             }
         });
 
-        jLabel9.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        jLabel9.setText("The scripts are used as an interface to external attacking or processing libraries.");
+        pubKeyLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        pubKeyLabel1.setText("Public Key:");
 
-        jButton8.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        jButton8.setText("save");
+        pubKeyText1.setToolTipText("Insert a path to a public key file.");
+        pubKeyText1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pubKeyText1ActionPerformed(evt);
+            }
+        });
+
+        pubKeyOpen1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        pubKeyOpen1.setText("...");
+        pubKeyOpen1.setToolTipText("open file");
+        pubKeyOpen1.setMargin(new java.awt.Insets(0, 10, 0, 10));
+        pubKeyOpen1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pubKeyOpen1ActionPerformed(evt);
+            }
+        });
+
+        scriptingLabel1.setText("Scripting");
+
+        scriptingDescription1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        scriptingDescription1.setText("The scripts are used as an interface to external attacking or processing libraries.");
+
+        scriptInLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        scriptInLabel1.setText("Input Processing Script:");
+
+        scriptInText1.setToolTipText("Insert a path to a python script.");
+        scriptInText1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                scriptInText1ActionPerformed(evt);
+            }
+        });
+
+        scriptInOpen1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        scriptInOpen1.setText("...");
+        scriptInOpen1.setToolTipText("open file");
+        scriptInOpen1.setMargin(new java.awt.Insets(0, 10, 0, 10));
+        scriptInOpen1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                scriptInOpen1ActionPerformed(evt);
+            }
+        });
+
+        scriptOutLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        scriptOutLabel1.setText("Output Processing Script:");
+
+        scriptOutText1.setToolTipText("Insert a path to a python script.");
+
+        scriptOutOpen1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        scriptOutOpen1.setText("...");
+        scriptOutOpen1.setToolTipText("open file");
+        scriptOutOpen1.setMargin(new java.awt.Insets(0, 10, 0, 10));
+        scriptOutOpen1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                scriptOutOpen1ActionPerformed(evt);
+            }
+        });
+
+        extLibLabel1.setText("External Libraries");
+
+        libLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        libLabel1.setText("Libraries:");
+
+        libText1.setToolTipText("Insert a path to a .jar file.");
+        libText1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                libText1ActionPerformed(evt);
+            }
+        });
+
+        libOpen1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        libOpen1.setText("...");
+        libOpen1.setToolTipText("open file");
+        libOpen1.setMargin(new java.awt.Insets(0, 10, 0, 10));
+        libOpen1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                libOpen1ActionPerformed(evt);
+            }
+        });
+
+        saveConfLabel1.setText("Save Configurations");
+
+        configLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        configLabel1.setText("Config file:");
+
+        configText1.setToolTipText("Save the extension configuration.");
+        configText1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                configText1ActionPerformed(evt);
+            }
+        });
+
+        configOpen1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        configOpen1.setText("...");
+        configOpen1.setToolTipText("open file");
+        configOpen1.setMargin(new java.awt.Insets(0, 10, 0, 10));
+        configOpen1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                configOpen1ActionPerformed(evt);
+            }
+        });
+
+        configSave1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        configSave1.setText("save");
+        configSave1.setToolTipText("Save all data to the configuration file.");
+        configSave1.setMargin(new java.awt.Insets(0, 14, 0, 14));
+        configSave1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                configSave1ActionPerformed(evt);
+            }
+        });
+
+        configApply1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        configApply1.setText("apply");
+        configApply1.setMargin(new java.awt.Insets(0, 14, 0, 14));
+        configApply1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                configApply1ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout scrollPanelLayout = new javax.swing.GroupLayout(scrollPanel);
+        scrollPanel.setLayout(scrollPanelLayout);
+        scrollPanelLayout.setHorizontalGroup(
+            scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 754, Short.MAX_VALUE)
+            .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(scrollPanelLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, scrollPanelLayout.createSequentialGroup()
+                            .addGap(534, 534, 534)
+                            .addComponent(configApply1)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(configSave1))
+                        .addGroup(scrollPanelLayout.createSequentialGroup()
+                            .addComponent(ssoLabel1)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(ssoSeparator1))
+                        .addGroup(scrollPanelLayout.createSequentialGroup()
+                            .addComponent(cryptoLabel1)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(cryptoSeparator1))
+                        .addGroup(scrollPanelLayout.createSequentialGroup()
+                            .addComponent(scriptingLabel1)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(scriptingSeperator1))
+                        .addGroup(scrollPanelLayout.createSequentialGroup()
+                            .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(OpenIDConnect1)
+                                .addComponent(OpenID1))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(scrollPanelLayout.createSequentialGroup()
+                                    .addComponent(oAuthv3)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(browserID1))
+                                .addGroup(scrollPanelLayout.createSequentialGroup()
+                                    .addComponent(oAuthv4)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(saml1)))
+                            .addGap(0, 0, Short.MAX_VALUE))
+                        .addGroup(scrollPanelLayout.createSequentialGroup()
+                            .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(certLabel1)
+                                .addComponent(schemaLabel1)
+                                .addComponent(privKeyLabel1)
+                                .addComponent(pubKeyLabel1))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(certText1)
+                                .addComponent(schemaText1)
+                                .addComponent(privKeyText1)
+                                .addComponent(pubKeyText1))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(schemaOpen1, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(certOpen1, javax.swing.GroupLayout.Alignment.TRAILING))
+                                .addComponent(privKeyOpen1)
+                                .addComponent(pubKeyOpen1)))
+                        .addGroup(scrollPanelLayout.createSequentialGroup()
+                            .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(scriptOutLabel1)
+                                .addComponent(scriptInLabel1))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(scriptOutText1)
+                                .addComponent(scriptInText1))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(scriptInOpen1, javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(scriptOutOpen1, javax.swing.GroupLayout.Alignment.TRAILING)))
+                        .addComponent(scriptingDescription1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(scrollPanelLayout.createSequentialGroup()
+                            .addComponent(extLibLabel1)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(extLibSeparator1))
+                        .addGroup(scrollPanelLayout.createSequentialGroup()
+                            .addComponent(configLabel1)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(configText1)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(configOpen1))
+                        .addGroup(scrollPanelLayout.createSequentialGroup()
+                            .addComponent(libLabel1)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(libText1)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(libOpen1))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, scrollPanelLayout.createSequentialGroup()
+                            .addComponent(saveConfLabel1)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(saveConfSeparator1)))
+                    .addContainerGap()))
+        );
+        scrollPanelLayout.setVerticalGroup(
+            scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 470, Short.MAX_VALUE)
+            .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(scrollPanelLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(ssoLabel1)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, scrollPanelLayout.createSequentialGroup()
+                            .addGap(6, 6, 6)
+                            .addComponent(ssoSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(browserID1)
+                            .addComponent(oAuthv3))
+                        .addComponent(OpenID1))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(OpenIDConnect1)
+                        .addComponent(oAuthv4)
+                        .addComponent(saml1))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(cryptoLabel1)
+                        .addComponent(cryptoSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 5, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(schemaLabel1)
+                        .addComponent(schemaText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(schemaOpen1))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(certLabel1)
+                        .addComponent(certText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(certOpen1))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(privKeyLabel1)
+                        .addComponent(privKeyText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(privKeyOpen1))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(pubKeyLabel1)
+                        .addComponent(pubKeyText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(pubKeyOpen1))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(scriptingLabel1)
+                        .addComponent(scriptingSeperator1, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(scriptingDescription1)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(scriptInLabel1)
+                        .addComponent(scriptInText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(scriptInOpen1))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(scriptOutLabel1)
+                        .addComponent(scriptOutText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(scriptOutOpen1))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(extLibLabel1)
+                        .addComponent(extLibSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(libLabel1)
+                        .addComponent(libText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(libOpen1))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(saveConfSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(saveConfLabel1))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(configLabel1)
+                        .addComponent(configText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(configOpen1))
+                    .addGap(18, 18, 18)
+                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(configApply1)
+                        .addComponent(configSave1))
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+        );
+
+        jScrollPane.setViewportView(scrollPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 561, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(6, 6, 6)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jSeparator1))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel12)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jSeparator3))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel3)
-                                    .addComponent(jLabel5))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(jTextField1)
-                                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButton2)
-                                    .addComponent(jButton3))
-                                .addGap(41, 166, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel13)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jSeparator4))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addGap(6, 6, 6)
-                                                .addComponent(jLabel7))
-                                            .addComponent(jLabel8)
-                                            .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jTextField5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jTextField6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                                .addComponent(jTextField3)
-                                                .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                        .addGap(18, 18, 18)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(jButton6)
-                                                .addComponent(jButton7))
-                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(jButton4)
-                                                .addComponent(jButton5))))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(OpenIDConnect)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jCheckBox4))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(OpenID)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(jCheckBox3)))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jCheckBox1)
-                                            .addComponent(jCheckBox5))))
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 474, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton8)))
-                    .addGap(6, 6, 6)))
+            .addComponent(jScrollPane)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 693, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(6, 6, 6)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jLabel13)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(5, 5, 5)
-                            .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(OpenID)
-                        .addComponent(jCheckBox3)
-                        .addComponent(jCheckBox1))
-                    .addGap(3, 3, 3)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(OpenIDConnect)
-                        .addComponent(jCheckBox4)
-                        .addComponent(jCheckBox5))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jLabel12)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                            .addGap(8, 8, 8)
-                            .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 7, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGap(26, 26, 26)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel11))
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jButton6)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jButton7)
-                                .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel10))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jButton4)
-                                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel8))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jButton5)
-                                .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel7))))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(26, 26, 26)
-                            .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(18, 18, 18)
-                            .addComponent(jLabel6)))
-                    .addGap(8, 8, 8)
-                    .addComponent(jLabel9)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel3)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton2))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel5)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton3))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 293, Short.MAX_VALUE)
-                    .addComponent(jButton8)
-                    .addGap(6, 6, 6)))
+            .addComponent(jScrollPane)
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void OpenID1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenID1ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_OpenID1ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void browserID1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browserID1ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_browserID1ActionPerformed
 
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+    private void saml1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saml1ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField3ActionPerformed
+    }//GEN-LAST:event_saml1ActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void schemaText1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_schemaText1ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }//GEN-LAST:event_schemaText1ActionPerformed
 
-    private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField5ActionPerformed
+    private void schemaOpen1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_schemaOpen1ActionPerformed
+        fc = new JFileChooser();
+        int returnVal = fc.showOpenDialog(this);
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton6ActionPerformed
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            schema = fc.getSelectedFile();
+            schemaText1.setText(schema.getPath());
+        } else {
+            JOptionPane.showMessageDialog(this,"The selected file could not be found","File not found",JOptionPane.ERROR_MESSAGE);
+            schemaText1.setText("File not found");
+        }
+    }//GEN-LAST:event_schemaOpen1ActionPerformed
 
-    private void OpenIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OpenIDActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_OpenIDActionPerformed
+    private void certText1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_certText1ActionPerformed
+        
+    }//GEN-LAST:event_certText1ActionPerformed
 
-    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
+    private void privKeyText1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_privKeyText1ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jCheckBox1ActionPerformed
+    }//GEN-LAST:event_privKeyText1ActionPerformed
 
-    private void jCheckBox5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox5ActionPerformed
+    private void privKeyOpen1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_privKeyOpen1ActionPerformed
+        fc = new JFileChooser();
+        int returnVal = fc.showOpenDialog(this);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            privkey = fc.getSelectedFile();
+            privKeyText1.setText(privkey.getPath());
+        } else {
+            JOptionPane.showMessageDialog(this,"The selected file could not be found","File not found",JOptionPane.ERROR_MESSAGE);
+            privKeyText1.setText("File not found");
+        }
+    }//GEN-LAST:event_privKeyOpen1ActionPerformed
+
+    private void pubKeyText1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pubKeyText1ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jCheckBox5ActionPerformed
+    }//GEN-LAST:event_pubKeyText1ActionPerformed
+
+    private void pubKeyOpen1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pubKeyOpen1ActionPerformed
+        fc = new JFileChooser();
+        int returnVal = fc.showOpenDialog(this);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+           pubkey = fc.getSelectedFile();
+           pubKeyText1.setText(pubkey.getPath());
+        } else {
+            JOptionPane.showMessageDialog(this,"The selected file could not be found","File not found",JOptionPane.ERROR_MESSAGE);
+            pubKeyText1.setText("File not found");
+        }
+    }//GEN-LAST:event_pubKeyOpen1ActionPerformed
+
+    private void scriptInText1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scriptInText1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_scriptInText1ActionPerformed
+
+    private void scriptInOpen1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scriptInOpen1ActionPerformed
+        fc = new JFileChooser();
+        int returnVal = fc.showOpenDialog(this);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+           scriptIn = fc.getSelectedFile();
+           scriptInText1.setText(scriptIn.getPath());
+        } else {
+            JOptionPane.showMessageDialog(this,"The selected file could not be found","File not found",JOptionPane.ERROR_MESSAGE);
+            scriptInText1.setText("File not found");
+        }
+    }//GEN-LAST:event_scriptInOpen1ActionPerformed
+
+    private void libText1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_libText1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_libText1ActionPerformed
+
+    private void libOpen1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_libOpen1ActionPerformed
+        fc = new JFileChooser();
+        int returnVal = fc.showOpenDialog(this);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+           extLib = fc.getSelectedFile();
+           libText1.setText(extLib.getPath());
+        } else {
+            JOptionPane.showMessageDialog(this,"The selected file could not be found","File not found",JOptionPane.ERROR_MESSAGE);
+            libText1.setText("File not found");
+        }
+    }//GEN-LAST:event_libOpen1ActionPerformed
+
+    private void configText1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configText1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_configText1ActionPerformed
+
+    private void configOpen1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configOpen1ActionPerformed
+        fc = new JFileChooser();
+        int returnVal = fc.showOpenDialog(this);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+           config = fc.getSelectedFile();
+           configText1.setText(config.getPath());
+        } else {
+            JOptionPane.showMessageDialog(this,"The selected file could not be found","File not found",JOptionPane.ERROR_MESSAGE);
+            configText1.setText("File not found");
+        }
+    }//GEN-LAST:event_configOpen1ActionPerformed
+
+    private void configSave1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configSave1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_configSave1ActionPerformed
+
+    private void configApply1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configApply1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_configApply1ActionPerformed
+
+    private void certOpen1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_certOpen1ActionPerformed
+        fc = new JFileChooser();
+        int returnVal = fc.showOpenDialog(this);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+           cert = fc.getSelectedFile();
+           certText1.setText(cert.getPath());
+        } else {
+            JOptionPane.showMessageDialog(this,"The selected file could not be found","File not found",JOptionPane.ERROR_MESSAGE);
+            certText1.setText("File not found");
+        }
+    }//GEN-LAST:event_certOpen1ActionPerformed
+
+    private void scriptOutOpen1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scriptOutOpen1ActionPerformed
+        fc = new JFileChooser();
+        int returnVal = fc.showOpenDialog(this);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+           scriptOut = fc.getSelectedFile();
+           scriptOutText1.setText(scriptOut.getPath());
+        } else {
+            JOptionPane.showMessageDialog(this,"The selected file could not be found","File not found",JOptionPane.ERROR_MESSAGE);
+            scriptOutText1.setText("File not found");
+        }
+    }//GEN-LAST:event_scriptOutOpen1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JCheckBox OpenID;
-    private javax.swing.JCheckBox OpenIDConnect;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JCheckBox jCheckBox3;
-    private javax.swing.JCheckBox jCheckBox4;
-    private javax.swing.JCheckBox jCheckBox5;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JSeparator jSeparator4;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField6;
+    private javax.swing.JCheckBox OpenID1;
+    private javax.swing.JCheckBox OpenIDConnect1;
+    private javax.swing.JCheckBox browserID1;
+    private javax.swing.JLabel certLabel1;
+    private javax.swing.JButton certOpen1;
+    private javax.swing.JTextField certText1;
+    private javax.swing.JButton configApply1;
+    private javax.swing.JLabel configLabel1;
+    private javax.swing.JButton configOpen1;
+    private javax.swing.JButton configSave1;
+    private javax.swing.JTextField configText1;
+    private javax.swing.JLabel cryptoLabel1;
+    private javax.swing.JSeparator cryptoSeparator1;
+    private javax.swing.JLabel extLibLabel1;
+    private javax.swing.JSeparator extLibSeparator1;
+    private javax.swing.JScrollPane jScrollPane;
+    private javax.swing.JLabel libLabel1;
+    private javax.swing.JButton libOpen1;
+    private javax.swing.JTextField libText1;
+    private javax.swing.JCheckBox oAuthv3;
+    private javax.swing.JCheckBox oAuthv4;
+    private javax.swing.JLabel privKeyLabel1;
+    private javax.swing.JButton privKeyOpen1;
+    private javax.swing.JTextField privKeyText1;
+    private javax.swing.JLabel pubKeyLabel1;
+    private javax.swing.JButton pubKeyOpen1;
+    private javax.swing.JTextField pubKeyText1;
+    private javax.swing.JCheckBox saml1;
+    private javax.swing.JLabel saveConfLabel1;
+    private javax.swing.JSeparator saveConfSeparator1;
+    private javax.swing.JLabel schemaLabel1;
+    private javax.swing.JButton schemaOpen1;
+    private javax.swing.JTextField schemaText1;
+    private javax.swing.JLabel scriptInLabel1;
+    private javax.swing.JButton scriptInOpen1;
+    private javax.swing.JTextField scriptInText1;
+    private javax.swing.JLabel scriptOutLabel1;
+    private javax.swing.JButton scriptOutOpen1;
+    private javax.swing.JTextField scriptOutText1;
+    private javax.swing.JLabel scriptingDescription1;
+    private javax.swing.JLabel scriptingLabel1;
+    private javax.swing.JSeparator scriptingSeperator1;
+    private javax.swing.JPanel scrollPanel;
+    private javax.swing.JLabel ssoLabel1;
+    private javax.swing.JSeparator ssoSeparator1;
     // End of variables declaration//GEN-END:variables
 }
