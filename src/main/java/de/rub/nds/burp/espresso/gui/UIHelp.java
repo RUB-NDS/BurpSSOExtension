@@ -49,6 +49,8 @@ public class UIHelp extends javax.swing.JPanel {
         samlPane = new javax.swing.JTabbedPane();
         smal1Pane = new javax.swing.JPanel();
         saml2Pane = new javax.swing.JPanel();
+        browseridPane = new javax.swing.JTabbedPane();
+        flowchartPane = new javax.swing.JPanel();
         openidPane = new javax.swing.JTabbedPane();
         openid11Pane = new javax.swing.JPanel();
         openid2Pane = new javax.swing.JPanel();
@@ -56,8 +58,6 @@ public class UIHelp extends javax.swing.JPanel {
         oauthPane = new javax.swing.JTabbedPane();
         oauth1Pane = new javax.swing.JPanel();
         oauth2Pane = new javax.swing.JPanel();
-        browseridPane = new javax.swing.JTabbedPane();
-        flowchartPane = new javax.swing.JPanel();
 
         headline.setText("Help for Using this Extension at: https://github.com/some_uri");
 
@@ -108,6 +108,24 @@ public class UIHelp extends javax.swing.JPanel {
 
         protocolsTabbedPane.addTab("SAML", samlPane);
 
+        browseridPane.setDoubleBuffered(true);
+        browseridPane.setFocusable(false);
+
+        javax.swing.GroupLayout flowchartPaneLayout = new javax.swing.GroupLayout(flowchartPane);
+        flowchartPane.setLayout(flowchartPaneLayout);
+        flowchartPaneLayout.setHorizontalGroup(
+            flowchartPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 508, Short.MAX_VALUE)
+        );
+        flowchartPaneLayout.setVerticalGroup(
+            flowchartPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 582, Short.MAX_VALUE)
+        );
+
+        browseridPane.addTab("Flowchart", flowchartPane);
+
+        protocolsTabbedPane.addTab("BrowserID", browseridPane);
+
         javax.swing.GroupLayout openid11PaneLayout = new javax.swing.GroupLayout(openid11Pane);
         openid11Pane.setLayout(openid11PaneLayout);
         openid11PaneLayout.setHorizontalGroup(
@@ -134,20 +152,20 @@ public class UIHelp extends javax.swing.JPanel {
 
         openidPane.addTab("OpenID 2.0", openid2Pane);
 
+        protocolsTabbedPane.addTab("OpenID", openidPane);
+
         javax.swing.GroupLayout openidconnectPaneLayout = new javax.swing.GroupLayout(openidconnectPane);
         openidconnectPane.setLayout(openidconnectPaneLayout);
         openidconnectPaneLayout.setHorizontalGroup(
             openidconnectPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 508, Short.MAX_VALUE)
+            .addGap(0, 513, Short.MAX_VALUE)
         );
         openidconnectPaneLayout.setVerticalGroup(
             openidconnectPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 582, Short.MAX_VALUE)
+            .addGap(0, 609, Short.MAX_VALUE)
         );
 
-        openidPane.addTab("OpenID Connect", openidconnectPane);
-
-        protocolsTabbedPane.addTab("OpenID", openidPane);
+        protocolsTabbedPane.addTab("OpenID Connect", openidconnectPane);
 
         javax.swing.GroupLayout oauth1PaneLayout = new javax.swing.GroupLayout(oauth1Pane);
         oauth1Pane.setLayout(oauth1PaneLayout);
@@ -176,24 +194,6 @@ public class UIHelp extends javax.swing.JPanel {
         oauthPane.addTab("OAuth 2.0", oauth2Pane);
 
         protocolsTabbedPane.addTab("OAuth", oauthPane);
-
-        browseridPane.setDoubleBuffered(true);
-        browseridPane.setFocusable(false);
-
-        javax.swing.GroupLayout flowchartPaneLayout = new javax.swing.GroupLayout(flowchartPane);
-        flowchartPane.setLayout(flowchartPaneLayout);
-        flowchartPaneLayout.setHorizontalGroup(
-            flowchartPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 508, Short.MAX_VALUE)
-        );
-        flowchartPaneLayout.setVerticalGroup(
-            flowchartPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 582, Short.MAX_VALUE)
-        );
-
-        browseridPane.addTab("Flowchart", flowchartPane);
-
-        protocolsTabbedPane.addTab("BrowserID", browseridPane);
 
         helpContainerPanel.addTab("Protocols", protocolsTabbedPane);
 
