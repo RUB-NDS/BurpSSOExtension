@@ -20,6 +20,8 @@ package de.rub.nds.burp.espresso.attacker;
 
 /**
  * Interface for external libraries.
+ * TODO use Google Java Protobuff for IPC.
+ * https://developers.google.com/protocol-buffers/
  * @author Tim Guenther
  * @version 1.0
  */

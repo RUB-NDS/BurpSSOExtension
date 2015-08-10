@@ -18,8 +18,6 @@
  */
 package de.rub.nds.burp.utilities.table;
 
-import de.rub.nds.burp.utilities.table.Table;
-import de.rub.nds.burp.utilities.table.TableEntry;
 import java.util.ArrayList;
 
 /**
@@ -34,7 +32,7 @@ public abstract class TableDB {
     
     /**
      * Get the table by name.
-     * @param name The name of the table.
+     * @param id The name of the table.
      * @return The table with the given name, otherwise null.
      */
     public static Table getTable(String id){

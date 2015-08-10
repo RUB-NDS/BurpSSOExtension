@@ -61,7 +61,7 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
 
     /**
      * Create a vertical split history window.
-     * @param callbacks 
+     * @param callbacks Helper provided by the Burp Suite api.
      */
     public UIHistory(IBurpExtenderCallbacks callbacks) {
         super(JSplitPane.VERTICAL_SPLIT);

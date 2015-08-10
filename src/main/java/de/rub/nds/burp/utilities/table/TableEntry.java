@@ -43,7 +43,6 @@ public class TableEntry {
     /**
      * Construct a new table entry.
      * @param counter The number of the entry position in the history. 
-     * @param number The number of the entry position in the protocol.
      * @param protocol The single sign-on protocol.
      * @param token The token or unique id for the protocol flow.
      * @param requestResponse The content of the request/response.
