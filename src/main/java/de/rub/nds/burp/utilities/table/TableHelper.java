@@ -30,7 +30,7 @@ import javax.swing.table.AbstractTableModel;
 public class TableHelper extends AbstractTableModel{
     
     private ArrayList<TableEntry> list;
-    private String[] colName = {"#","No.","SSO Protocol","Host","Method","URL","Token","Time","Length","Comment"};
+    private String[] colName = {"#","SSO Protocol","Host","Method","URL","Token","Time","Length","Comment"};
 
     /**
      * Construct a new Table Helper
@@ -126,22 +126,20 @@ public class TableHelper extends AbstractTableModel{
             case 0:
                 return entry.getCounter();
             case 1:
-                return entry.getNumber();
-            case 2:
                 return entry.getProtocol();
-            case 3:
+            case 2:
                 return entry.getHost();
-            case 4:
+            case 3:
                 return entry.getMethod();
-            case 5:
+            case 4:
                 return entry.getUrl();
-            case 6:
+            case 5:
                 return entry.getToken() ;   
-            case 7:
+            case 6:
                 return entry.getTime();
-            case 8:
+            case 7:
                 return entry.getLength();
-            case 9:
+            case 8:
                 return entry.getComment();
             default:
                 return null;

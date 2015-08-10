@@ -76,11 +76,10 @@ public class SSOScanner implements IHttpListener{
             String[] npt = checkForProtocol(httpRequestResponse);
             if(npt != null){
                 String count = Integer.toString(++counter);
-                String num = "NaN";
                 String protocol = npt[0];
                 String token = npt[1];
 
-                TableEntry e = new TableEntry(count,num,protocol,token,callbacks.saveBuffersToTempFiles(httpRequestResponse),callbacks);
+                TableEntry e = new TableEntry(count,protocol,token,callbacks.saveBuffersToTempFiles(httpRequestResponse),callbacks);
 
                 //Full History
                 TableDB.getTable(0).getTableHelper().addRow(e);

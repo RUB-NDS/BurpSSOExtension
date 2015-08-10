@@ -30,7 +30,6 @@ import java.time.LocalTime;
  */
 public class TableEntry {
     private String counter = "";
-    private String number = "";
     private String protocol = "";
     private String host = "";
     private String method = "";
@@ -50,11 +49,10 @@ public class TableEntry {
      * @param requestResponse The content of the request/response.
      * @param callbacks Helper provided by the Burp Suite api.
      */
-    public TableEntry(String counter, String number, String protocol, String token, IHttpRequestResponsePersisted requestResponse, IBurpExtenderCallbacks callbacks) {
+    public TableEntry(String counter, String protocol, String token, IHttpRequestResponsePersisted requestResponse, IBurpExtenderCallbacks callbacks) {
         IExtensionHelpers helpers = callbacks.getHelpers();
         
         this.counter = counter;
-        this.number = number;
         this.protocol = protocol;
         this.host = helpers.analyzeRequest(requestResponse).getUrl().getHost();
         this.method = helpers.analyzeRequest(requestResponse).getMethod();
@@ -70,10 +68,6 @@ public class TableEntry {
     //Getter
     public String getCounter() {
         return counter;
-    }
-
-    public String getNumber() {
-        return number;
     }
 
     public String getProtocol() {
