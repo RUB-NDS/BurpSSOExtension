@@ -37,7 +37,7 @@ public class TableTest extends TestCase {
     public void testGetName() {
         System.out.println("getName");
         String expResult = "testName";
-        Table instance = new Table(new TableHelper(null), expResult);
+        Table instance = new Table(new TableHelper(null), expResult, "123");
         String result = instance.getName();
         assertTrue(expResult.equals(result));
     }
@@ -48,7 +48,7 @@ public class TableTest extends TestCase {
     public void testGetTableHelper() {
         System.out.println("getTableHelper");
         TableHelper expResult = new TableHelper(null);
-        Table instance = new Table(expResult, null);
+        Table instance = new Table(expResult, null, "123");
         TableHelper result = instance.getTableHelper();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
@@ -61,7 +61,7 @@ public class TableTest extends TestCase {
     public void testGetTableList() {
         System.out.println("getTableList");
         ArrayList<TableEntry> expResult = new ArrayList<TableEntry>();
-        Table instance = new Table(new TableHelper(expResult), null);
+        Table instance = new Table(new TableHelper(expResult), null, "123");
         ArrayList<TableEntry> result = instance.getTableList();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.

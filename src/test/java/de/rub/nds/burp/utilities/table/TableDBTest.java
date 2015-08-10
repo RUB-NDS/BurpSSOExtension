@@ -35,11 +35,11 @@ public class TableDBTest extends TestCase {
      */
     public void testGetTable_String() {
         System.out.println("getTable");
-        String name = "testName";
-        Table expResult = new Table(new TableHelper(null),name);
+        String id = "123";
+        Table expResult = new Table(new TableHelper(null),"testName",id);
         TableDB.addTable(expResult);
-        Table result = TableDB.getTable(name);
-        assertEquals(expResult, result);
+        Table result = TableDB.getTable(id);
+        assertEquals(expResult.getID(), result.getID());
         // TODO review the generated test code and remove the default call to fail.
         //fail("The test case is a prototype.");
     }
@@ -50,11 +50,10 @@ public class TableDBTest extends TestCase {
     public void testGetTable_int() {
         System.out.println("getTable");
         int index = 0;
-        String name = "testName";
-        Table expResult = new Table(new TableHelper(null),name);
+        Table expResult = new Table(new TableHelper(null),"testName","123");
         TableDB.addTable(expResult);
         Table result = TableDB.getTable(index);
-        assertEquals(expResult.getName(), result.getName());
+        assertEquals(expResult.getID(), result.getID());
         // TODO review the generated test code and remove the default call to fail.
         //fail("The test case is a prototype.");
     }

@@ -30,6 +30,7 @@ import de.rub.nds.burp.utilities.protocols.SSOProtocol;
 import de.rub.nds.burp.utilities.table.TableDB;
 import de.rub.nds.burp.utilities.table.TableEntry;
 import de.rub.nds.burp.utilities.protocols.SAML;
+import de.rub.nds.burp.utilities.table.Table;
 import java.io.PrintWriter;
 import java.util.List;
 
@@ -83,6 +84,13 @@ public class SSOScanner implements IHttpListener{
 
                 //Full History
                 TableDB.getTable(0).getTableHelper().addRow(e);
+                //Add content to additional tables
+                for(int i = 1; i<TableDB.size(); i++){
+                    Table t = TableDB.getTable(i);
+                    if(token.equals(t.getID())){
+                        t.getTableHelper().addRow(e);
+                    }
+                }
             }
         }
     }

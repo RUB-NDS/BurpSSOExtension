@@ -51,6 +51,7 @@ import javax.swing.table.TableRowSorter;
 public class UIHistory extends JSplitPane implements IMessageEditorController{
     
     private IBurpExtenderCallbacks callbacks;
+    private PrintWriter stdout;
     
     private JTabbedPane historyContainer;
     private Table ssoHistoryTable;
@@ -65,6 +66,8 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
     public UIHistory(IBurpExtenderCallbacks callbacks) {
         super(JSplitPane.VERTICAL_SPLIT);
         this.callbacks = callbacks;
+        stdout = new PrintWriter(callbacks.getStdout(), true);
+        
         initComponent();
     }
     
@@ -75,7 +78,7 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
         //top part
         historyContainer = new JTabbedPane();
         
-        ssoHistoryTable = new Table(new TableHelper(new ArrayList<TableEntry>()), "Full History");
+        ssoHistoryTable = new Table(new TableHelper(new ArrayList<TableEntry>()), "Full History", "Default_ssoHistory");
         JScrollPane scrollPane = new JScrollPane(ssoHistoryTable);
         historyContainer.addTab(ssoHistoryTable.getName(), scrollPane);
         this.setTopComponent(historyContainer);
@@ -97,26 +100,12 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
 
             @Override
             public void actionPerformed(ActionEvent ae) {
-                JMenuItem menu = (JMenuItem) ae.getSource();
-                if (menu == item) {
-                    int row = ssoHistoryTable.getSelectedRow();
-                    String id = (String) ssoHistoryTable.getValueAt(row, 6);
-                    if(addNewTable(id)){
-                        try {
-                            //a little race condition with the new tab
-                            Thread.sleep(500);
-                        } catch (InterruptedException ex) {
-                        }
-                        new PrintWriter(callbacks.getStdout(), true).println("test");
-                        ArrayList<TableEntry> list = ssoHistoryTable.getTableList();
-                        for(TableEntry e : list){
-                            if(e.getToken().equals(id)){
-                                new PrintWriter(callbacks.getStdout(), true).println("1");
-                                TableDB.getTable(id).getTableHelper().addRow(e);
-                            }
-                        }
-                    }
-		}
+                stdout.println("Entry");
+                int row = ssoHistoryTable.getSelectedRow();
+                String id = (String) ssoHistoryTable.getValueAt(row, 5);
+                String protocol = (String) ssoHistoryTable.getValueAt(row, 1);
+                String no = (String) ssoHistoryTable.getValueAt(row, 0);
+                addNewTable(protocol+no, id);
             }
         });
         menu.add(item);
@@ -134,11 +123,12 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
     /**
      * Add a table to the history UI.
      * @param tableName Name of the table, is displayed in the new tab. 
-     * @return 
+     * @param id The id for the requests.
+     * @return False if table exists, otherwise true.
      */
-    public boolean addNewTable(String tableName){
+    public boolean addNewTable(String tableName, String id){
         //find tables with same name
-        if(TableDB.getTable(tableName) != null){
+        if(TableDB.getTable(id) != null){
             return false;
         }
         
@@ -147,9 +137,15 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
             @Override
             public void run()
             {   
-                Table t = new Table(new TableHelper(new ArrayList<TableEntry>()),tableName);
-                JScrollPane s = new JScrollPane(t);
+                Table t = new Table(new TableHelper(new ArrayList<TableEntry>()),tableName,id);
+                ArrayList<TableEntry> list = ssoHistoryTable.getTableList();
+                for(TableEntry e : list){
+                    if(e.getToken().equals(id)){
+                        t.getTableHelper().addRow(e);
+                    }
+                }
                 
+                JScrollPane s = new JScrollPane(t);
                 historyContainer.addTab(t.getName(), s);
                 
                 TableDB.addTable(t);

@@ -31,18 +31,21 @@ public class Table extends JTable{
     private TableHelper th;
     private ArrayList<TableEntry> list;
     private String name;
+    private String id;
     
     /**
      * Create a new Table.
      * @param th The helper to organise your table entries.
      * @param name The table name.
+     * @param id The request id.
      */
-    public Table(TableHelper th, String name)
+    public Table(TableHelper th, String name, String id)
     {
         super(th);
         this.th = th;
         this.list = th.getTableList();
         this.name = name;
+        this.id = id;
     }
 
     /**
@@ -51,6 +54,14 @@ public class Table extends JTable{
      */
     public String getName(){
         return name;
+    }
+    
+    /**
+     * 
+     * @return The request id of the table.
+     */
+    public String getID(){
+        return id;
     }
     
     /**

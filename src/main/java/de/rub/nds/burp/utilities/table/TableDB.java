@@ -37,9 +37,9 @@ public abstract class TableDB {
      * @param name The name of the table.
      * @return The table with the given name, otherwise null.
      */
-    public static Table getTable(String name){
+    public static Table getTable(String id){
         for(Table t : tableList){
-            if(t.getName().equals(name)){
+            if(t.getID().equals(id)){
                 return t;
             }
         }
@@ -67,5 +67,13 @@ public abstract class TableDB {
             return false;
         }
         return true;
+    }
+    
+    /**
+     * 
+     * @return The count of the tables.
+     */
+    public static int size(){
+        return tableList.size();
     }
 }
