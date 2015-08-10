@@ -26,6 +26,11 @@
             <artifactId>Signature_Faking_Library</artifactId>
             <version>1.7</version>
         </dependency>
+        <dependency>
+            <groupId>org.jdesktop</groupId>
+            <artifactId>beansbinding</artifactId>
+            <version>1.2.1</version>
+        </dependency>
     </dependencies>
     
     <repositories>
