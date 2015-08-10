@@ -18,7 +18,6 @@
  */
 package de.rub.nds.burp.utilities.table;
 
-import de.rub.nds.burp.espresso.gui.UIMain;
 import de.rub.nds.burp.espresso.gui.UIHistory;
 import java.util.ArrayList;
 import javax.swing.JTable;
@@ -40,7 +39,7 @@ public class Table extends JTable{
      */
     public Table(TableHelper th, String name)
     {
-        super(th); 
+        super(th);
         this.th = th;
         this.list = th.getTableList();
         this.name = name;

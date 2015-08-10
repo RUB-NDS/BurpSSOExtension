@@ -39,6 +39,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  * SSO History displays all Single Sign-On related messages.
@@ -119,6 +121,11 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
         menu.add(item);
         ssoHistoryTable.setComponentPopupMenu(menu);
         
+        //Enable sorting
+        TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>();
+        ssoHistoryTable.setRowSorter(sorter);
+        sorter.setModel(ssoHistoryTable.getModel());
+                
         TableDB.addTable(ssoHistoryTable);
     }
     
