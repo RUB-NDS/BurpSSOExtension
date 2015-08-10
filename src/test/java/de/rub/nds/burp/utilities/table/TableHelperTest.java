@@ -64,7 +64,7 @@ public class TableHelperTest extends TestCase {
     public void testGetColumnCount() {
         System.out.println("getColumnCount");
         TableHelper instance = new TableHelper(new ArrayList<TableEntry>());
-        int expResult = 10;
+        int expResult = 9;
         int result = instance.getColumnCount();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.

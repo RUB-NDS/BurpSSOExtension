@@ -18,7 +18,6 @@
  */
 package de.rub.nds.burp.utilities.table;
 
-import de.rub.nds.burp.utilities.table.TableEntry;
 import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
@@ -81,7 +80,7 @@ public class TableHelper extends AbstractTableModel{
     @Override
     public int getColumnCount()
     {
-        return 10;
+        return 9;
     }
 
     /**

@@ -38,6 +38,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
@@ -125,6 +126,7 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
         TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>();
         ssoHistoryTable.setRowSorter(sorter);
         sorter.setModel(ssoHistoryTable.getModel());
+        ssoHistoryTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
                 
         TableDB.addTable(ssoHistoryTable);
     }
