@@ -23,7 +23,6 @@ import burp.IHttpRequestResponse;
 import burp.IHttpService;
 import burp.IMessageEditor;
 import burp.IMessageEditorController;
-import de.rub.nds.burp.espresso.gui.contextmenu.FollowProtocol;
 import de.rub.nds.burp.utilities.table.Table;
 import de.rub.nds.burp.utilities.table.TableDB;
 import de.rub.nds.burp.utilities.table.TableEntry;
@@ -95,12 +94,11 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
         //context menu
         ssoHistoryTable.addMouseListener(new TableMouseListener(ssoHistoryTable));
         JPopupMenu menu = new JPopupMenu();
-        JMenuItem item = new JMenuItem(FollowProtocol.CAPTION);
+        JMenuItem item = new JMenuItem("Follow SSO Protocol");
         item.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent ae) {
-                stdout.println("Entry");
                 int row = ssoHistoryTable.getSelectedRow();
                 String id = (String) ssoHistoryTable.getValueAt(row, 5);
                 String protocol = (String) ssoHistoryTable.getValueAt(row, 1);

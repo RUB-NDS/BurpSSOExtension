@@ -23,7 +23,6 @@ import de.rub.nds.burp.espresso.scanner.SSOScanner;
 import de.rub.nds.burp.espresso.HttpMarker;
 import de.rub.nds.burp.espresso.editor.SamlRequestEditor;
 import de.rub.nds.burp.espresso.editor.SamlResponseEditor;
-import de.rub.nds.burp.espresso.gui.contextmenu.FollowProtocol;
 import java.io.PrintWriter;
 
 
@@ -70,9 +69,6 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener{
 	callbacks.registerHttpListener(httpMarker);
 	callbacks.registerMessageEditorTabFactory(new SamlResponseEditor(callbacks));
 	callbacks.registerMessageEditorTabFactory(new SamlRequestEditor(callbacks));
-        
-        callbacks.registerContextMenuFactory(new FollowProtocol(callbacks));
-        
     }
     /**
      * Print a notification on the standard output when extension is unloaded.
