@@ -22,12 +22,13 @@ import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IParameter;
 import de.rub.nds.burp.utilities.Compression;
-import de.rub.nds.burp.utilities.EncodingChecker;
+import de.rub.nds.burp.utilities.Encoding;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.DataFormatException;
 
 /**
  * Object containing all information about a SAML message.
@@ -107,48 +108,34 @@ public class SAML extends SSOProtocol{
      * @param input Encoded data.
      * @return Decoded data.
      */
-    @Override
     public String decode(String input){
-        if(EncodingChecker.isEncoded(input) == -1){
-            return input;
-        }
-        try {
-            switch (paramName) {
-                case SSOProtocol.SAML_REQUEST:
-                    if(EncodingChecker.isURLEncoded(input)){
-                        input = helpers.urlDecode(input);
-                        if(EncodingChecker.isEncoded(input) < 0){
-                            return input;
-                        }
-                    }
-                    byte[] byteString = null;
-                    if(EncodingChecker.isBase64Encoded(input)){
-                        byteString = helpers.base64Decode(input);
-                    } else {
-                        byteString = helpers.stringToBytes(input);
-                    }
-                    byte[] decompressed = null;
-                    if(EncodingChecker.isDeflated(byteString)){
-                        try{
-                            decompressed = Compression.decompress(byteString);
-                        }catch(Exception ex){
+        int encoding = Encoding.getEncoding(input);
+        for(int i = 0; i < 100; i++){
+            switch(encoding){
+                case Encoding.URL_ENCODED:
+                    input = helpers.urlDecode(input);
+                    break;
+                case Encoding.BASE64_ENCODED:
+                    input = helpers.bytesToString(helpers.base64Decode(input));
+                    break;
+                case Encoding.DEFLATED:
+                    {
+                        try {
+                            input = helpers.bytesToString(Compression.decompress(helpers.stringToBytes(input)));
+                        } catch (IOException | DataFormatException ex) {
                             Logger.getLogger(SAML.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        if(decompressed != null){
-                            String result = new String(decompressed);
-                            return result;
-                        }
-                    } else {
-                        return input;
                     }
-                case SSOProtocol.SAML_RESPONSE:
-                    return helpers.bytesToString(helpers.base64Decode(helpers.urlDecode(input)));
+                    break;
+                default:
+                    return input;
             }
-        } catch (IOException ex) {
-            Logger.getLogger(SAML.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+            encoding = Encoding.getEncoding(input);
+            if(encoding == -1){
+                return input;
+            }
         }
-        return null;
+        return input;
     }
     
     @Override
