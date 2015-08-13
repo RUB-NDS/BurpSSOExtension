@@ -18,6 +18,7 @@
  */
 package de.rub.nds.burp.utilities;
 
+import de.rub.nds.burp.utilities.protocols.SAML;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -65,12 +66,18 @@ public abstract class Encoding {
      */
     public static boolean isURLEncoded(String data){
         boolean flag = true;
+        //filter non ASCII chars
+        if(!regex_contains("[^\\x00-\\x7F]", data)){
         try {
             URLDecoder.decode(data, "ASCII");
+            Logger.getLogger(SAML.class.getName()).log(Level.SEVERE, null, data);
         } catch (UnsupportedEncodingException ex) {
             flag = false;
         }
-        String pattern = "%[a-zA-Z0-9]{2}";
+        } else {
+            flag = false;
+        }
+        String pattern = "(%[a-zA-Z0-9]{2})";
         return (flag && regex_contains(pattern, data));
     }
     
