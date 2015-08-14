@@ -64,6 +64,10 @@ public class EncodingTest extends TestCase {
         boolean result1 = Encoding.isBase64Encoded(data1);
         assertFalse(result1);
         
+        String data2 = "This%20is%20a%20test%20string%20with%20special%20chars%20like%20ths%3A%20%2f@%5E%26%2a%28%28%29%7B%7D%7B%3A%3B";
+        boolean result2 = Encoding.isBase64Encoded(data2);
+        assertFalse(result2);
+        
     }
 
     /**

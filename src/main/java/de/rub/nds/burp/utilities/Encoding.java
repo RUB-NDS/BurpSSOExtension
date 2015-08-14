@@ -67,13 +67,15 @@ public abstract class Encoding {
     public static boolean isURLEncoded(String data){
         boolean flag = true;
         //filter non ASCII chars
-        if(!regex_contains("[^\\x00-\\x7F]", data)){
-        try {
-            URLDecoder.decode(data, "ASCII");
-            Logger.getLogger(SAML.class.getName()).log(Level.SEVERE, null, data);
-        } catch (UnsupportedEncodingException ex) {
-            flag = false;
-        }
+        if(!regex_contains("([^\\x00-\\x7F])", data)){
+            try {
+                String tmp = URLDecoder.decode(data, "ASCII");
+                if(tmp.equals(data)){
+                    return false;
+                }
+            } catch (UnsupportedEncodingException ex) {
+                flag = false;
+            }
         } else {
             flag = false;
         }
