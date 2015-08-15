@@ -26,13 +26,18 @@ import burp.IParameter;
 import burp.IRequestInfo;
 import de.rub.nds.burp.espresso.gui.UIOptions;
 import de.rub.nds.burp.espresso.gui.UITab;
+import static de.rub.nds.burp.utilities.ParameterUtilities.parameterListContainsParameterName;
+import de.rub.nds.burp.utilities.protocols.OpenID;
 import de.rub.nds.burp.utilities.protocols.SSOProtocol;
 import de.rub.nds.burp.utilities.table.TableDB;
 import de.rub.nds.burp.utilities.table.TableEntry;
 import de.rub.nds.burp.utilities.protocols.SAML;
 import de.rub.nds.burp.utilities.table.Table;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Scan for Single Sign-On protocols in requests.
@@ -108,14 +113,8 @@ public class SSOScanner implements IHttpListener{
                     break;   
                 }
             }
-            if(UIOptions.openID1Bool){
-                npt = checkForSAML(param);
-                if(npt != null){
-                    break;   
-                }
-            }
-            if(UIOptions.openID2Bool){
-                npt = checkForSAML(param);
+            if(UIOptions.openIDBool){
+                npt = checkForOpenID(param, parameterList);
                 if(npt != null){
                     break;   
                 }
@@ -162,6 +161,12 @@ public class SSOScanner implements IHttpListener{
         return null;
     }
     
+    private String[] makeOpenID(IParameter param, String protocol){
+        OpenID openId = new OpenID(param, callbacks, protocol, messageInfo);
+        String[] res = {protocol, openId.getID()};
+        return res;
+    }
+    
     private String[] checkForSAML(IParameter param){
         String[] npt = null; 
         switch(param.getName()){
@@ -177,16 +182,25 @@ public class SSOScanner implements IHttpListener{
     }
     
     //TODO: Implement protocol.
-    private String[] checkForOpenIDv1(IParameter param){
-        String[] npt = null; 
-        switch(param.getName()){
-            case SSOProtocol.SAML_REQUEST:
-                npt = makeSAML(param);
-                break;
-            case SSOProtocol.SAML_RESPONSE:
-                npt = makeSAML(param);
-                break;
-            default:
+    private String[] checkForOpenID(IParameter param, List<IParameter> paramList){
+        String[] npt = null;
+        Set<String> IN_REQUEST_OPENID2 = new HashSet<String>(Arrays.asList(
+		new String[]{"openid.claimed_id", "openid.op_endpoint"}
+	));
+        String protocol = SSOProtocol.OPENID_V1;
+        if(parameterListContainsParameterName(paramList, IN_REQUEST_OPENID2)){
+            protocol = SSOProtocol.OAUTH_V2;
+        }
+        
+        if(param.getName().equals(SSOProtocol.OPENID_PARAM)){
+            switch (param.getValue()) {
+                case SSOProtocol.OPENID_REQUEST:
+                    makeOpenID(param, protocol);
+                    break;
+                case SSOProtocol.OPENID_RESPONSE:
+                    makeOpenID(param, protocol);
+                    break;
+            }
         }
         return npt;
     }

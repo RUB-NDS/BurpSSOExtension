@@ -36,7 +36,7 @@ public class UIOptions extends JPanel {
     private File extLib, config;
     
     public static boolean samlBool=true;
-    public static boolean openID1Bool=true;
+    public static boolean openIDBool=true;
     public static boolean openID2Bool=true;
     public static boolean openIDConnectBool=true;
     public static boolean browserIDBool=true;
@@ -545,7 +545,7 @@ public class UIOptions extends JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void openID1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openID1ActionPerformed
-        openID1Bool = openID1.isSelected();
+        openIDBool = openID1.isSelected();
     }//GEN-LAST:event_openID1ActionPerformed
 
     private void browserID1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browserID1ActionPerformed

@@ -29,15 +29,21 @@ import burp.IParameter;
 public abstract class SSOProtocol {
     //constants
     public static final String SAML = "SAML";
+    public static final String SAML_REQUEST = "SAMLRequest";
+    public static final String SAML_RESPONSE = "SAMLResponse";
+    public static final String SAML_RELAYSTATE = "RelayState";
+    public static final String SAML_ARTUFACT = "SAMLart";
+    
     public static final String OPENID_V1 = "OpenID v1.0";
+    public static final String OPENID_PARAM = "openid.mode";
+    public static final String OPENID_REQUEST = "checkid_setup";
+    public static final String OPENID_RESPONSE = "id_res";
+    
     public static final String OPENID_V2 = "OpenID v2.0";
     public static final String OPENID_CONNECT = "OpenID Connect";
     public static final String OAUTH_V1 = "OAuth v1.0";
     public static final String OAUTH_V2 = "OAuth v2.0";
     public static final String BROWSERID = "BrowserID";
-    
-    public static final String SAML_REQUEST = "SAMLRequest";
-    public static final String SAML_RESPONSE = "SAMLResponse";
     
     private String protocol = null;
     private String content = null;

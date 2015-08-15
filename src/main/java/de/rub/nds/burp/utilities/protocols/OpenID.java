@@ -19,6 +19,7 @@
 package de.rub.nds.burp.utilities.protocols;
 
 import burp.IBurpExtenderCallbacks;
+import burp.IHttpRequestResponse;
 import burp.IParameter;
 
 /**
@@ -26,10 +27,14 @@ import burp.IParameter;
  * @author Tim Guenther
  */
 public class OpenID extends SSOProtocol{
+    
+    private IHttpRequestResponse ihrr; 
 
-    public OpenID(IParameter param, IBurpExtenderCallbacks callbacks) {
+    public OpenID(IParameter param, IBurpExtenderCallbacks callbacks, String protocol, IHttpRequestResponse ihrr) {
         super(param, callbacks);
-        super.setProtocol(OPENID_V1);
+        super.setProtocol(protocol);
+        this.ihrr = ihrr;
+        super.setID("TODO");                
     }
 
     @Override
