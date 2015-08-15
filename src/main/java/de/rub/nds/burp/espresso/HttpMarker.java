@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.JOptionPane;
 
 /**
  * Highlight request in the proxy history.
@@ -157,11 +158,13 @@ public class HttpMarker implements IHttpListener {
 			Pattern p = Pattern.compile("=[\"'][^\"']*openid[^\"']*[\"']");
 			Matcher m = p.matcher(responseBody);
 			if (m.find()) {
-				markRequestResponse(httpRequestResponse, "OpenID Login Possibility");
+				markRequestResponse(httpRequestResponse, "OpenID Login Possibility", "green");
+                                IRequestInfo iri = helpers.analyzeRequest(httpRequestResponse);
+                                callbacks.issueAlert("OpenID Login on: "+iri.getUrl().toString());  
 			}
 		}
 	}
-
+        
 	private void checkRequestForBrowserId(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
 		final List<IParameter> parameterList = requestInfo.getParameters();
 		if (parameterListContainsParameterName(parameterList, IN_REQUEST_BROWSERID_PARAMETER)) {
@@ -171,6 +174,17 @@ public class HttpMarker implements IHttpListener {
 
 	private void markRequestResponse(IHttpRequestResponse httpRequestResponse, String message) {
 		httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
+		final String oldComment = httpRequestResponse.getComment();
+		if (oldComment != null && !oldComment.isEmpty()) {
+			httpRequestResponse.setComment(String.format("%s, %s", oldComment, message));
+		} else {
+			httpRequestResponse.setComment(message);
+		}
+
+	}
+        
+        private void markRequestResponse(IHttpRequestResponse httpRequestResponse, String message, String colour) {
+		httpRequestResponse.setHighlight(colour);
 		final String oldComment = httpRequestResponse.getComment();
 		if (oldComment != null && !oldComment.isEmpty()) {
 			httpRequestResponse.setComment(String.format("%s, %s", oldComment, message));
