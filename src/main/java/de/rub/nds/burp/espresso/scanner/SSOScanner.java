@@ -108,36 +108,42 @@ public class SSOScanner implements IHttpListener{
 
         for(IParameter param : parameterList){
             if(UIOptions.samlBool){
+                new PrintWriter(callbacks.getStderr(), true).println(1);
                 npt = checkForSAML(param);
                 if(npt != null){
                     break;   
                 }
             }
             if(UIOptions.openIDBool){
+                new PrintWriter(callbacks.getStderr(), true).println(2);
                 npt = checkForOpenID(param, parameterList);
                 if(npt != null){
                     break;   
                 }
             }
-            if(UIOptions.openIDConnectBool){
+            if(false){//if(UIOptions.openIDConnectBool){
+                new PrintWriter(callbacks.getStderr(), true).println(3);
                 npt = checkForSAML(param);
                 if(npt != null){
                     break;   
                 }
             }
-            if(UIOptions.oAuthv1Bool){
+            if(false){//if(UIOptions.oAuthv1Bool){
+                new PrintWriter(callbacks.getStderr(), true).println(4);
                npt = checkForSAML(param);
                 if(npt != null){
                     break;   
                 }
             }
-            if(UIOptions.oAuthv2Bool){
+            if(false){//if(UIOptions.oAuthv2Bool){
+                new PrintWriter(callbacks.getStderr(), true).println(5);
                 npt = checkForSAML(param);
                 if(npt != null){
                     break;   
                 }
             }
-            if(UIOptions.browserIDBool){
+            if(false){//if(UIOptions.browserIDBool){
+                new PrintWriter(callbacks.getStderr(), true).println(6);
                 npt = checkForSAML(param);
                 if(npt != null){
                     break;   
