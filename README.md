@@ -9,9 +9,10 @@ Bochum](http://nds.rub.de/) and the [3curity GmbH](http://3curity.de/). The exte
 ### Detecting
 Supported Protocols:
 - [x] SAML
-- [ ] OpenID
-- [ ] OAuth
-- [ ] BrowserId
+- [x] OpenID
+- [x] OAuth
+- [x] BrowserId
+- [ ] OpenID Connect
 
 ### Attacking
 - [ ] scripting API
@@ -20,7 +21,8 @@ Supported Protocols:
 ### Beautifier
 - [x] View and edit SAML messages.
 - [x] Show SAML in a history tab
-- [ ] Syntax Highlight
+- [x] Syntax Highlight
+- [x] Context menu for 'Follow SSO Protocol'
 
 ### Basic functions
 - [x] Highlight SSO messages in proxy window, incl. the SSO type.
