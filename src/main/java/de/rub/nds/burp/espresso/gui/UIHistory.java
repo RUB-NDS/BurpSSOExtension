@@ -28,11 +28,20 @@ import de.rub.nds.burp.utilities.table.TableDB;
 import de.rub.nds.burp.utilities.table.TableEntry;
 import de.rub.nds.burp.utilities.table.TableHelper;
 import de.rub.nds.burp.utilities.table.TableMouseListener;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -145,6 +154,89 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
                 
                 JScrollPane s = new JScrollPane(t);
                 historyContainer.addTab(t.getName(), s);
+                
+                //Setup close button for tab
+                //thanks to: http://stackoverflow.com/questions/11553112/how-to-add-close-button-to-a-jtabbedpane-tab
+                String title = t.getName();
+                int index = historyContainer.indexOfTab(title);
+                JPanel pnlTab = new JPanel(new GridBagLayout());
+                pnlTab.setOpaque(false);
+                JLabel lblTitle = new JLabel(title+"  ");
+                JLabel btnClose = new JLabel("x");
+
+                GridBagConstraints gbc = new GridBagConstraints();
+                gbc.gridx = 0;
+                gbc.gridy = 0;
+                gbc.weightx = 1;
+
+                pnlTab.add(lblTitle, gbc);
+
+                gbc.gridx++;
+                gbc.weightx = 0;
+                pnlTab.add(btnClose, gbc);
+
+                historyContainer.setTabComponentAt(index, pnlTab);
+
+                btnClose.setToolTipText("Click to close tab.");
+                btnClose.setOpaque(false);
+                btnClose.setBackground(Color.lightGray);
+                        
+                btnClose.addMouseListener(new MouseListener() {
+
+                    @Override
+                    public void mouseClicked(MouseEvent me) {
+                        int index = historyContainer.indexOfTab(title);
+                        if (index >= 0) {
+
+                            historyContainer.removeTabAt(index);
+                            TableDB.removeTable(t);
+                        }
+                    }
+
+                    @Override
+                    public void mousePressed(MouseEvent me) {
+                        int index = historyContainer.indexOfTab(title);
+                        if (index >= 0) {
+
+                            historyContainer.removeTabAt(index);
+                            TableDB.removeTable(t);
+                        }
+                    }
+
+                    @Override
+                    public void mouseReleased(MouseEvent me) {
+                        int index = historyContainer.indexOfTab(title);
+                        if (index >= 0) {
+
+                            historyContainer.removeTabAt(index);
+                            TableDB.removeTable(t);
+                        }
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent me) {
+                        btnClose.setBackground(Color.black);
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent me) {
+                        btnClose.setBackground(Color.lightGray);
+                    }
+                    
+                });
+//                        addActionListener(new ActionListener() {
+//                    
+//                    @Override
+//                    public void actionPerformed(ActionEvent evt) {
+//                        int index = historyContainer.indexOfTab(title);
+//                        if (index >= 0) {
+//
+//                            historyContainer.removeTabAt(index);
+//                            TableDB.removeTable(t);
+//                        }
+//                    }
+//                }
+//);
                 
                 TableDB.addTable(t);
             }
