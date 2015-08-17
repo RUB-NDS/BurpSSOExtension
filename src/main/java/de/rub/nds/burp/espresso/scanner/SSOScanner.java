@@ -27,6 +27,7 @@ import burp.IRequestInfo;
 import de.rub.nds.burp.espresso.gui.UIOptions;
 import de.rub.nds.burp.espresso.gui.UITab;
 import static de.rub.nds.burp.utilities.ParameterUtilities.parameterListContainsParameterName;
+import de.rub.nds.burp.utilities.protocols.OAuth;
 import de.rub.nds.burp.utilities.protocols.OpenID;
 import de.rub.nds.burp.utilities.protocols.OpenIDConnect;
 import de.rub.nds.burp.utilities.protocols.SSOProtocol;
@@ -126,12 +127,6 @@ public class SSOScanner implements IHttpListener{
                     break;   
                 }
             }
-            if(false){//if(UIOptions.oAuthv1Bool){
-               npt = checkForSAML(param);
-                if(npt != null){
-                    break;   
-                }
-            }
             if(false){//if(UIOptions.oAuthv2Bool){;
                 npt = checkForSAML(param);
                 if(npt != null){
@@ -144,6 +139,9 @@ public class SSOScanner implements IHttpListener{
                     break;   
                 }
             }
+        }
+        if(UIOptions.oAuthv1Bool){
+            npt = checkForOAuth(parameterList);
         }
         return npt;
     }
@@ -174,6 +172,12 @@ public class SSOScanner implements IHttpListener{
         return res;
     }
     
+    private String[] makeOAuth(IParameter param){
+        OAuth oAuth = new OAuth(param, callbacks, messageInfo);
+        String[] res = {SSOProtocol.OAUTH_V2, oAuth.getID()};
+        return res;
+    }
+    
     private String[] checkForSAML(IParameter param){
         String[] npt = null; 
         switch(param.getName()){
@@ -198,7 +202,6 @@ public class SSOScanner implements IHttpListener{
         if(parameterListContainsParameterName(paramList, IN_REQUEST_OPENID2)){
             protocol = SSOProtocol.OAUTH_V2;
         }
-        new PrintWriter(callbacks.getStderr(), true).println(6);
         if(param.getName().equals(SSOProtocol.OPENID_PARAM)){
             switch (param.getValue()) {
                 case SSOProtocol.OPENID_REQUEST:
@@ -214,30 +217,19 @@ public class SSOScanner implements IHttpListener{
     
     //TODO: Implement protocol.
     private String[] checkForOpenIdConnect(IParameter param){
-        String[] npt = null; 
-        switch(param.getName()){
-            case SSOProtocol.SAML_REQUEST:
-                npt = makeOpenIDConnect(param, "OpenID Connect");
-                break;
-            case SSOProtocol.SAML_RESPONSE:
-                npt = makeOpenIDConnect(param, "OpenID Connect");
-                break;
-            default:
-        }
+        String[] npt = null; ;
+        npt = makeOpenIDConnect(param, "OpenID Connect");
         return npt;
     }
     
     //TODO: Implement protocol.
-    private String[] checkForOAuthv1(IParameter param){
+    private String[] checkForOAuth(List<IParameter> paramList){
+        Set<String> IN_REQUEST_OAUTH_TOKEN_PARAMETER = new HashSet<String>(Arrays.asList(
+		new String[]{"redirect_uri", "scope", "client_id"}
+	));
         String[] npt = null; 
-        switch(param.getName()){
-            case SSOProtocol.SAML_REQUEST:
-                npt = makeSAML(param);
-                break;
-            case SSOProtocol.SAML_RESPONSE:
-                npt = makeSAML(param);
-                break;
-            default:
+        if(parameterListContainsParameterName(paramList, IN_REQUEST_OAUTH_TOKEN_PARAMETER)){
+            npt = makeOAuth(paramList.get(0));
         }
         return npt;
     }

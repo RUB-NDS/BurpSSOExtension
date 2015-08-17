@@ -39,11 +39,15 @@ public abstract class SSOProtocol {
     public static final String OPENID_REQUEST = "checkid_setup";
     public static final String OPENID_RESPONSE = "id_res";
     public static final String OPENID_ID = "openid.identity";
-    
     public static final String OPENID_V2 = "OpenID v2.0";
+    
     public static final String OPENID_CONNECT = "OpenID Connect";
+    
     public static final String OAUTH_V1 = "OAuth v1.0";
     public static final String OAUTH_V2 = "OAuth v2.0";
+    public static final String OAUTH_ID = "client_id";
+    public static final String OAUTH_ID_FACEBOOK = "app_id";
+    
     public static final String BROWSERID = "BrowserID";
     
     private String protocol = null;
