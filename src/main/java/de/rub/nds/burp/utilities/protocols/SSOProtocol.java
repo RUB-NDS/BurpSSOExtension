@@ -38,6 +38,7 @@ public abstract class SSOProtocol {
     public static final String OPENID_PARAM = "openid.mode";
     public static final String OPENID_REQUEST = "checkid_setup";
     public static final String OPENID_RESPONSE = "id_res";
+    public static final String OPENID_ID = "openid.identity";
     
     public static final String OPENID_V2 = "OpenID v2.0";
     public static final String OPENID_CONNECT = "OpenID Connect";

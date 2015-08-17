@@ -28,6 +28,7 @@ import de.rub.nds.burp.espresso.gui.UIOptions;
 import de.rub.nds.burp.espresso.gui.UITab;
 import static de.rub.nds.burp.utilities.ParameterUtilities.parameterListContainsParameterName;
 import de.rub.nds.burp.utilities.protocols.OpenID;
+import de.rub.nds.burp.utilities.protocols.OpenIDConnect;
 import de.rub.nds.burp.utilities.protocols.SSOProtocol;
 import de.rub.nds.burp.utilities.table.TableDB;
 import de.rub.nds.burp.utilities.table.TableEntry;
@@ -108,42 +109,36 @@ public class SSOScanner implements IHttpListener{
 
         for(IParameter param : parameterList){
             if(UIOptions.samlBool){
-                new PrintWriter(callbacks.getStderr(), true).println(1);
                 npt = checkForSAML(param);
                 if(npt != null){
                     break;   
                 }
             }
             if(UIOptions.openIDBool){
-                new PrintWriter(callbacks.getStderr(), true).println(2);
                 npt = checkForOpenID(param, parameterList);
                 if(npt != null){
                     break;   
                 }
             }
             if(false){//if(UIOptions.openIDConnectBool){
-                new PrintWriter(callbacks.getStderr(), true).println(3);
                 npt = checkForSAML(param);
                 if(npt != null){
                     break;   
                 }
             }
             if(false){//if(UIOptions.oAuthv1Bool){
-                new PrintWriter(callbacks.getStderr(), true).println(4);
                npt = checkForSAML(param);
                 if(npt != null){
                     break;   
                 }
             }
-            if(false){//if(UIOptions.oAuthv2Bool){
-                new PrintWriter(callbacks.getStderr(), true).println(5);
+            if(false){//if(UIOptions.oAuthv2Bool){;
                 npt = checkForSAML(param);
                 if(npt != null){
                     break;   
                 }
             }
             if(false){//if(UIOptions.browserIDBool){
-                new PrintWriter(callbacks.getStderr(), true).println(6);
                 npt = checkForSAML(param);
                 if(npt != null){
                     break;   
@@ -173,6 +168,12 @@ public class SSOScanner implements IHttpListener{
         return res;
     }
     
+    private String[] makeOpenIDConnect(IParameter param, String protocol){
+        OpenIDConnect openIdConnect = new OpenIDConnect(param, callbacks, messageInfo);
+        String[] res = {protocol, openIdConnect.getID()};
+        return res;
+    }
+    
     private String[] checkForSAML(IParameter param){
         String[] npt = null; 
         switch(param.getName()){
@@ -197,31 +198,16 @@ public class SSOScanner implements IHttpListener{
         if(parameterListContainsParameterName(paramList, IN_REQUEST_OPENID2)){
             protocol = SSOProtocol.OAUTH_V2;
         }
-        
+        new PrintWriter(callbacks.getStderr(), true).println(6);
         if(param.getName().equals(SSOProtocol.OPENID_PARAM)){
             switch (param.getValue()) {
                 case SSOProtocol.OPENID_REQUEST:
-                    makeOpenID(param, protocol);
+                    npt = makeOpenID(param, protocol);
                     break;
                 case SSOProtocol.OPENID_RESPONSE:
-                    makeOpenID(param, protocol);
+                    npt = makeOpenID(param, protocol);
                     break;
             }
-        }
-        return npt;
-    }
-    
-    //TODO: Implement protocol.
-    private String[] checkForOpenIDv2(IParameter param){
-        String[] npt = null; 
-        switch(param.getName()){
-            case SSOProtocol.SAML_REQUEST:
-                npt = makeSAML(param);
-                break;
-            case SSOProtocol.SAML_RESPONSE:
-                npt = makeSAML(param);
-                break;
-            default:
         }
         return npt;
     }
@@ -231,10 +217,10 @@ public class SSOScanner implements IHttpListener{
         String[] npt = null; 
         switch(param.getName()){
             case SSOProtocol.SAML_REQUEST:
-                npt = makeSAML(param);
+                npt = makeOpenIDConnect(param, "OpenID Connect");
                 break;
             case SSOProtocol.SAML_RESPONSE:
-                npt = makeSAML(param);
+                npt = makeOpenIDConnect(param, "OpenID Connect");
                 break;
             default:
         }

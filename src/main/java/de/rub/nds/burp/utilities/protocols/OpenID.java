@@ -21,6 +21,8 @@ package de.rub.nds.burp.utilities.protocols;
 import burp.IBurpExtenderCallbacks;
 import burp.IHttpRequestResponse;
 import burp.IParameter;
+import burp.IRequestInfo;
+import java.util.List;
 
 /**
  *
@@ -34,17 +36,24 @@ public class OpenID extends SSOProtocol{
         super(param, callbacks);
         super.setProtocol(protocol);
         this.ihrr = ihrr;
-        super.setID("TODO");                
+        super.setID(findID());                
     }
 
     @Override
     public String decode(String input) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return super.getCallbacks().getHelpers().urlDecode(input);
     }
 
     @Override
     public String findID() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+          IRequestInfo iri = super.getCallbacks().getHelpers().analyzeRequest(ihrr);
+          List<IParameter> list = iri.getParameters();
+          for(IParameter p : list){
+              if(p.getName().equals(SSOProtocol.OPENID_ID)){
+                  return decode(p.getValue());
+              }
+          }
+          return "Not Found!";
     }
 
 }
