@@ -19,6 +19,7 @@
 package de.rub.nds.burp.utilities.protocols;
 
 import burp.IBurpExtenderCallbacks;
+import burp.IHttpRequestResponse;
 import burp.IParameter;
 
 /**
@@ -27,10 +28,9 @@ import burp.IParameter;
  */
 public class OpenIDConnect extends SSOProtocol{
 
-    public OpenIDConnect() {
-    }
+    private IHttpRequestResponse ihrr;
 
-    public OpenIDConnect(IParameter param, IBurpExtenderCallbacks callbacks) {
+    public OpenIDConnect(IParameter param, IBurpExtenderCallbacks callbacks, IHttpRequestResponse ihrr) {
         super(param, callbacks);
         super.setProtocol(OPENID_CONNECT);
     }
