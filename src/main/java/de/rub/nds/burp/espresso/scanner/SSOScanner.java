@@ -27,6 +27,7 @@ import burp.IRequestInfo;
 import de.rub.nds.burp.espresso.gui.UIOptions;
 import de.rub.nds.burp.espresso.gui.UITab;
 import static de.rub.nds.burp.utilities.ParameterUtilities.parameterListContainsParameterName;
+import de.rub.nds.burp.utilities.protocols.BrowserID;
 import de.rub.nds.burp.utilities.protocols.OAuth;
 import de.rub.nds.burp.utilities.protocols.OpenID;
 import de.rub.nds.burp.utilities.protocols.OpenIDConnect;
@@ -133,14 +134,11 @@ public class SSOScanner implements IHttpListener{
                     break;   
                 }
             }
-            if(false){//if(UIOptions.browserIDBool){
-                npt = checkForSAML(param);
-                if(npt != null){
-                    break;   
-                }
-            }
         }
-        if(UIOptions.oAuthv1Bool){
+        if(UIOptions.browserIDBool && npt == null){
+            npt = checkForBrowserID(parameterList);
+        }
+        if(UIOptions.oAuthv1Bool && npt == null){
             npt = checkForOAuth(parameterList);
         }
         return npt;
@@ -161,6 +159,7 @@ public class SSOScanner implements IHttpListener{
     }
     
     private String[] makeOpenID(IParameter param, String protocol){
+        new PrintWriter(callbacks.getStderr(), true).println(protocol);
         OpenID openId = new OpenID(param, callbacks, protocol, messageInfo);
         String[] res = {protocol, openId.getID()};
         return res;
@@ -175,6 +174,12 @@ public class SSOScanner implements IHttpListener{
     private String[] makeOAuth(IParameter param){
         OAuth oAuth = new OAuth(param, callbacks, messageInfo);
         String[] res = {SSOProtocol.OAUTH_V2, oAuth.getID()};
+        return res;
+    }
+    
+    private String[] makeBrowserID(List<IParameter> parameterList){
+        BrowserID browserId = new BrowserID(parameterList, callbacks, messageInfo);
+        String[] res = {SSOProtocol.BROWSERID, browserId.getID()};
         return res;
     }
     
@@ -250,16 +255,13 @@ public class SSOScanner implements IHttpListener{
     }
     
     //TODO: Implement protocol.
-    private String[] checkForBrowserID(IParameter param){
-        String[] npt = null; 
-        switch(param.getName()){
-            case SSOProtocol.SAML_REQUEST:
-                npt = makeSAML(param);
-                break;
-            case SSOProtocol.SAML_RESPONSE:
-                npt = makeSAML(param);
-                break;
-            default:
+    private String[] checkForBrowserID(List<IParameter> parameterList){
+        String[] npt = null;
+        Set<String> IN_REQUEST_BROWSERID_PARAMETER = new HashSet<String>(Arrays.asList(
+		new String[]{"browserid_state", "assertion"}
+	));
+        if(parameterListContainsParameterName(parameterList, IN_REQUEST_BROWSERID_PARAMETER)){
+            npt = makeBrowserID(parameterList);
         }
         return npt;
     }

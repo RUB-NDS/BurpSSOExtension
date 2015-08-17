@@ -19,30 +19,36 @@
 package de.rub.nds.burp.utilities.protocols;
 
 import burp.IBurpExtenderCallbacks;
+import burp.IHttpRequestResponse;
 import burp.IParameter;
+import java.util.List;
 
 /**
  *
  * @author Tim Guenther
  */
 public class BrowserID extends SSOProtocol{
+    
+    private IHttpRequestResponse ihrr;
 
     public BrowserID() {
     }
 
-    public BrowserID(IParameter param, IBurpExtenderCallbacks callbacks) {
-        super(param, callbacks);
+    public BrowserID(List<IParameter> parameterList, IBurpExtenderCallbacks callbacks, IHttpRequestResponse ihrr) {
+        super(parameterList.get(0), callbacks);
         super.setProtocol(BROWSERID);
+        this.ihrr = ihrr;
+        super.setID(findID());
     }
     
     @Override
     public String decode(String input) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return input;
     }
 
     @Override
     public String findID() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "TODO";
     }
     
 }
