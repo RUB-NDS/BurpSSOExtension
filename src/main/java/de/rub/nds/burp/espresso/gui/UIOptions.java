@@ -187,7 +187,7 @@ public class UIOptions extends JPanel {
         });
 
         certLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        certLabel1.setText("Certificat:");
+        certLabel1.setText("Certificate:");
 
         certText1.setToolTipText("Insert a path to a certificat file.");
         certText1.addActionListener(new java.awt.event.ActionListener() {
