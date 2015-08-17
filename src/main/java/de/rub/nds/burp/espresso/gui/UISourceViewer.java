@@ -91,6 +91,7 @@ public class UISourceViewer extends JPanel{
         this.sourceCode = sourceCode;
         this.codeStyle = codeStyle;
         textArea.setSyntaxEditingStyle(codeStyle);
+        textArea.setEditable(false);
         textArea.setText(sourceCode);
         this.updateUI();
     }
