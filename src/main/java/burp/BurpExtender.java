@@ -37,7 +37,7 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener{
     /**
      * {@value #EXTENSION_NAME}
      */
-    public static final String EXTENSION_NAME = "EsPReSSO - Extension for Processing and Recognition of Single Sign-On";
+    public static final String EXTENSION_NAME = "EsPReSSO";
     
     private UITab tab;
     private PrintWriter stdout;
