@@ -150,6 +150,8 @@ public class SSOScanner implements IHttpListener{
             saml = new SAML(param, callbacks);
         } else if(param.getName().equals(SSOProtocol.SAML_RESPONSE)){
             saml = new SAML(helpers.getRequestParameter(messageInfo.getRequest(), SSOProtocol.SAML_RESPONSE), callbacks);
+        } else if( param.getName().equals(SSOProtocol.SAML_RELAYSTATE) || param.getName().equals(SSOProtocol.SAML_ARTIFACT)){
+            saml = new SAML(param, callbacks);
         }
         if(saml.getID() != null){
             String[] res = {"SAML",saml.getID()};

@@ -32,7 +32,7 @@ public abstract class SSOProtocol {
     public static final String SAML_REQUEST = "SAMLRequest";
     public static final String SAML_RESPONSE = "SAMLResponse";
     public static final String SAML_RELAYSTATE = "RelayState";
-    public static final String SAML_ARTUFACT = "SAMLart";
+    public static final String SAML_ARTIFACT = "SAMLart";
     
     public static final String OPENID_V1 = "OpenID v1.0";
     public static final String OPENID_PARAM = "openid.mode";

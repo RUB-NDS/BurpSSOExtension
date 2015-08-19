@@ -90,8 +90,11 @@ public class SAML extends SSOProtocol{
             case SSOProtocol.SAML_RESPONSE:
                 p = Pattern.compile("InResponseTo=\"(.*?)\"");
                 break;
+            case SSOProtocol.SAML_ARTIFACT:
+                p = Pattern.compile("InResponseTo=\"(.*?)\"");
+                break;
             default:
-                return null;
+                return "Not Found!";
         }
         if(content != null){
             m = p.matcher(content);
@@ -99,7 +102,7 @@ public class SAML extends SSOProtocol{
                 return m.group(1);
             }
         }
-        return null;
+        return "Not Found!";
     }
     
     /**
