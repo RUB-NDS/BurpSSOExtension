@@ -21,6 +21,7 @@ package de.rub.nds.burp.utilities.protocols;
 import burp.IBurpExtenderCallbacks;
 import burp.IHttpRequestResponse;
 import burp.IParameter;
+import burp.IRequestInfo;
 import java.util.List;
 
 /**
@@ -48,7 +49,14 @@ public class BrowserID extends SSOProtocol{
 
     @Override
     public String findID() {
-        return "TODO";
+        IRequestInfo iri = super.getCallbacks().getHelpers().analyzeRequest(ihrr);
+        List<IParameter> list = iri.getParameters();
+        for(IParameter p : list){
+            if(p.getName().equals(SSOProtocol.BROWSERID_ID)){
+                return decode(p.getValue());
+            }
+        }
+        return "Not Found!";
     }
     
 }

@@ -49,6 +49,7 @@ public abstract class SSOProtocol {
     public static final String OAUTH_ID_FACEBOOK = "app_id";
     
     public static final String BROWSERID = "BrowserID";
+    public static final String BROWSERID_ID = "browserid_state";
     
     private String protocol = null;
     private String content = null;

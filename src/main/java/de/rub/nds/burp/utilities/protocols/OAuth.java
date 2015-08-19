@@ -22,8 +22,6 @@ import burp.IBurpExtenderCallbacks;
 import burp.IHttpRequestResponse;
 import burp.IParameter;
 import burp.IRequestInfo;
-import burp.IResponseInfo;
-import java.io.PrintWriter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,7 +49,7 @@ public class OAuth extends SSOProtocol{
     @Override
     public String findID() {
         IRequestInfo iri = super.getCallbacks().getHelpers().analyzeRequest(ihrr);
-        List<IParameter> list = iri.getParameters();;
+        List<IParameter> list = iri.getParameters();
         for(IParameter p : list){
             if(p.getName().equals(SSOProtocol.OAUTH_ID)){
                 return decode(p.getValue());
