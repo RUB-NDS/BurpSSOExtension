@@ -25,6 +25,7 @@ import burp.IHttpRequestResponse;
 import burp.IParameter;
 import burp.IRequestInfo;
 import burp.IResponseInfo;
+import de.rub.nds.burp.espresso.gui.UIOptions;
 import static de.rub.nds.burp.utilities.ParameterUtilities.getFirstParameterByName;
 import static de.rub.nds.burp.utilities.ParameterUtilities.parameterListContainsParameterName;
 import java.util.Arrays;
@@ -168,12 +169,14 @@ public class HttpMarker implements IHttpListener {
 	private void checkRequestForBrowserId(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
 		final List<IParameter> parameterList = requestInfo.getParameters();
 		if (parameterListContainsParameterName(parameterList, IN_REQUEST_BROWSERID_PARAMETER)) {
-			markRequestResponse(httpRequestResponse, "BrowserId");
+			markRequestResponse(httpRequestResponse, "BrowserID");
 		}
 	}
 
 	private void markRequestResponse(IHttpRequestResponse httpRequestResponse, String message) {
-		httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
+		if(UIOptions.highlightBool){
+                    httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
+                }
 		final String oldComment = httpRequestResponse.getComment();
 		if (oldComment != null && !oldComment.isEmpty()) {
 			httpRequestResponse.setComment(String.format("%s, %s", oldComment, message));
@@ -184,7 +187,9 @@ public class HttpMarker implements IHttpListener {
 	}
         
         private void markRequestResponse(IHttpRequestResponse httpRequestResponse, String message, String colour) {
-		httpRequestResponse.setHighlight(colour);
+		if(UIOptions.highlightBool){
+                    httpRequestResponse.setHighlight(colour);
+                }
 		final String oldComment = httpRequestResponse.getComment();
 		if (oldComment != null && !oldComment.isEmpty()) {
 			httpRequestResponse.setComment(String.format("%s, %s", oldComment, message));
