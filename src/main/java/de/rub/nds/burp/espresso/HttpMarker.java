@@ -155,7 +155,7 @@ public class HttpMarker implements IHttpListener {
 			final byte[] responseBytes = httpRequestResponse.getResponse();
 			final int bodyOffset = responseInfo.getBodyOffset();
 			final String responseBody = (new String(responseBytes)).substring(bodyOffset);
-			Pattern p = Pattern.compile("=[\"'][^\"']*openid[^\"']*[\"']");
+			Pattern p = Pattern.compile("=[\"'][^\"']*openid[^\"']*[\"']", Pattern.CASE_INSENSITIVE);
 			Matcher m = p.matcher(responseBody);
 			if (m.find()) {
 				markRequestResponse(httpRequestResponse, "OpenID Login Possibility", "green");
