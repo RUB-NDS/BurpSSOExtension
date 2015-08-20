@@ -22,6 +22,7 @@ import burp.IBurpExtenderCallbacks;
 import burp.IHttpRequestResponse;
 import burp.IParameter;
 import burp.IRequestInfo;
+import de.rub.nds.burp.utilities.Encoding;
 import java.util.List;
 
 /**
@@ -29,31 +30,43 @@ import java.util.List;
  * @author Tim Guenther
  */
 public class OpenID extends SSOProtocol{
-    
-    private IHttpRequestResponse ihrr; 
 
     public OpenID(IParameter param, IBurpExtenderCallbacks callbacks, String protocol, IHttpRequestResponse ihrr) {
         super(param, callbacks);
         super.setProtocol(protocol);
-        this.ihrr = ihrr;
-        super.setID(findID());                
+        super.setMessage(ihrr);
+        super.setToken(findID());                
+    }
+    
+    public OpenID(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
+        super(message, protocol, callbacks);
+        super.setToken(findID());
+        analyseProtocol();
     }
 
     @Override
     public String decode(String input) {
-        return super.getCallbacks().getHelpers().urlDecode(input);
+        if(Encoding.isURLEncoded(input)){
+            return super.getCallbacks().getHelpers().urlDecode(input);
+        }
+        return input;
     }
 
     @Override
     public String findID() {
-          IRequestInfo iri = super.getCallbacks().getHelpers().analyzeRequest(ihrr);
+          IRequestInfo iri = super.getCallbacks().getHelpers().analyzeRequest(super.getMessage());
           List<IParameter> list = iri.getParameters();
           for(IParameter p : list){
-              if(p.getName().equals(SSOProtocol.OPENID_ID)){
+              if(p.getName().equals("openid.identity")){
                   return decode(p.getValue());
               }
           }
           return "Not Found!";
+    }
+
+    @Override
+    public int analyseProtocol() {
+        return -1;
     }
 
 }

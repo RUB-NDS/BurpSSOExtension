@@ -20,7 +20,10 @@ package de.rub.nds.burp.utilities.protocols;
 
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
+import burp.IHttpRequestResponse;
 import burp.IParameter;
+import de.rub.nds.burp.utilities.table.TableEntry;
+import java.util.ArrayList;
 
 /**
  *
@@ -51,10 +54,18 @@ public abstract class SSOProtocol {
     public static final String BROWSERID = "BrowserID";
     public static final String BROWSERID_ID = "browserid_state";
     
+    private static int max_protocol_id = -1;
+    private static ArrayList<ArrayList<SSOProtocol>> protocolDB = new ArrayList<ArrayList<SSOProtocol>>();
+    private ArrayList<SSOProtocol> protocolflow = new ArrayList<SSOProtocol>();
+    
+    private IHttpRequestResponse message;
+    //Unique id for all messages of the same protocol flow.
+    private int protocolflow_id = -1;
+    
     private String protocol = null;
     private String content = null;
     private String paramName = null;
-    private String id = null;
+    private String token = "Not Found!";
     private String codeStyle = null;
     
     private IBurpExtenderCallbacks callbacks;
@@ -70,6 +81,15 @@ public abstract class SSOProtocol {
         this.content = param.getValue();
     }
     
+    public SSOProtocol(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
+        this.message = message;
+        this.protocol = protocol;
+        this.callbacks = callbacks;
+        this.helpers = callbacks.getHelpers();        
+    }
+    
+    //return id of table in protocolDB
+    abstract public int analyseProtocol();
     abstract public String decode(String input);
     abstract public String findID();
     
@@ -81,8 +101,8 @@ public abstract class SSOProtocol {
         return paramName;
     }
     
-    public String getID(){
-        return id;
+    public String getToken(){
+        return token;
     }
     
     public String getProtocol(){
@@ -106,8 +126,8 @@ public abstract class SSOProtocol {
         this.codeStyle = codeStyle;
     }
     
-    protected void setID(String id){
-        this.id = id;
+    protected void setToken(String token){
+        this.token = token;
     }
     
     protected void setContent(String content){
@@ -120,6 +140,39 @@ public abstract class SSOProtocol {
     
     @Override
     public String toString(){
-        return id+" "+protocol+" "+paramName+"="+content;
+        return token+" "+protocol+" "+paramName+"="+content;
+    }
+    
+    public static int newProtocolflowID(){
+        max_protocol_id++;
+        return max_protocol_id;
+    }
+    
+    public void setProtocolflowID(int id){
+        protocolflow_id = id;
+    }
+    
+    public int getProtocolflowID(){
+        return protocolflow_id;
+    }
+    
+    public TableEntry toTableEntry(){
+        return new TableEntry(this, callbacks);
+    }
+    
+    public static ArrayList<SSOProtocol> getLastProtocolFlow(){
+        return protocolDB.get(protocolDB.size());
+    }
+    
+    public ArrayList<SSOProtocol> getProtocolFlow(){
+        return protocolflow;
+    }
+    
+    public IHttpRequestResponse getMessage(){
+        return message;
+    }
+    
+    public void setMessage(IHttpRequestResponse message){
+        this.message = message;
     }
 }

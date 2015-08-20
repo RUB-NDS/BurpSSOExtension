@@ -110,13 +110,13 @@ public class SSOScanner implements IHttpListener{
         String[] npt = null; 
 
         for(IParameter param : parameterList){
-            if(UIOptions.samlBool){
+            if(UIOptions.samlActive){
                 npt = checkForSAML(param);
                 if(npt != null){
                     break;   
                 }
             }
-            if(UIOptions.openIDBool){
+            if(UIOptions.openIDActive){
                 npt = checkForOpenID(param, parameterList);
                 if(npt != null){
                     break;   
@@ -135,10 +135,10 @@ public class SSOScanner implements IHttpListener{
                 }
             }
         }
-        if(UIOptions.browserIDBool && npt == null){
+        if(UIOptions.browserIDActive && npt == null){
             npt = checkForBrowserID(parameterList);
         }
-        if(UIOptions.oAuthv1Bool && npt == null){
+        if(UIOptions.oAuthv1Active && npt == null){
             npt = checkForOAuth(parameterList);
         }
         return npt;
@@ -153,8 +153,8 @@ public class SSOScanner implements IHttpListener{
         } else if( param.getName().equals(SSOProtocol.SAML_RELAYSTATE) || param.getName().equals(SSOProtocol.SAML_ARTIFACT)){
             saml = new SAML(param, callbacks);
         }
-        if(saml.getID() != null){
-            String[] res = {"SAML",saml.getID()};
+        if(saml.getToken() != null){
+            String[] res = {"SAML",saml.getToken()};
             return res;
         }
         return null;
@@ -163,25 +163,25 @@ public class SSOScanner implements IHttpListener{
     private String[] makeOpenID(IParameter param, String protocol){
         new PrintWriter(callbacks.getStderr(), true).println(protocol);
         OpenID openId = new OpenID(param, callbacks, protocol, messageInfo);
-        String[] res = {protocol, openId.getID()};
+        String[] res = {protocol, openId.getToken()};
         return res;
     }
     
     private String[] makeOpenIDConnect(IParameter param, String protocol){
         OpenIDConnect openIdConnect = new OpenIDConnect(param, callbacks, messageInfo);
-        String[] res = {protocol, openIdConnect.getID()};
+        String[] res = {protocol, openIdConnect.getToken()};
         return res;
     }
     
     private String[] makeOAuth(IParameter param){
         OAuth oAuth = new OAuth(param, callbacks, messageInfo);
-        String[] res = {SSOProtocol.OAUTH_V2, oAuth.getID()};
+        String[] res = {SSOProtocol.OAUTH_V2, oAuth.getToken()};
         return res;
     }
     
     private String[] makeBrowserID(List<IParameter> parameterList){
         BrowserID browserId = new BrowserID(parameterList, callbacks, messageInfo);
-        String[] res = {SSOProtocol.BROWSERID, browserId.getID()};
+        String[] res = {SSOProtocol.BROWSERID, browserId.getToken()};
         return res;
     }
     
@@ -207,7 +207,7 @@ public class SSOScanner implements IHttpListener{
 	));
         String protocol = SSOProtocol.OPENID_V1;
         if(parameterListContainsParameterName(paramList, IN_REQUEST_OPENID2)){
-            protocol = SSOProtocol.OAUTH_V2;
+            protocol = SSOProtocol.OPENID_V2;
         }
         if(param.getName().equals(SSOProtocol.OPENID_PARAM)){
             switch (param.getValue()) {

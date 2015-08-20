@@ -28,19 +28,24 @@ import burp.IResponseInfo;
 import de.rub.nds.burp.espresso.gui.UIOptions;
 import static de.rub.nds.burp.utilities.ParameterUtilities.getFirstParameterByName;
 import static de.rub.nds.burp.utilities.ParameterUtilities.parameterListContainsParameterName;
+import de.rub.nds.burp.utilities.protocols.OpenID;
+import de.rub.nds.burp.utilities.protocols.SAML;
+import de.rub.nds.burp.utilities.protocols.SSOProtocol;
+import de.rub.nds.burp.utilities.table.TableDB;
+import de.rub.nds.burp.utilities.table.TableEntry;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.JOptionPane;
 
 /**
  * Highlight request in the proxy history.
  * The protocols OpenID, OpenID Connect, OAuth, BrowserID and SAML are highlighted.
- * @author Christian Mainka
- * @version 1.0
+ * @author Christian Mainka, Tim Guenther
+ * @version 1.1
  */
 
 public class HttpMarker implements IHttpListener {
@@ -48,38 +53,43 @@ public class HttpMarker implements IHttpListener {
 	private String[] OPENID_TOKEN_PARAMETER = {"openid.return_to"};
 
 	private static final Set<String> IN_REQUEST_OPENID2_TOKEN_PARAMETER = new HashSet<String>(Arrays.asList(
-		new String[]{"openid.claimed_id", "openid.op_endpoint"}
+            new String[]{"openid.claimed_id", "openid.op_endpoint"}
 	));
 
 	private static final Set<String> IN_REQUEST_OAUTH_TOKEN_PARAMETER = new HashSet<String>(Arrays.asList(
-		new String[]{"redirect_uri", "scope", "client_id"}
+            new String[]{"redirect_uri", "scope", "client_id"}
 	));
 
 	private static final Set<String> IN_REQUEST_SAML_TOKEN_PARAMETER = new HashSet<String>(Arrays.asList(
-		new String[]{"SAMLResponse"}
+            new String[]{"SAMLResponse"}
 	));
 
 	private static final Set<String> IN_REQUEST_SAML_REQUEST_PARAMETER = new HashSet<String>(Arrays.asList(
-		new String[]{"SAMLRequest"}
+            new String[]{"SAMLRequest"}
 	));
 
 	private static final Set<String> IN_REQUEST_BROWSERID_PARAMETER = new HashSet<String>(Arrays.asList(
-		new String[]{"browserid_state", "assertion"}
+            new String[]{"browserid_state", "assertion"}
 	));
 
 	private static final String HIGHLIGHT_COLOR = "yellow";
+	private static final String MIMETYPE_HTML = "HTML";
+	private static final int STATUS_OK = 200;
 
 	private IBurpExtenderCallbacks callbacks;
-
 	private IExtensionHelpers helpers;
+        private PrintWriter stdout;
+        private PrintWriter stderr;
         
         /**
          * Create a new HttpMarker.
          * @param callbacks IPC for the Burp Suite api.
          */
 	public HttpMarker(IBurpExtenderCallbacks callbacks) {
-		this.callbacks = callbacks;
-		this.helpers = callbacks.getHelpers();
+            this.callbacks = callbacks;
+            this.helpers = callbacks.getHelpers();
+            this.stderr = new PrintWriter(callbacks.getStderr(), true);
+            this.stdout = new PrintWriter(callbacks.getStdout(), true);
 	}
         
         /**
@@ -91,114 +101,152 @@ public class HttpMarker implements IHttpListener {
          */
 	@Override
 	public void processHttpMessage(int toolFlag, boolean isRequest, IHttpRequestResponse httpRequestResponse) {
-		// only flag messages sent/received by the proxy
-		if (toolFlag == IBurpExtenderCallbacks.TOOL_PROXY) {
-			if (isRequest) {
-				processHttpRequest(toolFlag, httpRequestResponse);
-			} else {
-				processHttpResponse(toolFlag, httpRequestResponse);
-			}
-		}
+            // only flag messages sent/received by the proxy
+            if (toolFlag == IBurpExtenderCallbacks.TOOL_PROXY && !isRequest) {
+                    TableEntry e = processHttpRequest(httpRequestResponse);
+                    if(e != null){
+                        //Full History
+                        TableDB.getTable(0).getTableHelper().addRow(e);
+                        stderr.println("add new row");
+                    }
+                    
+                    processHttpResponse(httpRequestResponse);
+            }
 	}
 
-	private void processHttpResponse(int flag, IHttpRequestResponse httpRequestResponse) {
-//			httpResponse.setComment("Flagged by me with " + flag);
-		final byte[] responseBytes = httpRequestResponse.getResponse();
-		IResponseInfo responseInfo = helpers.analyzeResponse(responseBytes);
-		checkRequestForOpenIdLogin(responseInfo, httpRequestResponse);
+	private void processHttpResponse(IHttpRequestResponse httpRequestResponse) {
+            final byte[] responseBytes = httpRequestResponse.getResponse();
+            IResponseInfo responseInfo = helpers.analyzeResponse(responseBytes);
+            checkRequestForOpenIdLoginMetadata(responseInfo, httpRequestResponse);
 	}
 
-	private void processHttpRequest(int flag, IHttpRequestResponse httpRequestResponse) {
-		IRequestInfo requestInfo = helpers.analyzeRequest(httpRequestResponse);
-
-		checkRequestForOpenId(requestInfo, httpRequestResponse);
-		checkRequestHasOAuthParameters(requestInfo, httpRequestResponse);
-		checkRequestForSaml(requestInfo, httpRequestResponse);
-		checkRequestForBrowserId(requestInfo, httpRequestResponse);
+	private TableEntry processHttpRequest(IHttpRequestResponse httpRequestResponse) {
+            IRequestInfo requestInfo = helpers.analyzeRequest(httpRequestResponse);
+            if(UIOptions.openIDActive){
+                SSOProtocol protocol = checkRequestForOpenId(requestInfo, httpRequestResponse);
+                if(protocol != null){
+                    return protocol.toTableEntry();
+                }
+            }
+            if(UIOptions.oAuthv1Active || UIOptions.oAuthv2Active){
+                checkRequestHasOAuthParameters(requestInfo, httpRequestResponse);
+            }
+            if(UIOptions.samlActive){
+                checkRequestForSaml(requestInfo, httpRequestResponse);
+            }
+            if(UIOptions.browserIDActive){
+                checkRequestForBrowserId(requestInfo, httpRequestResponse);
+            }
+            if(UIOptions.openIDConnectActive){
+                //TODO OpenID Connect
+            }
+            return null;
 	}
 
-	private void checkRequestForOpenId(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
-		final List<IParameter> parameterList = requestInfo.getParameters();
-		IParameter openidMode = getFirstParameterByName(parameterList, "openid.mode");
-		if (openidMode != null) {
-			if (openidMode.getValue().equals("checkid_setup")) {
-				markRequestResponse(httpRequestResponse, "OpenID Request");
-			} else if (openidMode.getValue().equals("id_res")) {
+	private SSOProtocol checkRequestForOpenId(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
+            final List<IParameter> parameterList = requestInfo.getParameters();
+            IParameter openidMode = getFirstParameterByName(parameterList, "openid.mode");
+            String protocol = "OpenID";
+            if (openidMode != null) {
+                if (openidMode.getValue().equals("checkid_setup")) {
+                    markRequestResponse(httpRequestResponse, "OpenID Request", HIGHLIGHT_COLOR);
+                    //make Openid
+                    return new SAML(httpRequestResponse, "OpenID", callbacks);
+                } else if (openidMode.getValue().equals("id_res")) {
 
-				if (parameterListContainsParameterName(parameterList, IN_REQUEST_OPENID2_TOKEN_PARAMETER)) {
-					markRequestResponse(httpRequestResponse, "OpenID v2 Token");
-				} else {
-					markRequestResponse(httpRequestResponse, "OpenID v1 Token");
-				}
-			}
-		}
+                    if (parameterListContainsParameterName(parameterList, IN_REQUEST_OPENID2_TOKEN_PARAMETER)) {
+                            markRequestResponse(httpRequestResponse, "OpenID 2.0 Token", HIGHLIGHT_COLOR);
+                            protocol += " 2.0";
+                    } else {
+                            markRequestResponse(httpRequestResponse, "OpenID 1.0 Token", HIGHLIGHT_COLOR);
+                            protocol += " 1.0";
+                    }
+                } else if(openidMode.getValue().equals("associate")){
+                    markRequestResponse(httpRequestResponse, "OpenID Association", HIGHLIGHT_COLOR);
+                }
+                
+                return new OpenID(httpRequestResponse, protocol, callbacks);
+            }
+            return null;
 	}
 
 	private void checkRequestHasOAuthParameters(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
-		if (parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_OAUTH_TOKEN_PARAMETER)) {
-			markRequestResponse(httpRequestResponse, "OAuth");
-		}
+            if (parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_OAUTH_TOKEN_PARAMETER)) {
+                markRequestResponse(httpRequestResponse, "OAuth", HIGHLIGHT_COLOR);
+            }
 	}
 
 	private void checkRequestForSaml(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
-		final List<IParameter> parameterList = requestInfo.getParameters();
-		if (parameterListContainsParameterName(parameterList, IN_REQUEST_SAML_REQUEST_PARAMETER)) {
-			markRequestResponse(httpRequestResponse, "SAML Authentication Request");
-		}
+            final List<IParameter> parameterList = requestInfo.getParameters();
+            if (parameterListContainsParameterName(parameterList, IN_REQUEST_SAML_REQUEST_PARAMETER)) {
+                markRequestResponse(httpRequestResponse, "SAML Authentication Request", HIGHLIGHT_COLOR);
+            }
 
-		if (parameterListContainsParameterName(parameterList, IN_REQUEST_SAML_TOKEN_PARAMETER)) {
-			markRequestResponse(httpRequestResponse, "SAML Token");
-		}
+            if (parameterListContainsParameterName(parameterList, IN_REQUEST_SAML_TOKEN_PARAMETER)) {
+                markRequestResponse(httpRequestResponse, "SAML Token", HIGHLIGHT_COLOR);
+            }
 	}
 
-	private void checkRequestForOpenIdLogin(IResponseInfo responseInfo, IHttpRequestResponse httpRequestResponse) {
-		if (responseInfo.getStatusCode() == STATUS_OK && MIMETYPE_HTML.equals(responseInfo.getStatedMimeType())) {
-			final byte[] responseBytes = httpRequestResponse.getResponse();
-			final int bodyOffset = responseInfo.getBodyOffset();
-			final String responseBody = (new String(responseBytes)).substring(bodyOffset);
-			Pattern p = Pattern.compile("=[\"'][^\"']*openid[^\"']*[\"']", Pattern.CASE_INSENSITIVE);
-			Matcher m = p.matcher(responseBody);
-			if (m.find()) {
-				markRequestResponse(httpRequestResponse, "OpenID Login Possibility", "green");
-                                IRequestInfo iri = helpers.analyzeRequest(httpRequestResponse);
-                                callbacks.issueAlert("OpenID Login on: "+iri.getUrl().toString());  
-			}
-		}
+	private boolean checkRequestForOpenIdLoginMetadata(IResponseInfo responseInfo, IHttpRequestResponse httpRequestResponse) {
+            if (responseInfo.getStatusCode() == STATUS_OK && MIMETYPE_HTML.equals(responseInfo.getStatedMimeType())) {
+                final byte[] responseBytes = httpRequestResponse.getResponse();
+                final int bodyOffset = responseInfo.getBodyOffset();
+		final String responseBody = (new String(responseBytes)).substring(bodyOffset);
+                final String response = helpers.bytesToString(responseBytes);
+                
+                Pattern p = Pattern.compile("=[\"'][^\"']*openid[^\"']*[\"']", Pattern.CASE_INSENSITIVE);
+                Matcher m = p.matcher(responseBody);
+                if (m.find()) {
+                    markRequestResponse(httpRequestResponse, "OpenID Login Possibility", "green");
+                    IRequestInfo iri = helpers.analyzeRequest(httpRequestResponse);
+                    callbacks.issueAlert("OpenID Login on: "+iri.getUrl().toString()); 
+                    return true;
+                }
+                p = Pattern.compile("rel=\"openid(.server|.delegate|2.provider|2.local_id)\"", Pattern.CASE_INSENSITIVE);
+                m = p.matcher(responseBody);
+                if (m.find()) {
+                    markRequestResponse(httpRequestResponse, "OpenID Metadata", "green");
+                    IRequestInfo iri = helpers.analyzeRequest(httpRequestResponse);
+                    callbacks.issueAlert("OpenID Login on: "+iri.getUrl().toString());
+                    return true;
+                }
+                p = Pattern.compile("X-XRDS-Location:\\s(https?:\\/\\/)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})", Pattern.CASE_INSENSITIVE);
+                m = p.matcher(response);
+                if (m.find()) {
+                    markRequestResponse(httpRequestResponse, "OpenID Metadata", "green");
+                    IRequestInfo iri = helpers.analyzeRequest(httpRequestResponse);
+                    callbacks.issueAlert("OpenID Login on: "+iri.getUrl().toString()); 
+                    return true;
+                }
+                p = Pattern.compile("xmlns:xrds=\"xri://$xrds\" xmlns=\"xri://$xrd*($v*2.0)\"", Pattern.CASE_INSENSITIVE);
+                m = p.matcher(response);
+                if (m.find()) {
+                    markRequestResponse(httpRequestResponse, "OpenID Metadata", "green");
+                    IRequestInfo iri = helpers.analyzeRequest(httpRequestResponse);
+                    callbacks.issueAlert("OpenID Login on: "+iri.getUrl().toString()); 
+                    return true;
+                }
+            }
+            return false;
 	}
         
 	private void checkRequestForBrowserId(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
-		final List<IParameter> parameterList = requestInfo.getParameters();
-		if (parameterListContainsParameterName(parameterList, IN_REQUEST_BROWSERID_PARAMETER)) {
-			markRequestResponse(httpRequestResponse, "BrowserID");
-		}
+            final List<IParameter> parameterList = requestInfo.getParameters();
+            if (parameterListContainsParameterName(parameterList, IN_REQUEST_BROWSERID_PARAMETER)) {
+                markRequestResponse(httpRequestResponse, "BrowserID", HIGHLIGHT_COLOR);
+            }
 	}
 
-	private void markRequestResponse(IHttpRequestResponse httpRequestResponse, String message) {
-		if(UIOptions.highlightBool){
-                    httpRequestResponse.setHighlight(HIGHLIGHT_COLOR);
-                }
-		final String oldComment = httpRequestResponse.getComment();
-		if (oldComment != null && !oldComment.isEmpty()) {
-			httpRequestResponse.setComment(String.format("%s, %s", oldComment, message));
-		} else {
-			httpRequestResponse.setComment(message);
-		}
-
-	}
-        
         private void markRequestResponse(IHttpRequestResponse httpRequestResponse, String message, String colour) {
-		if(UIOptions.highlightBool){
-                    httpRequestResponse.setHighlight(colour);
-                }
-		final String oldComment = httpRequestResponse.getComment();
-		if (oldComment != null && !oldComment.isEmpty()) {
-			httpRequestResponse.setComment(String.format("%s, %s", oldComment, message));
-		} else {
-			httpRequestResponse.setComment(message);
-		}
+            if(UIOptions.highlightBool){
+                httpRequestResponse.setHighlight(colour);
+            }
+            final String oldComment = httpRequestResponse.getComment();
+            if (oldComment != null && !oldComment.isEmpty()) {
+                    httpRequestResponse.setComment(String.format("%s, %s", oldComment, message));
+            } else {
+                    httpRequestResponse.setComment(message);
+            }
 
 	}
-
-	private static final String MIMETYPE_HTML = "HTML";
-	private static final int STATUS_OK = 200;
 }

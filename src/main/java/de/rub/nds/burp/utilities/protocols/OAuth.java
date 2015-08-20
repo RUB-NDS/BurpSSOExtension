@@ -38,7 +38,7 @@ public class OAuth extends SSOProtocol{
         super(param, callbacks);
         super.setProtocol(OAUTH_V2);
         this.ihrr = ihrr;
-        super.setID(findID());
+        super.setToken(findID());
     }
 
     @Override
@@ -65,6 +65,11 @@ public class OAuth extends SSOProtocol{
             return m.group(1);
         }
         return "Not Found!";
+    }
+
+    @Override
+    public int analyseProtocol() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

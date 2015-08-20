@@ -39,7 +39,7 @@ public class BrowserID extends SSOProtocol{
         super(parameterList.get(0), callbacks);
         super.setProtocol(BROWSERID);
         this.ihrr = ihrr;
-        super.setID(findID());
+        super.setToken(findID());
     }
     
     @Override
@@ -57,6 +57,11 @@ public class BrowserID extends SSOProtocol{
             }
         }
         return "Not Found!";
+    }
+
+    @Override
+    public int analyseProtocol() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

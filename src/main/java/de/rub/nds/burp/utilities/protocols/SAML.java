@@ -20,6 +20,7 @@ package de.rub.nds.burp.utilities.protocols;
 
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
+import burp.IHttpRequestResponse;
 import burp.IParameter;
 import de.rub.nds.burp.utilities.Compression;
 import de.rub.nds.burp.utilities.Encoding;
@@ -71,8 +72,13 @@ public class SAML extends SSOProtocol{
         this.id = findID();
     }
     
+    public SAML(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
+        super(message, protocol, callbacks);
+        super.setProtocol(protocol);
+    }
     
-    public String getID(){
+    
+    public String getToken(){
         return id;
     }
     
@@ -158,5 +164,10 @@ public class SAML extends SSOProtocol{
     @Override
     public String toString(){
         return id+" "+paramName+"="+content;
+    }
+
+    @Override
+    public int analyseProtocol() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

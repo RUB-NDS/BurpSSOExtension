@@ -21,7 +21,9 @@ package de.rub.nds.burp.utilities.table;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IHttpRequestResponsePersisted;
+import de.rub.nds.burp.utilities.protocols.SSOProtocol;
 import java.time.LocalTime;
+import java.util.ArrayList;
 
 /**
  * A table entry for the class Table.
@@ -39,6 +41,7 @@ public class TableEntry {
     private String length = "";
     private String comment = "";
     private IHttpRequestResponsePersisted fullMessage = null;
+    private SSOProtocol ssoProtocol = null;
 
     /**
      * Construct a new table entry.
@@ -62,6 +65,23 @@ public class TableEntry {
         this.length = (new Integer(requestResponse.getResponse().length)).toString();
         this.comment = requestResponse.getComment();
         this.fullMessage = requestResponse;
+    }
+    
+    public TableEntry(SSOProtocol ssoProtocol, IBurpExtenderCallbacks callbacks) {
+        IExtensionHelpers helpers = callbacks.getHelpers();
+        
+        this.counter = "New Scanner";
+        this.protocol = ssoProtocol.getProtocol();
+        this.fullMessage = callbacks.saveBuffersToTempFiles(ssoProtocol.getMessage());
+        this.host = helpers.analyzeRequest(this.fullMessage ).getUrl().getHost();
+        this.method = helpers.analyzeRequest(this.fullMessage ).getMethod();
+        this.url = helpers.analyzeRequest(this.fullMessage ).getUrl().getPath();
+        this.token = ssoProtocol.getToken();
+        LocalTime t = LocalTime.now();
+        this.time = t.toString();
+        this.length = (new Integer(this.fullMessage.getResponse().length)).toString();
+        this.comment = this.fullMessage .getComment();
+        this.ssoProtocol = ssoProtocol;
     }
 
     //Getter
@@ -105,7 +125,9 @@ public class TableEntry {
         return fullMessage;
     }
     
-    
+    public ArrayList<SSOProtocol> getProtocolFlow(){
+        return ssoProtocol.getProtocolFlow();
+    }
 
     //Setter
     public void setComment(String comment) {
