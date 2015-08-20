@@ -69,6 +69,7 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener{
 	callbacks.registerHttpListener(httpMarker);
 	callbacks.registerMessageEditorTabFactory(new SamlResponseEditor(callbacks));
 	callbacks.registerMessageEditorTabFactory(new SamlRequestEditor(callbacks));
+        callbacks.registerExtensionStateListener(this);
     }
     /**
      * Print a notification on the standard output when extension is unloaded.
