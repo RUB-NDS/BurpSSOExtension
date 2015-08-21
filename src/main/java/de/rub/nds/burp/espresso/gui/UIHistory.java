@@ -111,12 +111,12 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
             @Override
             public void actionPerformed(ActionEvent ae) {
                 int row = ssoHistoryTable.getSelectedRow();
-                String id = (String) ssoHistoryTable.getValueAt(row, 5);
                 String protocol = (String) ssoHistoryTable.getValueAt(row, 1);
                 
                 TableEntry entry = (TableEntry) ssoHistoryTable.getTableEntry(row);
+                SSOProtocol sso = entry.getSSOProtocol();
                 
-                addNewTable(protocol+" "+(tab_counter++), id, entry.getSSOProtocol());
+                addNewTable(protocol+" "+(tab_counter++), new Integer(sso.getProtocolflowID()).toString(), sso);
             }
         });
         menu.add(item);
@@ -140,6 +140,7 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
     public boolean addNewTable(String tableName, String id, SSOProtocol sso){
         //find tables with same name
         if(TableDB.getTable(id) != null){
+            sso.printErr("Can't create new table for "+sso.getProtocol()+" message no. "+sso.getCounter()+", table already exists.");
             return false;
         }
         

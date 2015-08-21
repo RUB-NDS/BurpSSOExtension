@@ -152,11 +152,13 @@ public class SAML extends SSOProtocol{
 
     @Override
     public int analyseProtocol() {
+        printOut("Analyse: "+getProtocol()+" with ID: "+getToken());
         ArrayList<SSOProtocol> last_protocolflow = SSOProtocol.getLastProtocolFlow();
         if(last_protocolflow != null){
             double listsize = (double) last_protocolflow.size();
             double protocol = 0;
             double token = 0;
+            printOut("Size:"+listsize);
             for(SSOProtocol sso : last_protocolflow){
                 if(sso.getProtocol().equals(this.getProtocol())){
                     printOut(sso.getProtocol());
@@ -169,6 +171,7 @@ public class SAML extends SSOProtocol{
             }
             if(listsize >= 0){
                 double prob = ((protocol/listsize)*2+(token/listsize))/3;
+                printOut("Probability: "+prob);
                 if(prob >= 0.7){
                     return getIDOfLastList();
                 }

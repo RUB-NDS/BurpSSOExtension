@@ -27,12 +27,15 @@ import static de.rub.nds.burp.utilities.protocols.SSOProtocol.getIDOfLastList;
 import static de.rub.nds.burp.utilities.protocols.SSOProtocol.newProtocolflowID;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  *
  * @author Tim Guenther
  */
 public class OpenID extends SSOProtocol{
+    
+    private String return_to = "";
 
     public OpenID(IParameter param, IBurpExtenderCallbacks callbacks, String protocol, IHttpRequestResponse ihrr) {
         super(param, callbacks);
@@ -60,33 +63,63 @@ public class OpenID extends SSOProtocol{
     public String findID() {
           IRequestInfo iri = super.getCallbacks().getHelpers().analyzeRequest(super.getMessage());
           List<IParameter> list = iri.getParameters();
+          String id = "Not Found!";
           for(IParameter p : list){
               if(p.getName().equals("openid.identity")){
-                  return decode(p.getValue());
+                  id = decode(p.getValue());
+                  continue;
+              }
+              if(p.getName().equals("openid.return_to")){
+                  return_to = p.getValue();
               }
           }
-          return "Not Found!";
+          return id;
+    }
+    
+    private String findReturnTo(IHttpRequestResponse message){
+        IRequestInfo iri = super.getCallbacks().getHelpers().analyzeRequest(message);
+          List<IParameter> list = iri.getParameters();
+          String returnTo = null;
+          for(IParameter p : list){
+              if(p.getName().equals("openid.return_to")){
+                  returnTo = p.getValue();
+                  break;
+              }
+          }
+          return returnTo;
     }
 
     @Override
     public int analyseProtocol() {
+        printOut("Analyse: "+getProtocol()+" with ID: "+getToken());
         ArrayList<SSOProtocol> last_protocolflow = SSOProtocol.getLastProtocolFlow();
         if(last_protocolflow != null){
             double listsize = (double) last_protocolflow.size();
             double protocol = 0;
             double token = 0;
+            double traffic = 0;
             for(SSOProtocol sso : last_protocolflow){
-                if(sso.getProtocol().equals(this.getProtocol())){
+                if(sso.getProtocol().substring(0, 5).equals(this.getProtocol().substring(0, 5))){
                     printOut(sso.getProtocol());
                     protocol++;
                 }
                 if(sso.getToken().equals(this.getToken())){
                     printOut(sso.getToken());
                     token++;
-                } 
+                }
+                String returnTo = findReturnTo(sso.getMessage());
+                if(returnTo != null){
+                    if(return_to.equals(returnTo)){
+                        printOut(returnTo);
+                        traffic++;
+                    }
+                }
+                
             }
+            
             if(listsize >= 0){
-                double prob = ((protocol/listsize)*2+(token/listsize))/3;
+                double prob = ((protocol/listsize)+(token/listsize)+(traffic/listsize))/3;
+                printOut("Probability: "+prob+"\n");
                 if(prob >= 0.7){
                     return getIDOfLastList();
                 }
