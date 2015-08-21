@@ -23,6 +23,9 @@ import burp.IHttpRequestResponse;
 import burp.IParameter;
 import burp.IRequestInfo;
 import de.rub.nds.burp.utilities.Encoding;
+import static de.rub.nds.burp.utilities.protocols.SSOProtocol.getIDOfLastList;
+import static de.rub.nds.burp.utilities.protocols.SSOProtocol.newProtocolflowID;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,7 +44,8 @@ public class OpenID extends SSOProtocol{
     public OpenID(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
         super(message, protocol, callbacks);
         super.setToken(findID());
-        analyseProtocol();
+        super.setProtocolflowID(analyseProtocol());
+        add(this, getProtocolflowID());
     }
 
     @Override
@@ -66,7 +70,30 @@ public class OpenID extends SSOProtocol{
 
     @Override
     public int analyseProtocol() {
-        return -1;
+        ArrayList<SSOProtocol> last_protocolflow = SSOProtocol.getLastProtocolFlow();
+        if(last_protocolflow != null){
+            double listsize = (double) last_protocolflow.size();
+            double protocol = 0;
+            double token = 0;
+            for(SSOProtocol sso : last_protocolflow){
+                if(sso.getProtocol().equals(this.getProtocol())){
+                    printOut(sso.getProtocol());
+                    protocol++;
+                }
+                if(sso.getToken().equals(this.getToken())){
+                    printOut(sso.getToken());
+                    token++;
+                } 
+            }
+            if(listsize >= 0){
+                double prob = ((protocol/listsize)*2+(token/listsize))/3;
+                if(prob >= 0.7){
+                    return getIDOfLastList();
+                }
+            }
+            
+        }
+        return newProtocolflowID();
     }
 
 }

@@ -22,7 +22,11 @@ import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IHttpRequestResponse;
 import burp.IParameter;
+import de.rub.nds.burp.utilities.table.Table;
+import de.rub.nds.burp.utilities.table.TableDB;
 import de.rub.nds.burp.utilities.table.TableEntry;
+import de.rub.nds.burp.utilities.table.TableHelper;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 /**
@@ -61,6 +65,7 @@ public abstract class SSOProtocol {
     private IHttpRequestResponse message;
     //Unique id for all messages of the same protocol flow.
     private int protocolflow_id = -1;
+    private int counter = -1;
     
     private String protocol = null;
     private String content = null;
@@ -70,6 +75,8 @@ public abstract class SSOProtocol {
     
     private IBurpExtenderCallbacks callbacks;
     private IExtensionHelpers helpers;
+    private PrintWriter stdout;
+    private PrintWriter stderr;
     
     public SSOProtocol(){        
     }
@@ -79,19 +86,30 @@ public abstract class SSOProtocol {
         this.helpers = callbacks.getHelpers();
         this.paramName = param.getName();
         this.content = param.getValue();
+        this.stdout = new PrintWriter(callbacks.getStdout(), true);
+        this.stderr = new PrintWriter(callbacks.getStderr(), true);
     }
     
     public SSOProtocol(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
         this.message = message;
         this.protocol = protocol;
         this.callbacks = callbacks;
-        this.helpers = callbacks.getHelpers();        
+        this.helpers = callbacks.getHelpers();
+        this.stdout = new PrintWriter(callbacks.getStdout(), true);
+        this.stderr = new PrintWriter(callbacks.getStderr(), true);
     }
     
     //return id of table in protocolDB
     abstract public int analyseProtocol();
     abstract public String decode(String input);
     abstract public String findID();
+    
+    public void printOut(String s){
+        stdout.println(s);
+    }
+    public void printErr(String s){
+        stderr.println(s);
+    }
     
     public String getContent(){
         return content;
@@ -138,6 +156,14 @@ public abstract class SSOProtocol {
         this.protocol = protocol;
     }
     
+    public void setCounter(int i){
+        this.counter = i;
+    }
+    
+    public int getCounter(){
+        return counter;
+    }
+    
     @Override
     public String toString(){
         return token+" "+protocol+" "+paramName+"="+content;
@@ -160,12 +186,38 @@ public abstract class SSOProtocol {
         return new TableEntry(this, callbacks);
     }
     
+    public Table toTable(String tableName, String id){
+        Table t = new Table(new TableHelper(new ArrayList<TableEntry>()),tableName,id);
+        int i = 1;
+        for(SSOProtocol sso : protocolflow){
+            TableEntry e = sso.toTableEntry();
+            e.setCounter(i++);
+            t.getTableHelper().addRow(e);
+        }
+        if(t.getTableList().size() >= 0){
+            return t;
+        }
+        printErr("Table "+id+" null.");
+        return null;
+    }
+    
     public static ArrayList<SSOProtocol> getLastProtocolFlow(){
-        return protocolDB.get(protocolDB.size());
+        if(protocolDB.size()-1 < 0){
+            return null;
+        }
+        return protocolDB.get(protocolDB.size()-1);
+    }
+    
+    public static int getIDOfLastList(){
+        return protocolDB.size()-1;
     }
     
     public ArrayList<SSOProtocol> getProtocolFlow(){
         return protocolflow;
+    }
+    
+    public void setProtocolFlow(ArrayList<SSOProtocol> protocolflow){
+        this.protocolflow = protocolflow;
     }
     
     public IHttpRequestResponse getMessage(){
@@ -174,5 +226,27 @@ public abstract class SSOProtocol {
     
     public void setMessage(IHttpRequestResponse message){
         this.message = message;
+    }
+    
+    public void setParamName(String paramName){
+        this.paramName = paramName;
+    }
+    
+    public boolean add(SSOProtocol sso, int id){
+        if(protocolDB.size()-1 < id){
+            protocolflow.add(sso);
+            protocolDB.add(protocolflow);
+            if(protocolDB.size()-1 == id){
+                return true;
+            }
+            return false;
+        }
+        protocolDB.get(id).add(sso);
+        protocolflow = protocolDB.get(id);
+        return true;
+    }
+    
+    public ArrayList<SSOProtocol> get(int i){
+        return protocolDB.get(i);
     }
 }

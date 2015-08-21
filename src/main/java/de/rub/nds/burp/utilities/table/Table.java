@@ -19,7 +19,9 @@
 package de.rub.nds.burp.utilities.table;
 
 import de.rub.nds.burp.espresso.gui.UIHistory;
+import de.rub.nds.burp.utilities.protocols.SSOProtocol;
 import java.util.ArrayList;
+import java.util.Iterator;
 import javax.swing.JTable;
 
 /**
@@ -79,6 +81,10 @@ public class Table extends JTable{
     public ArrayList<TableEntry> getTableList(){
         return list;
     }
+    
+    public TableEntry getTableEntry(int i){
+        return list.get(i);
+    }
 
     /**
      * Controls the current displayed item in the detail view.
@@ -98,5 +104,15 @@ public class Table extends JTable{
         UIHistory.currentlyDisplayedItem = entry.getFullMessage();
 
         super.changeSelection(row, col, toggle, extend);
-    }        
+    }
+    
+    public void update(){
+        SSOProtocol sso = list.get(0).getSSOProtocol();
+        ArrayList<SSOProtocol> ssoList = sso.getProtocolFlow();
+        list.clear();
+        for (Iterator<SSOProtocol> it = ssoList.iterator(); it.hasNext();) {
+            sso = it.next();
+            th.addRow(sso.toTableEntry());
+        }
+    }
 }

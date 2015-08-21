@@ -31,6 +31,7 @@ import static de.rub.nds.burp.utilities.ParameterUtilities.parameterListContains
 import de.rub.nds.burp.utilities.protocols.OpenID;
 import de.rub.nds.burp.utilities.protocols.SAML;
 import de.rub.nds.burp.utilities.protocols.SSOProtocol;
+import de.rub.nds.burp.utilities.table.Table;
 import de.rub.nds.burp.utilities.table.TableDB;
 import de.rub.nds.burp.utilities.table.TableEntry;
 import java.io.PrintWriter;
@@ -49,6 +50,8 @@ import java.util.regex.Pattern;
  */
 
 public class HttpMarker implements IHttpListener {
+    
+        private static int counter = 1;
 
 	private String[] OPENID_TOKEN_PARAMETER = {"openid.return_to"};
 
@@ -103,11 +106,9 @@ public class HttpMarker implements IHttpListener {
 	public void processHttpMessage(int toolFlag, boolean isRequest, IHttpRequestResponse httpRequestResponse) {
             // only flag messages sent/received by the proxy
             if (toolFlag == IBurpExtenderCallbacks.TOOL_PROXY && !isRequest) {
-                    TableEntry e = processHttpRequest(httpRequestResponse);
-                    if(e != null){
-                        //Full History
-                        TableDB.getTable(0).getTableHelper().addRow(e);
-                        stderr.println("add new row");
+                    TableEntry entry = processHttpRequest(httpRequestResponse);
+                    if(entry != null){
+                        updateTables(entry);
                     }
                     
                     processHttpResponse(httpRequestResponse);
@@ -125,6 +126,7 @@ public class HttpMarker implements IHttpListener {
             if(UIOptions.openIDActive){
                 SSOProtocol protocol = checkRequestForOpenId(requestInfo, httpRequestResponse);
                 if(protocol != null){
+                    protocol.setCounter(counter++);
                     return protocol.toTableEntry();
                 }
             }
@@ -132,7 +134,11 @@ public class HttpMarker implements IHttpListener {
                 checkRequestHasOAuthParameters(requestInfo, httpRequestResponse);
             }
             if(UIOptions.samlActive){
-                checkRequestForSaml(requestInfo, httpRequestResponse);
+                SSOProtocol protocol = checkRequestForSaml(requestInfo, httpRequestResponse);
+                if(protocol != null){
+                    protocol.setCounter(counter++);
+                    return protocol.toTableEntry();
+                }
             }
             if(UIOptions.browserIDActive){
                 checkRequestForBrowserId(requestInfo, httpRequestResponse);
@@ -142,6 +148,16 @@ public class HttpMarker implements IHttpListener {
             }
             return null;
 	}
+        
+        private void updateTables(TableEntry entry){
+            //Full history
+            TableDB.getTable(0).getTableHelper().addRow(entry);
+            //Add content to additional tables
+            for(int i = 1; i<TableDB.size(); i++){
+                Table t = TableDB.getTable(i);
+                t.update();
+            }
+        }
 
 	private SSOProtocol checkRequestForOpenId(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
             final List<IParameter> parameterList = requestInfo.getParameters();
@@ -150,16 +166,14 @@ public class HttpMarker implements IHttpListener {
             if (openidMode != null) {
                 if (openidMode.getValue().equals("checkid_setup")) {
                     markRequestResponse(httpRequestResponse, "OpenID Request", HIGHLIGHT_COLOR);
-                    //make Openid
-                    return new SAML(httpRequestResponse, "OpenID", callbacks);
                 } else if (openidMode.getValue().equals("id_res")) {
 
                     if (parameterListContainsParameterName(parameterList, IN_REQUEST_OPENID2_TOKEN_PARAMETER)) {
                             markRequestResponse(httpRequestResponse, "OpenID 2.0 Token", HIGHLIGHT_COLOR);
-                            protocol += " 2.0";
+                            protocol += " v2.0";
                     } else {
                             markRequestResponse(httpRequestResponse, "OpenID 1.0 Token", HIGHLIGHT_COLOR);
-                            protocol += " 1.0";
+                            protocol += " v1.0";
                     }
                 } else if(openidMode.getValue().equals("associate")){
                     markRequestResponse(httpRequestResponse, "OpenID Association", HIGHLIGHT_COLOR);
@@ -176,15 +190,18 @@ public class HttpMarker implements IHttpListener {
             }
 	}
 
-	private void checkRequestForSaml(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
+	private SSOProtocol checkRequestForSaml(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
             final List<IParameter> parameterList = requestInfo.getParameters();
             if (parameterListContainsParameterName(parameterList, IN_REQUEST_SAML_REQUEST_PARAMETER)) {
                 markRequestResponse(httpRequestResponse, "SAML Authentication Request", HIGHLIGHT_COLOR);
+                return new SAML(httpRequestResponse, "SAML", callbacks, getFirstParameterByName(parameterList, "SAMLRequest"));
             }
 
             if (parameterListContainsParameterName(parameterList, IN_REQUEST_SAML_TOKEN_PARAMETER)) {
                 markRequestResponse(httpRequestResponse, "SAML Token", HIGHLIGHT_COLOR);
+                return new SAML(httpRequestResponse, "SAML", callbacks, getFirstParameterByName(parameterList, "SAMLResponse"));
             }
+            return null;
 	}
 
 	private boolean checkRequestForOpenIdLoginMetadata(IResponseInfo responseInfo, IHttpRequestResponse httpRequestResponse) {

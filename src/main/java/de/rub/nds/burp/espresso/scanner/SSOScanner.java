@@ -145,7 +145,7 @@ public class SSOScanner implements IHttpListener{
     }
     
     private String[] makeSAML(IParameter param){
-        SAML saml = new SAML();
+        SAML saml = null;
         if(param.getName().equals(SSOProtocol.SAML_REQUEST)){
             saml = new SAML(param, callbacks);
         } else if(param.getName().equals(SSOProtocol.SAML_RESPONSE)){

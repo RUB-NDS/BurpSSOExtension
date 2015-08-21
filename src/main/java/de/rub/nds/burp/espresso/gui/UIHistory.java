@@ -23,6 +23,7 @@ import burp.IHttpRequestResponse;
 import burp.IHttpService;
 import burp.IMessageEditor;
 import burp.IMessageEditorController;
+import de.rub.nds.burp.utilities.protocols.SSOProtocol;
 import de.rub.nds.burp.utilities.table.Table;
 import de.rub.nds.burp.utilities.table.TableDB;
 import de.rub.nds.burp.utilities.table.TableEntry;
@@ -66,6 +67,7 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
     public static IMessageEditor requestViewer;
     public static IMessageEditor responseViewer;
     public static IHttpRequestResponse currentlyDisplayedItem;
+    public static int tab_counter = 1;
 
     /**
      * Create a vertical split history window.
@@ -111,8 +113,10 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
                 int row = ssoHistoryTable.getSelectedRow();
                 String id = (String) ssoHistoryTable.getValueAt(row, 5);
                 String protocol = (String) ssoHistoryTable.getValueAt(row, 1);
-                String no = (String) ssoHistoryTable.getValueAt(row, 0);
-                addNewTable(protocol+no, id);
+                
+                TableEntry entry = (TableEntry) ssoHistoryTable.getTableEntry(row);
+                
+                addNewTable(protocol+" "+(tab_counter++), id, entry.getSSOProtocol());
             }
         });
         menu.add(item);
@@ -133,7 +137,7 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
      * @param id The id for the requests.
      * @return False if table exists, otherwise true.
      */
-    public boolean addNewTable(String tableName, String id){
+    public boolean addNewTable(String tableName, String id, SSOProtocol sso){
         //find tables with same name
         if(TableDB.getTable(id) != null){
             return false;
@@ -144,13 +148,15 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
             @Override
             public void run()
             {   
-                Table t = new Table(new TableHelper(new ArrayList<TableEntry>()),tableName,id);
-                ArrayList<TableEntry> list = ssoHistoryTable.getTableList();
-                for(TableEntry e : list){
-                    if(e.getToken().equals(id)){
-                        t.getTableHelper().addRow(e);
-                    }
-                }
+//                Table t = new Table(new TableHelper(new ArrayList<TableEntry>()),tableName,id);
+//                ArrayList<TableEntry> list = ssoHistoryTable.getTableList();
+//                for(TableEntry e : list){
+//                    if(e.getToken().equals(id)){
+//                        t.getTableHelper().addRow(e);
+//                    }
+//                }
+                Table t = sso.toTable(tableName, id);
+                
                 
                 JScrollPane s = new JScrollPane(t);
                 historyContainer.addTab(t.getName(), s);

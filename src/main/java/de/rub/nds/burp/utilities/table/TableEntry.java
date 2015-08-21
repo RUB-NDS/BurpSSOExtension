@@ -38,6 +38,7 @@ public class TableEntry {
     private String url = "";
     private String token = "";
     private String time = "";
+    private LocalTime timestamp = null;
     private String length = "";
     private String comment = "";
     private IHttpRequestResponsePersisted fullMessage = null;
@@ -61,7 +62,8 @@ public class TableEntry {
         this.url = helpers.analyzeRequest(requestResponse).getUrl().getPath();
         this.token = token;
         LocalTime t = LocalTime.now();
-        this.time = t.toString();
+        this.timestamp = t;
+        this.time = t.toString().substring(0, t.toString().length()-2);
         this.length = (new Integer(requestResponse.getResponse().length)).toString();
         this.comment = requestResponse.getComment();
         this.fullMessage = requestResponse;
@@ -70,7 +72,7 @@ public class TableEntry {
     public TableEntry(SSOProtocol ssoProtocol, IBurpExtenderCallbacks callbacks) {
         IExtensionHelpers helpers = callbacks.getHelpers();
         
-        this.counter = "New Scanner";
+        this.counter = ""+ssoProtocol.getCounter();
         this.protocol = ssoProtocol.getProtocol();
         this.fullMessage = callbacks.saveBuffersToTempFiles(ssoProtocol.getMessage());
         this.host = helpers.analyzeRequest(this.fullMessage ).getUrl().getHost();
@@ -78,7 +80,8 @@ public class TableEntry {
         this.url = helpers.analyzeRequest(this.fullMessage ).getUrl().getPath();
         this.token = ssoProtocol.getToken();
         LocalTime t = LocalTime.now();
-        this.time = t.toString();
+        this.timestamp = t;
+        this.time = t.toString().substring(0, t.toString().length()-2);
         this.length = (new Integer(this.fullMessage.getResponse().length)).toString();
         this.comment = this.fullMessage .getComment();
         this.ssoProtocol = ssoProtocol;
@@ -128,14 +131,21 @@ public class TableEntry {
     public ArrayList<SSOProtocol> getProtocolFlow(){
         return ssoProtocol.getProtocolFlow();
     }
+    
+    public SSOProtocol getSSOProtocol(){
+        return ssoProtocol;
+    }
+    
+    public LocalTime getTimestamp(){
+        return timestamp;
+    }
 
     //Setter
     public void setComment(String comment) {
         this.comment = comment;
     }
     
-    
-    
-    
-    
+    public void setCounter(int i){
+        this.counter = (new Integer(i)).toString();
+    }
 }
