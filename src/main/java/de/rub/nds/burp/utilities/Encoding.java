@@ -122,7 +122,7 @@ public abstract class Encoding {
     }
     
     public static boolean isJWT(String data){
-        String[] base64 = data.split(".");
+        String[] base64 = data.split("\\.");
         boolean val = false;
         try{
             val = isBase64Encoded(base64[0]) && isBase64Encoded(base64[1]) && isBase64Encoded(base64[2]);
