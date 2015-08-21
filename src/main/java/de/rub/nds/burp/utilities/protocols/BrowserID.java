@@ -22,6 +22,9 @@ import burp.IBurpExtenderCallbacks;
 import burp.IHttpRequestResponse;
 import burp.IParameter;
 import burp.IRequestInfo;
+import static de.rub.nds.burp.utilities.protocols.SSOProtocol.getIDOfLastList;
+import static de.rub.nds.burp.utilities.protocols.SSOProtocol.newProtocolflowID;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,7 +33,7 @@ import java.util.List;
  */
 public class BrowserID extends SSOProtocol{
     
-    private IHttpRequestResponse ihrr;
+    public static final String ID = "browserid_state";
 
     public BrowserID() {
     }
@@ -38,8 +41,15 @@ public class BrowserID extends SSOProtocol{
     public BrowserID(List<IParameter> parameterList, IBurpExtenderCallbacks callbacks, IHttpRequestResponse ihrr) {
         super(parameterList.get(0), callbacks);
         super.setProtocol(BROWSERID);
-        this.ihrr = ihrr;
+        setMessage(ihrr);
         super.setToken(findID());
+    }
+    
+    public BrowserID(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
+        super(message, protocol, callbacks);
+        super.setToken(findID());
+        super.setProtocolflowID(analyseProtocol());
+        add(this, getProtocolflowID());
     }
     
     @Override
@@ -49,10 +59,10 @@ public class BrowserID extends SSOProtocol{
 
     @Override
     public String findID() {
-        IRequestInfo iri = super.getCallbacks().getHelpers().analyzeRequest(ihrr);
+        IRequestInfo iri = super.getCallbacks().getHelpers().analyzeRequest(getMessage());
         List<IParameter> list = iri.getParameters();
         for(IParameter p : list){
-            if(p.getName().equals(SSOProtocol.BROWSERID_ID)){
+            if(p.getName().equals(ID)){
                 return decode(p.getValue());
             }
         }
@@ -61,7 +71,54 @@ public class BrowserID extends SSOProtocol{
 
     @Override
     public int analyseProtocol() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        printOut("\nAnalyse: "+getProtocol()+" with ID: "+getToken());
+        ArrayList<SSOProtocol> last_protocolflow = SSOProtocol.getLastProtocolFlow();
+        if(last_protocolflow != null){
+            double listsize = (double) last_protocolflow.size();
+            double protocol = 0;
+            double token = 0;
+            
+            long tmp = 0;
+            long curr_time = 0;
+            long last_time = 0;
+            boolean wait = true;
+            
+            for(SSOProtocol sso : last_protocolflow){
+                if(sso.getProtocol().substring(0, 5).equals(this.getProtocol().substring(0, 5))){
+                    printOut(sso.getProtocol());
+                    protocol++;
+                }
+                if(sso.getToken().equals(this.getToken())){
+                    printOut(sso.getToken());
+                    token++;
+                }
+                if(wait){
+                    wait = false;
+                } else {
+                    curr_time = sso.getTimestamp();
+                    tmp += curr_time-last_time;
+                    printOut("Diff: "+(curr_time-last_time));
+                }
+                last_time = sso.getTimestamp();
+            }
+            
+            if(listsize >= 0){
+                double diff_time = ((double)tmp/listsize);
+                double curr_diff_time = getTimestamp() - last_protocolflow.get(last_protocolflow.size()-1).getTimestamp();
+                double time_bonus = 0;
+                printOut("CurrDiff:"+curr_diff_time+" Diff:"+diff_time);
+                if(curr_diff_time <= (diff_time+4000)){
+                    time_bonus = 0.35;
+                }
+                double prob = ((protocol/listsize)+(token/listsize)*2)/3+(time_bonus);
+                printOut("Probability: "+prob);
+                if(prob >= 0.6){
+                    return getIDOfLastList();
+                }
+            }
+            
+        }
+        return newProtocolflowID();
     }
     
 }

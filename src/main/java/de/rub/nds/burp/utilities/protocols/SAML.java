@@ -152,7 +152,7 @@ public class SAML extends SSOProtocol{
 
     @Override
     public int analyseProtocol() {
-        printOut("Analyse: "+getProtocol()+" with ID: "+getToken());
+        printOut("\nAnalyse: "+getProtocol()+" with ID: "+getToken());
         ArrayList<SSOProtocol> last_protocolflow = SSOProtocol.getLastProtocolFlow();
         if(last_protocolflow != null){
             double listsize = (double) last_protocolflow.size();

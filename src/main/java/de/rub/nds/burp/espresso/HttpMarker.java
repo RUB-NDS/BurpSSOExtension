@@ -28,6 +28,7 @@ import burp.IResponseInfo;
 import de.rub.nds.burp.espresso.gui.UIOptions;
 import static de.rub.nds.burp.utilities.ParameterUtilities.getFirstParameterByName;
 import static de.rub.nds.burp.utilities.ParameterUtilities.parameterListContainsParameterName;
+import de.rub.nds.burp.utilities.protocols.BrowserID;
 import de.rub.nds.burp.utilities.protocols.OpenID;
 import de.rub.nds.burp.utilities.protocols.SAML;
 import de.rub.nds.burp.utilities.protocols.SSOProtocol;
@@ -141,7 +142,11 @@ public class HttpMarker implements IHttpListener {
                 }
             }
             if(UIOptions.browserIDActive){
-                checkRequestForBrowserId(requestInfo, httpRequestResponse);
+                SSOProtocol protocol = checkRequestForBrowserId(requestInfo, httpRequestResponse);
+                if(protocol != null){
+                    protocol.setCounter(counter++);
+                    return protocol.toTableEntry();
+                }
             }
             if(UIOptions.openIDConnectActive){
                 //TODO OpenID Connect
@@ -247,11 +252,13 @@ public class HttpMarker implements IHttpListener {
             return false;
 	}
         
-	private void checkRequestForBrowserId(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
+	private SSOProtocol checkRequestForBrowserId(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
             final List<IParameter> parameterList = requestInfo.getParameters();
             if (parameterListContainsParameterName(parameterList, IN_REQUEST_BROWSERID_PARAMETER)) {
                 markRequestResponse(httpRequestResponse, "BrowserID", HIGHLIGHT_COLOR);
+                return new BrowserID(httpRequestResponse, "BrowserID", callbacks);
             }
+            return null;
 	}
 
         private void markRequestResponse(IHttpRequestResponse httpRequestResponse, String message, String colour) {

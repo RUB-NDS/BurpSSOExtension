@@ -23,11 +23,13 @@ import burp.IExtensionHelpers;
 import burp.IHttpRequestResponse;
 import burp.IParameter;
 import de.rub.nds.burp.utilities.table.Table;
-import de.rub.nds.burp.utilities.table.TableDB;
 import de.rub.nds.burp.utilities.table.TableEntry;
 import de.rub.nds.burp.utilities.table.TableHelper;
 import java.io.PrintWriter;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
+import javax.xml.crypto.Data;
 
 /**
  *
@@ -66,6 +68,7 @@ public abstract class SSOProtocol {
     //Unique id for all messages of the same protocol flow.
     private int protocolflow_id = -1;
     private int counter = -1;
+    private long timestamp = 0;
     
     private String protocol = null;
     private String content = null;
@@ -97,6 +100,7 @@ public abstract class SSOProtocol {
         this.helpers = callbacks.getHelpers();
         this.stdout = new PrintWriter(callbacks.getStdout(), true);
         this.stderr = new PrintWriter(callbacks.getStderr(), true);
+        this.timestamp = System.currentTimeMillis();
     }
     
     //return id of table in protocolDB
@@ -180,6 +184,10 @@ public abstract class SSOProtocol {
     
     public int getProtocolflowID(){
         return protocolflow_id;
+    }
+    
+    public long getTimestamp(){
+        return timestamp;
     }
     
     public TableEntry toTableEntry(){

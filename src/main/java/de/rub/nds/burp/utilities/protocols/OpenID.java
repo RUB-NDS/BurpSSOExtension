@@ -91,7 +91,7 @@ public class OpenID extends SSOProtocol{
 
     @Override
     public int analyseProtocol() {
-        printOut("Analyse: "+getProtocol()+" with ID: "+getToken());
+        printOut("\nAnalyse: "+getProtocol()+" with ID: "+getToken());
         ArrayList<SSOProtocol> last_protocolflow = SSOProtocol.getLastProtocolFlow();
         if(last_protocolflow != null){
             double listsize = (double) last_protocolflow.size();
@@ -119,7 +119,7 @@ public class OpenID extends SSOProtocol{
             
             if(listsize >= 0){
                 double prob = ((protocol/listsize)+(token/listsize)+(traffic/listsize))/3;
-                printOut("Probability: "+prob+"\n");
+                printOut("Probability: "+prob);
                 if(prob >= 0.7){
                     return getIDOfLastList();
                 }

@@ -81,7 +81,7 @@ public class TableEntry {
         this.token = ssoProtocol.getToken();
         LocalTime t = LocalTime.now();
         this.timestamp = t;
-        this.time = t.toString().substring(0, t.toString().length()-2);
+        this.time = t.toString().substring(0, t.toString().length()-4);
         this.length = (new Integer(this.fullMessage.getResponse().length)).toString();
         this.comment = this.fullMessage .getComment();
         this.ssoProtocol = ssoProtocol;
