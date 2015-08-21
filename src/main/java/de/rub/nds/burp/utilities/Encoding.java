@@ -18,7 +18,6 @@
  */
 package de.rub.nds.burp.utilities;
 
-import de.rub.nds.burp.utilities.protocols.SAML;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -27,6 +26,9 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.DataFormatException;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  * Analyse data for different encodings.
@@ -107,6 +109,27 @@ public abstract class Encoding {
             return false;   
         }
         return true; 
+    }
+    
+    public static boolean isJSON(String data){
+        JSONParser parser = new JSONParser();
+        try{
+            JSONObject json = (JSONObject) parser.parse(data);
+        } catch(ParseException e){
+            return false;
+        }
+        return true;
+    }
+    
+    public static boolean isJWT(String data){
+        String[] base64 = data.split(".");
+        boolean val = false;
+        try{
+            val = isBase64Encoded(base64[0]) && isBase64Encoded(base64[1]) && isBase64Encoded(base64[2]);
+        } catch(IndexOutOfBoundsException e){
+            return false;
+        }
+        return val;
     }
     
     private static boolean regex_contains(String pattern, String data){
