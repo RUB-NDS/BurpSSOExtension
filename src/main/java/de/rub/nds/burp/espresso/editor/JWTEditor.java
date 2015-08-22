@@ -24,6 +24,8 @@ import burp.IMessageEditorController;
 import burp.IMessageEditorTab;
 import burp.IMessageEditorTabFactory;
 import burp.IParameter;
+import burp.IRequestInfo;
+import burp.IResponseInfo;
 import burp.ITextEditor;
 import de.rub.nds.burp.espresso.gui.UISourceViewer;
 import de.rub.nds.burp.utilities.Encoding;
@@ -31,9 +33,13 @@ import java.awt.Component;
 import java.io.PrintWriter;
 import java.util.Base64;
 import java.util.Base64.Decoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JTabbedPane;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  * TODO:
@@ -114,15 +120,36 @@ public class JWTEditor implements IMessageEditorTabFactory{
 
         @Override
         public boolean isEnabled(byte[] content, boolean isRequest) {
-                return isJWT(content);
+                return isJWT(content, isRequest);
         }
 
-        private boolean isJWT(byte[] content) {
-            return null != getJWT(content);
+        private boolean isJWT(byte[] content, boolean isRequest) {
+            return getJWT(content, isRequest) != null;
         }
 
-        private IParameter getJWT(byte[] content){
-            return helpers.getRequestParameter(content, "assertion");
+        private String getJWT(byte[] content, boolean isRequest){
+            if(content != null){
+                IParameter jwt = helpers.getRequestParameter(content, "assertion");
+                if(jwt == null){
+                    if(isRequest){
+                            IRequestInfo iri = helpers.analyzeRequest(content);
+                            if(iri.getContentType() == IRequestInfo.CONTENT_TYPE_JSON){
+                                String body = (new String(content)).substring(iri.getBodyOffset());
+                                try {
+                                    JSONObject json = (JSONObject)new JSONParser().parse(body);
+                                    body = json.getString("assertion");
+                                } catch (Exception e) {
+                                    new PrintWriter(callbacks.getStderr(),true).println("JWTEditor.getJWT: "+e.toString());
+                                    return "";
+                                }
+                                return body;
+                            }
+                        }
+                } else {
+                    return jwt.getValue();
+                }
+            }
+            return null;
         }
 
         @Override
@@ -132,21 +159,23 @@ public class JWTEditor implements IMessageEditorTabFactory{
                 txtInput.setText(null);
                 txtInput.setEditable(false);
             } else {
+                
+                String jwt = getJWT(content, isRequest);
+                if(jwt != null){
+                    // deserialize the parameter value
+                    String[] jwt_list = decode(jwt);
 
-                IParameter parameter = getJWT(content);
-                // deserialize the parameter value
-                String[] jwt_list = decode(parameter.getValue());
-                txtInput.setText(parameter.getValue().getBytes());
-                try{
-                    sourceViewerHeader.setText(new JSONObject(jwt_list[0]).toString(1), SyntaxConstants.SYNTAX_STYLE_JSON);
-                    sourceViewerPayload.setText(new JSONObject(jwt_list[1]).toString(1), SyntaxConstants.SYNTAX_STYLE_JSON);
-                    sourceViewerSignature.setText("Base64(binary)="+jwt_list[2], SyntaxConstants.SYNTAX_STYLE_NONE);
-                } catch(Exception e){
-                    new PrintWriter(callbacks.getStderr(),true).println(e.toString());
+                    txtInput.setText(jwt.getBytes());
+                    txtInput.setText(helpers.stringToBytes(jwt));
+                    txtInput.setEditable(editable);
+                    try{
+                        sourceViewerHeader.setText(new JSONObject(jwt_list[0]).toString(1), SyntaxConstants.SYNTAX_STYLE_JSON);
+                        sourceViewerPayload.setText(new JSONObject(jwt_list[1]).toString(1), SyntaxConstants.SYNTAX_STYLE_JSON);
+                        sourceViewerSignature.setText("Base64(binary)="+jwt_list[2], SyntaxConstants.SYNTAX_STYLE_NONE);
+                    } catch(Exception e){
+                        new PrintWriter(callbacks.getStderr(),true).println("JWTEditor.setMessage: "+e.toString());
+                    }
                 }
-
-                txtInput.setText(helpers.stringToBytes(parameter.getValue()));
-                txtInput.setEditable(editable);
             }
 
             // remember the displayed content
@@ -185,23 +214,23 @@ public class JWTEditor implements IMessageEditorTabFactory{
 
         public String[] decode(String input){
             try{
-            if(Encoding.isURLEncoded(input)){
-                input = helpers.urlDecode(input);
-            }
-            if(Encoding.isBase64Encoded(input)){
-                input = helpers.bytesToString(helpers.base64Decode(input));
-            }
-            String[] jwt_list = input.split("\\.");
-            String[] tmp = {"","",""};
-            Decoder b64 = Base64.getDecoder();
-            for(int i = 0; i<2; i++){
-                tmp[i] = helpers.bytesToString(b64.decode(jwt_list[i]));
-            }
-            tmp[2] = jwt_list[2];
-            
-            return tmp;
+                if(Encoding.isURLEncoded(input)){
+                    input = helpers.urlDecode(input);
+                }
+                if(Encoding.isBase64Encoded(input)){
+                    input = helpers.bytesToString(helpers.base64Decode(input));
+                }
+                String[] jwt_list = input.split("\\.");
+                String[] tmp = {"","",""};
+                Decoder b64 = Base64.getDecoder();
+                for(int i = 0; i<2; i++){
+                    tmp[i] = helpers.bytesToString(b64.decode(jwt_list[i]));
+                }
+                tmp[2] = jwt_list[2];
+
+                return tmp;
             } catch(Exception e){
-                new PrintWriter(callbacks.getStderr(),true).println("decode: "+e.toString());
+                new PrintWriter(callbacks.getStderr(),true).println("JWTEditor.decode: "+e.toString());
             }
             return null;
         }
