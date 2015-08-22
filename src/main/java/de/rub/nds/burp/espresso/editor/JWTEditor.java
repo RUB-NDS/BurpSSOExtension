@@ -101,7 +101,7 @@ public class JWTEditor implements IMessageEditorTabFactory{
             sourceViewerSignature = new UISourceViewer();
             editor.addTab("Header", sourceViewerHeader);
             editor.addTab("Payload", sourceViewerPayload);
-            editor.addTab("Signature", sourceViewerSignature);
+            editor.addTab("Base64(Signature)", sourceViewerSignature);
             editor.addTab("Raw", txtInput.getComponent());
         }
 
@@ -171,7 +171,7 @@ public class JWTEditor implements IMessageEditorTabFactory{
                     try{
                         sourceViewerHeader.setText(new JSONObject(jwt_list[0]).toString(1), SyntaxConstants.SYNTAX_STYLE_JSON);
                         sourceViewerPayload.setText(new JSONObject(jwt_list[1]).toString(1), SyntaxConstants.SYNTAX_STYLE_JSON);
-                        sourceViewerSignature.setText("Base64(binary)="+jwt_list[2], SyntaxConstants.SYNTAX_STYLE_NONE);
+                        sourceViewerSignature.setText(jwt_list[2], SyntaxConstants.SYNTAX_STYLE_NONE);
                     } catch(Exception e){
                         new PrintWriter(callbacks.getStderr(),true).println("JWTEditor.setMessage: "+e.toString());
                     }
