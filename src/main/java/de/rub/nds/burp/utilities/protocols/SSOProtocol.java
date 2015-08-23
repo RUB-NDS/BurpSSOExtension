@@ -81,15 +81,6 @@ public abstract class SSOProtocol {
     public SSOProtocol(){        
     }
 
-    public SSOProtocol(IParameter param, IBurpExtenderCallbacks callbacks){
-        this.callbacks = callbacks;
-        this.helpers = callbacks.getHelpers();
-        this.paramName = param.getName();
-        this.content = param.getValue();
-        this.stdout = new PrintWriter(callbacks.getStdout(), true);
-        this.stderr = new PrintWriter(callbacks.getStderr(), true);
-    }
-    
     public SSOProtocol(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
         this.message = message;
         this.protocol = protocol;

@@ -30,12 +30,6 @@ public class OpenIDConnect extends SSOProtocol{
 
     private IHttpRequestResponse ihrr;
 
-    public OpenIDConnect(IParameter param, IBurpExtenderCallbacks callbacks, IHttpRequestResponse ihrr) {
-        super(param, callbacks);
-        super.setProtocol(OPENID_CONNECT);
-    }
-    
-
     @Override
     public String decode(String input) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

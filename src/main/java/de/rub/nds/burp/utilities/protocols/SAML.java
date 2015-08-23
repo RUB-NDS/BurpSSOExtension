@@ -45,18 +45,6 @@ public class SAML extends SSOProtocol{
     public static final String ARTIFACT = "SAMLart";
     
     
-    /**
-     * Construct a SAML message.
-     * @param param A Burp Suite api for parameters. 
-     * @param callbacks Provided by the Burp Suite api.
-     */
-    public SAML(IParameter param, IBurpExtenderCallbacks callbacks){
-        super(param, callbacks);
-        super.setParamName(param.getName());
-        super.setContent(decode(param.getValue()));
-        super.setToken(findID());
-    }
-    
     public SAML(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks, IParameter param){
         super(message, protocol, callbacks);
         super.setParamName(param.getName());

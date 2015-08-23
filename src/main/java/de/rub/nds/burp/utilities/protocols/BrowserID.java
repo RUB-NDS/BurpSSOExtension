@@ -34,16 +34,6 @@ import java.util.List;
 public class BrowserID extends SSOProtocol{
     
     public static final String ID = "browserid_state";
-
-    public BrowserID() {
-    }
-
-    public BrowserID(List<IParameter> parameterList, IBurpExtenderCallbacks callbacks, IHttpRequestResponse ihrr) {
-        super(parameterList.get(0), callbacks);
-        super.setProtocol(BROWSERID);
-        setMessage(ihrr);
-        super.setToken(findID());
-    }
     
     public BrowserID(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
         super(message, protocol, callbacks);

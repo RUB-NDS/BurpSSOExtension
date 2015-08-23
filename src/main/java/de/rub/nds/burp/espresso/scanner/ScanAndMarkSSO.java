@@ -298,8 +298,8 @@ public class ScanAndMarkSSO implements IHttpListener {
                         comment = "OAuth (IF)";
                     }
                 }
+                markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
             }
-            markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
             return oauth;
 	}
 

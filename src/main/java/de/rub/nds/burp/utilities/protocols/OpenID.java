@@ -36,13 +36,6 @@ import java.util.regex.Pattern;
 public class OpenID extends SSOProtocol{
     
     private String return_to = "";
-
-    public OpenID(IParameter param, IBurpExtenderCallbacks callbacks, String protocol, IHttpRequestResponse ihrr) {
-        super(param, callbacks);
-        super.setProtocol(protocol);
-        super.setMessage(ihrr);
-        super.setToken(findID());                
-    }
     
     public OpenID(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
         super(message, protocol, callbacks);

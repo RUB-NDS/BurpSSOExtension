@@ -36,13 +36,6 @@ import java.util.regex.Pattern;
 public class OAuth extends SSOProtocol{
     
     private IHttpRequestResponse prev_message = null;
-
-    public OAuth(IParameter param, IBurpExtenderCallbacks callbacks, IHttpRequestResponse ihrr) {
-        super(param, callbacks);
-        super.setProtocol(OAUTH_V2);
-        setMessage(ihrr);
-        super.setToken(findID());
-    }
     
     public OAuth(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
         super(message, protocol, callbacks);
