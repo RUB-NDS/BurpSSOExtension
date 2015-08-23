@@ -26,10 +26,7 @@ import de.rub.nds.burp.utilities.table.Table;
 import de.rub.nds.burp.utilities.table.TableEntry;
 import de.rub.nds.burp.utilities.table.TableHelper;
 import java.io.PrintWriter;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
-import javax.xml.crypto.Data;
 
 /**
  *

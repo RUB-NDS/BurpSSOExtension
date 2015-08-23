@@ -25,7 +25,6 @@ import burp.IMessageEditorTab;
 import burp.IMessageEditorTabFactory;
 import burp.IParameter;
 import burp.IRequestInfo;
-import burp.IResponseInfo;
 import burp.ITextEditor;
 import de.rub.nds.burp.espresso.gui.UISourceViewer;
 import de.rub.nds.burp.utilities.Encoding;
@@ -33,13 +32,10 @@ import java.awt.Component;
 import java.io.PrintWriter;
 import java.util.Base64;
 import java.util.Base64.Decoder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JTabbedPane;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 /**
  * TODO:

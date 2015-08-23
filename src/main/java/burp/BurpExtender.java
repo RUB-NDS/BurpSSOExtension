@@ -19,8 +19,7 @@
 package burp;
 
 import de.rub.nds.burp.espresso.gui.UITab;
-import de.rub.nds.burp.espresso.scanner.SSOScanner;
-import de.rub.nds.burp.espresso.HttpMarker;
+import de.rub.nds.burp.espresso.scanner.ScanAndMarkSSO;
 import de.rub.nds.burp.espresso.editor.JSONEditor;
 import de.rub.nds.burp.espresso.editor.JWTEditor;
 import de.rub.nds.burp.espresso.editor.SamlRequestEditor;
@@ -62,13 +61,9 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener{
         //register a new Tab
         tab = new UITab(callbacks);
         
-        //
-        final SSOScanner ssoScanner = new SSOScanner(callbacks, tab);
-        //callbacks.registerHttpListener(ssoScanner);
-        
         //integrate the extension of Christian Mainka
-        final HttpMarker httpMarker = new HttpMarker(callbacks);
-	callbacks.registerHttpListener(httpMarker);
+        final ScanAndMarkSSO scanAndMark = new ScanAndMarkSSO(callbacks);
+	callbacks.registerHttpListener(scanAndMark);
 	callbacks.registerMessageEditorTabFactory(new SamlResponseEditor(callbacks));
 	callbacks.registerMessageEditorTabFactory(new SamlRequestEditor(callbacks));
         callbacks.registerMessageEditorTabFactory(new JSONEditor(callbacks));

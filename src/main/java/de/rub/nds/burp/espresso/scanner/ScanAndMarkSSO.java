@@ -16,7 +16,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package de.rub.nds.burp.espresso;
+package de.rub.nds.burp.espresso.scanner;
 
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
@@ -51,7 +51,7 @@ import java.util.regex.Pattern;
  * @version 1.1
  */
 
-public class HttpMarker implements IHttpListener {
+public class ScanAndMarkSSO implements IHttpListener {
     
         private IHttpRequestResponse prev_message = null;
         private boolean oauth_code_requested = false;
@@ -99,7 +99,7 @@ public class HttpMarker implements IHttpListener {
          * Create a new HttpMarker.
          * @param callbacks IPC for the Burp Suite api.
          */
-	public HttpMarker(IBurpExtenderCallbacks callbacks) {
+	public ScanAndMarkSSO(IBurpExtenderCallbacks callbacks) {
             this.callbacks = callbacks;
             this.helpers = callbacks.getHelpers();
             this.stderr = new PrintWriter(callbacks.getStderr(), true);
