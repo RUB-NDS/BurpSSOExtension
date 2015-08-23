@@ -35,225 +35,227 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="754" max="32767" attributes="0"/>
-                  <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
-                      <Group type="102" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="1" attributes="0">
-                                  <EmptySpace min="-2" pref="534" max="-2" attributes="0"/>
-                                  <Component id="configApply1" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="configSave1" min="-2" max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="1" attributes="0">
+                              <EmptySpace min="534" pref="594" max="32767" attributes="0"/>
+                              <Component id="configApply1" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="configSave1" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="ssoLabel1" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
+                              <Component id="activeSSOProtocols" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="ssoSeparator1" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="cryptoLabel1" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="cryptoSeparator1" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="scriptingLabel1" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="scriptingSeperator1" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="openIDConnect1" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="openID1" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="ssoLabel1" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="ssoSeparator1" max="32767" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="cryptoLabel1" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="cryptoSeparator1" max="32767" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="scriptingLabel1" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="scriptingSeperator1" max="32767" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="openIDConnect1" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="openID1" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Component id="oAuthv1" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="browserID1" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                   </Group>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="oAuthv1" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                                          <Component id="browserID1" min="-2" max="-2" attributes="0"/>
-                                      </Group>
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="oAuthv2" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                                          <Component id="saml1" min="-2" max="-2" attributes="0"/>
-                                      </Group>
+                                  <Group type="102" attributes="0">
+                                      <Component id="oAuthv2" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="saml1" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                      <Component id="highlightSSO" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Group type="103" groupAlignment="1" attributes="0">
-                                      <Component id="certLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
-                                      <Component id="schemaLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
-                                      <Component id="privKeyLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
-                                      <Component id="pubKeyLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="certText1" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="schemaText1" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="privKeyText1" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="pubKeyText1" alignment="0" max="32767" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="103" alignment="0" groupAlignment="0" attributes="0">
-                                          <Component id="schemaOpen1" alignment="1" min="-2" max="-2" attributes="0"/>
-                                          <Component id="certOpen1" alignment="1" min="-2" max="-2" attributes="0"/>
-                                      </Group>
-                                      <Component id="privKeyOpen1" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="pubKeyOpen1" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Group type="103" groupAlignment="1" attributes="0">
-                                      <Component id="scriptOutLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
-                                      <Component id="scriptInLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="scriptOutText1" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="scriptInText1" alignment="0" max="32767" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="scriptInOpen1" alignment="1" min="-2" max="-2" attributes="0"/>
-                                      <Component id="scriptOutOpen1" alignment="1" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                              </Group>
-                              <Component id="scriptingDescription1" alignment="0" max="32767" attributes="0"/>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="extLibLabel1" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="extLibSeparator1" max="32767" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="configLabel1" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="configText1" max="32767" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="configOpen1" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="libLabel1" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="libText1" max="32767" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="libOpen1" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="1" attributes="0">
-                                  <Component id="saveConfLabel1" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="saveConfSeparator1" max="32767" attributes="0"/>
                               </Group>
                           </Group>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="1" attributes="0">
+                                  <Component id="certLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="schemaLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="privKeyLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="pubKeyLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="certText1" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="schemaText1" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="privKeyText1" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="pubKeyText1" alignment="0" max="32767" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="103" alignment="0" groupAlignment="0" attributes="0">
+                                      <Component id="schemaOpen1" alignment="1" min="-2" max="-2" attributes="0"/>
+                                      <Component id="certOpen1" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Component id="privKeyOpen1" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="pubKeyOpen1" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="1" attributes="0">
+                                  <Component id="scriptOutLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="scriptInLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="scriptOutText1" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="scriptInText1" alignment="0" max="32767" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="scriptInOpen1" alignment="1" min="-2" max="-2" attributes="0"/>
+                                  <Component id="scriptOutOpen1" alignment="1" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Component id="scriptingDescription1" alignment="0" pref="730" max="32767" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="extLibLabel1" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="extLibSeparator1" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="configLabel1" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="configText1" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="configOpen1" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="libLabel1" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="libText1" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="libOpen1" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="saveConfLabel1" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="saveConfSeparator1" max="32767" attributes="0"/>
+                          </Group>
                       </Group>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="470" max="32767" attributes="0"/>
-                  <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="ssoLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Group type="102" alignment="1" attributes="0">
-                                  <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
-                                  <Component id="ssoSeparator1" min="-2" pref="9" max="-2" attributes="0"/>
-                              </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="1" attributes="0">
+                              <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                              <Component id="ssoSeparator1" min="-2" pref="9" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="browserID1" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="oAuthv1" min="-2" max="-2" attributes="0"/>
-                              <Component id="openID1" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" alignment="0" groupAlignment="1" attributes="0">
+                              <Component id="activeSSOProtocols" min="-2" max="-2" attributes="0"/>
+                              <Component id="ssoLabel1" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="openIDConnect1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="oAuthv2" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="saml1" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="cryptoLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
-                              <Component id="cryptoSeparator1" alignment="1" min="-2" pref="5" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="schemaLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="schemaText1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="schemaOpen1" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="certLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="certText1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="certOpen1" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="privKeyLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="privKeyText1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="privKeyOpen1" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="pubKeyLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="pubKeyText1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="pubKeyOpen1" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="scriptingLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
-                              <Component id="scriptingSeperator1" alignment="1" min="-2" pref="9" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="scriptingDescription1" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="scriptInLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="scriptInText1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="scriptInOpen1" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="scriptOutLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="scriptOutText1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="scriptOutOpen1" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="extLibLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
-                              <Component id="extLibSeparator1" alignment="1" min="-2" pref="9" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="libLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="libText1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="libOpen1" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="saveConfSeparator1" alignment="1" min="-2" pref="9" max="-2" attributes="0"/>
-                              <Component id="saveConfLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="configLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="configText1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="configOpen1" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="configApply1" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="configSave1" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="browserID1" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="oAuthv1" min="-2" max="-2" attributes="0"/>
+                          <Component id="openID1" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="openIDConnect1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="oAuthv2" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="saml1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="highlightSSO" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="cryptoLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="cryptoSeparator1" alignment="1" min="-2" pref="5" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="schemaLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="schemaText1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="schemaOpen1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="certLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="certText1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="certOpen1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="privKeyLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="privKeyText1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="privKeyOpen1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="pubKeyLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="pubKeyText1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="pubKeyOpen1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="scriptingLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="scriptingSeperator1" alignment="1" min="-2" pref="9" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="scriptingDescription1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="scriptInLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="scriptInText1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="scriptInOpen1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="scriptOutLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="scriptOutText1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="scriptOutOpen1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="extLibLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="extLibSeparator1" alignment="1" min="-2" pref="9" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="libLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="libText1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="libOpen1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="saveConfSeparator1" alignment="1" min="-2" pref="9" max="-2" attributes="0"/>
+                          <Component id="saveConfLabel1" alignment="1" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="configLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="configText1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="configOpen1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="configApply1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="configSave1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace pref="27" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -339,6 +341,19 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saml1ActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="highlightSSO">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Dialog" size="12" style="0"/>
+                </Property>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="text" type="java.lang.String" value="Highlight SSO"/>
+                <Property name="toolTipText" type="java.lang.String" value="Disable/Enable the highlighted messages in the Proxy tab."/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="highlightSSOActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JSeparator" name="cryptoSeparator1">
@@ -649,6 +664,21 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="configApply1ActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="activeSSOProtocols">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Dialog" size="12" style="0"/>
+                </Property>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="toolTipText" type="java.lang.String" value="Disable all protocols"/>
+                <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
+                  <Insets value="[0, 2, 0, 2]"/>
+                </Property>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="activeSSOProtocolsActionPerformed"/>
               </Events>
             </Component>
           </SubComponents>

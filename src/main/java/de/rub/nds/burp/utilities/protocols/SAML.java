@@ -20,10 +20,13 @@ package de.rub.nds.burp.utilities.protocols;
 
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
+import burp.IHttpRequestResponse;
 import burp.IParameter;
+import de.rub.nds.burp.espresso.attacker.SSOAttacker;
 import de.rub.nds.burp.utilities.Compression;
 import de.rub.nds.burp.utilities.Encoding;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -35,28 +38,12 @@ import java.util.regex.Pattern;
  * @version 1.0
  */
 public class SAML extends SSOProtocol{
-    private String content = null;
-    private String paramName = null;
-    private String id = null;
-    private IBurpExtenderCallbacks callbacks;
-    private IExtensionHelpers helpers;
+    public static final String NAME = "SAML";
+    public static final String REQUEST = "SAMLRequest";
+    public static final String RESPONSE = "SAMLResponse";
+    public static final String RELAYSTATE = "RelayState";
+    public static final String ARTIFACT = "SAMLart";
     
-    /**
-     * Default constructor.
-     */
-    public SAML(){
-    }
-    
-    /**
-     * Construct a SAML message.
-     * @param saml SAML message.
-     * @param paramName Parameter Name.
-     */
-    public SAML(String saml, String paramName){
-        this.content = saml;
-        this.paramName = paramName;
-        this.id = findID();
-    }
     
     /**
      * Construct a SAML message.
@@ -64,16 +51,19 @@ public class SAML extends SSOProtocol{
      * @param callbacks Provided by the Burp Suite api.
      */
     public SAML(IParameter param, IBurpExtenderCallbacks callbacks){
-        this.paramName = param.getName();
-        this.callbacks = callbacks;
-        this.helpers = callbacks.getHelpers();
-        this.content = decode(param.getValue());
-        this.id = findID();
+        super(param, callbacks);
+        super.setParamName(param.getName());
+        super.setContent(decode(param.getValue()));
+        super.setToken(findID());
     }
     
-    
-    public String getID(){
-        return id;
+    public SAML(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks, IParameter param){
+        super(message, protocol, callbacks);
+        super.setParamName(param.getName());
+        super.setContent(decode(param.getValue()));
+        super.setToken(findID());
+        super.setProtocolflowID(analyseProtocol());
+        add(this, getProtocolflowID());
     }
     
     /**
@@ -83,21 +73,21 @@ public class SAML extends SSOProtocol{
     public String findID(){
         Matcher m;
         Pattern p;
-        switch (paramName) {
-            case SSOProtocol.SAML_REQUEST:
+        switch (super.getParamName()) {
+            case REQUEST:
                 p = Pattern.compile("ID=\"(.*?)\"");
                 break;
-            case SSOProtocol.SAML_RESPONSE:
+            case RESPONSE:
                 p = Pattern.compile("InResponseTo=\"(.*?)\"");
                 break;
-            case SSOProtocol.SAML_ARTIFACT:
+            case ARTIFACT:
                 p = Pattern.compile("InResponseTo=\"(.*?)\"");
                 break;
             default:
                 return "Not Found!";
         }
-        if(content != null){
-            m = p.matcher(content);
+        if(super.getContent() != null){
+            m = p.matcher(super.getContent());
             if(m.find()){
                 return m.group(1);
             }
@@ -115,19 +105,19 @@ public class SAML extends SSOProtocol{
         if(Encoding.getEncoding(input) == -1){
             return input;
         }
-        switch (paramName) {
-            case SSOProtocol.SAML_REQUEST:
+        switch (super.getParamName()) {
+            case REQUEST:
                 if(Encoding.isURLEncoded(input)){
-                    input = helpers.urlDecode(input);
+                    input = super.getHelpers().urlDecode(input);
                     if(Encoding.getEncoding(input) < 0){
                         return input;
                     }
                 }
                 byte[] byteString = null;
                 if(Encoding.isBase64Encoded(input)){
-                    byteString = helpers.base64Decode(input);
+                    byteString = super.getHelpers().base64Decode(input);
                 } else {
-                    byteString = helpers.stringToBytes(input);
+                    byteString = super.getHelpers().stringToBytes(input);
                 }
                 byte[] decompressed = null;
                 {
@@ -149,14 +139,45 @@ public class SAML extends SSOProtocol{
                         Logger.getLogger(SAML.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-            case SSOProtocol.SAML_RESPONSE:
-                return helpers.bytesToString(helpers.base64Decode(helpers.urlDecode(input)));
+            case RESPONSE:
+                return super.getHelpers().bytesToString(super.getHelpers().base64Decode(super.getHelpers().urlDecode(input)));
         }
         return null;
     }
     
     @Override
     public String toString(){
-        return id+" "+paramName+"="+content;
+        return super.getToken()+" "+super.getParamName()+"="+super.getContent();
+    }
+
+    @Override
+    public int analyseProtocol() {
+        printOut("\nAnalyse: "+getProtocol()+" with ID: "+getToken());
+        ArrayList<SSOProtocol> last_protocolflow = SSOProtocol.getLastProtocolFlow();
+        if(last_protocolflow != null){
+            double listsize = (double) last_protocolflow.size();
+            double protocol = 0;
+            double token = 0;
+            printOut("Size:"+listsize);
+            for(SSOProtocol sso : last_protocolflow){
+                if(sso.getProtocol().equals(this.getProtocol())){
+                    printOut(sso.getProtocol());
+                    protocol++;
+                }
+                if(sso.getToken().equals(this.getToken())){
+                    printOut(sso.getToken());
+                    token++;
+                } 
+            }
+            if(listsize >= 0){
+                double prob = ((protocol/listsize)*2+(token/listsize))/3;
+                printOut("Probability: "+prob);
+                if(prob >= 0.7){
+                    return getIDOfLastList();
+                }
+            }
+            
+        }
+        return newProtocolflowID();
     }
 }

@@ -64,7 +64,7 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener{
         
         //
         final SSOScanner ssoScanner = new SSOScanner(callbacks, tab);
-        callbacks.registerHttpListener(ssoScanner);
+        //callbacks.registerHttpListener(ssoScanner);
         
         //integrate the extension of Christian Mainka
         final HttpMarker httpMarker = new HttpMarker(callbacks);

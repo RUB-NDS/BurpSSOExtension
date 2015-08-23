@@ -35,13 +35,13 @@ public class UIOptions extends JPanel {
     private File scriptOut, scriptIn;
     private File extLib, config;
     
-    public static boolean samlBool=true;
-    public static boolean openIDBool=true;
-    public static boolean openID2Bool=true;
-    public static boolean openIDConnectBool=true;
-    public static boolean browserIDBool=true;
-    public static boolean oAuthv1Bool=true;
-    public static boolean oAuthv2Bool=true;
+    public static boolean samlActive=true;
+    public static boolean openIDActive=true;
+    public static boolean openIDConnectActive=true;
+    public static boolean browserIDActive=true;
+    public static boolean oAuthv1Active=true;
+    public static boolean oAuthv2Active=true;
+    public static boolean highlightBool=true;
     
     
 
@@ -71,6 +71,7 @@ public class UIOptions extends JPanel {
         oAuthv2 = new javax.swing.JCheckBox();
         browserID1 = new javax.swing.JCheckBox();
         saml1 = new javax.swing.JCheckBox();
+        highlightSSO = new javax.swing.JCheckBox();
         cryptoSeparator1 = new javax.swing.JSeparator();
         cryptoLabel1 = new javax.swing.JLabel();
         schemaLabel1 = new javax.swing.JLabel();
@@ -106,6 +107,7 @@ public class UIOptions extends JPanel {
         configOpen1 = new javax.swing.JButton();
         configSave1 = new javax.swing.JButton();
         configApply1 = new javax.swing.JButton();
+        activeSSOProtocols = new javax.swing.JCheckBox();
 
         ssoLabel1.setText("Active SSO Protocols");
 
@@ -161,6 +163,16 @@ public class UIOptions extends JPanel {
         saml1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saml1ActionPerformed(evt);
+            }
+        });
+
+        highlightSSO.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        highlightSSO.setSelected(true);
+        highlightSSO.setText("Highlight SSO");
+        highlightSSO.setToolTipText("Disable/Enable the highlighted messages in the Proxy tab.");
+        highlightSSO.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                highlightSSOActionPerformed(evt);
             }
         });
 
@@ -349,185 +361,198 @@ public class UIOptions extends JPanel {
             }
         });
 
+        activeSSOProtocols.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        activeSSOProtocols.setSelected(true);
+        activeSSOProtocols.setToolTipText("Disable all protocols");
+        activeSSOProtocols.setMargin(new java.awt.Insets(0, 2, 0, 2));
+        activeSSOProtocols.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                activeSSOProtocolsActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout scrollPanelLayout = new javax.swing.GroupLayout(scrollPanel);
         scrollPanel.setLayout(scrollPanelLayout);
         scrollPanelLayout.setHorizontalGroup(
             scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 754, Short.MAX_VALUE)
-            .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(scrollPanelLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, scrollPanelLayout.createSequentialGroup()
-                            .addGap(534, 534, 534)
-                            .addComponent(configApply1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(configSave1))
-                        .addGroup(scrollPanelLayout.createSequentialGroup()
-                            .addComponent(ssoLabel1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(ssoSeparator1))
-                        .addGroup(scrollPanelLayout.createSequentialGroup()
-                            .addComponent(cryptoLabel1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(cryptoSeparator1))
-                        .addGroup(scrollPanelLayout.createSequentialGroup()
-                            .addComponent(scriptingLabel1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(scriptingSeperator1))
-                        .addGroup(scrollPanelLayout.createSequentialGroup()
+            .addGroup(scrollPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, scrollPanelLayout.createSequentialGroup()
+                        .addGap(534, 594, Short.MAX_VALUE)
+                        .addComponent(configApply1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(configSave1))
+                    .addGroup(scrollPanelLayout.createSequentialGroup()
+                        .addComponent(ssoLabel1)
+                        .addGap(2, 2, 2)
+                        .addComponent(activeSSOProtocols)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(ssoSeparator1))
+                    .addGroup(scrollPanelLayout.createSequentialGroup()
+                        .addComponent(cryptoLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cryptoSeparator1))
+                    .addGroup(scrollPanelLayout.createSequentialGroup()
+                        .addComponent(scriptingLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(scriptingSeperator1))
+                    .addGroup(scrollPanelLayout.createSequentialGroup()
+                        .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(openIDConnect1)
+                            .addComponent(openID1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(scrollPanelLayout.createSequentialGroup()
+                                .addComponent(oAuthv1)
+                                .addGap(18, 18, 18)
+                                .addComponent(browserID1)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(scrollPanelLayout.createSequentialGroup()
+                                .addComponent(oAuthv2)
+                                .addGap(18, 18, 18)
+                                .addComponent(saml1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(highlightSSO))))
+                    .addGroup(scrollPanelLayout.createSequentialGroup()
+                        .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(certLabel1)
+                            .addComponent(schemaLabel1)
+                            .addComponent(privKeyLabel1)
+                            .addComponent(pubKeyLabel1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(certText1)
+                            .addComponent(schemaText1)
+                            .addComponent(privKeyText1)
+                            .addComponent(pubKeyText1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(openIDConnect1)
-                                .addComponent(openID1))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(scrollPanelLayout.createSequentialGroup()
-                                    .addComponent(oAuthv1)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(browserID1))
-                                .addGroup(scrollPanelLayout.createSequentialGroup()
-                                    .addComponent(oAuthv2)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(saml1)))
-                            .addGap(0, 0, Short.MAX_VALUE))
-                        .addGroup(scrollPanelLayout.createSequentialGroup()
-                            .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(certLabel1)
-                                .addComponent(schemaLabel1)
-                                .addComponent(privKeyLabel1)
-                                .addComponent(pubKeyLabel1))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(certText1)
-                                .addComponent(schemaText1)
-                                .addComponent(privKeyText1)
-                                .addComponent(pubKeyText1))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(schemaOpen1, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(certOpen1, javax.swing.GroupLayout.Alignment.TRAILING))
-                                .addComponent(privKeyOpen1)
-                                .addComponent(pubKeyOpen1)))
-                        .addGroup(scrollPanelLayout.createSequentialGroup()
-                            .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(scriptOutLabel1)
-                                .addComponent(scriptInLabel1))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(scriptOutText1)
-                                .addComponent(scriptInText1))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(scriptInOpen1, javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(scriptOutOpen1, javax.swing.GroupLayout.Alignment.TRAILING)))
-                        .addComponent(scriptingDescription1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(scrollPanelLayout.createSequentialGroup()
-                            .addComponent(extLibLabel1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(extLibSeparator1))
-                        .addGroup(scrollPanelLayout.createSequentialGroup()
-                            .addComponent(configLabel1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(configText1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(configOpen1))
-                        .addGroup(scrollPanelLayout.createSequentialGroup()
-                            .addComponent(libLabel1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(libText1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(libOpen1))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, scrollPanelLayout.createSequentialGroup()
-                            .addComponent(saveConfLabel1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(saveConfSeparator1)))
-                    .addContainerGap()))
+                                .addComponent(schemaOpen1, javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(certOpen1, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addComponent(privKeyOpen1)
+                            .addComponent(pubKeyOpen1)))
+                    .addGroup(scrollPanelLayout.createSequentialGroup()
+                        .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(scriptOutLabel1)
+                            .addComponent(scriptInLabel1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(scriptOutText1)
+                            .addComponent(scriptInText1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(scriptInOpen1, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(scriptOutOpen1, javax.swing.GroupLayout.Alignment.TRAILING)))
+                    .addComponent(scriptingDescription1, javax.swing.GroupLayout.DEFAULT_SIZE, 730, Short.MAX_VALUE)
+                    .addGroup(scrollPanelLayout.createSequentialGroup()
+                        .addComponent(extLibLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(extLibSeparator1))
+                    .addGroup(scrollPanelLayout.createSequentialGroup()
+                        .addComponent(configLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(configText1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(configOpen1))
+                    .addGroup(scrollPanelLayout.createSequentialGroup()
+                        .addComponent(libLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(libText1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(libOpen1))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, scrollPanelLayout.createSequentialGroup()
+                        .addComponent(saveConfLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(saveConfSeparator1)))
+                .addContainerGap())
         );
         scrollPanelLayout.setVerticalGroup(
             scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 470, Short.MAX_VALUE)
-            .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(scrollPanelLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(ssoLabel1)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, scrollPanelLayout.createSequentialGroup()
-                            .addGap(6, 6, 6)
-                            .addComponent(ssoSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(browserID1)
-                        .addComponent(oAuthv1)
-                        .addComponent(openID1))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(openIDConnect1)
-                        .addComponent(oAuthv2)
-                        .addComponent(saml1))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addGroup(scrollPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, scrollPanelLayout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(ssoSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(cryptoLabel1)
-                        .addComponent(cryptoSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 5, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(schemaLabel1)
-                        .addComponent(schemaText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(schemaOpen1))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(certLabel1)
-                        .addComponent(certText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(certOpen1))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(privKeyLabel1)
-                        .addComponent(privKeyText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(privKeyOpen1))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(pubKeyLabel1)
-                        .addComponent(pubKeyText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(pubKeyOpen1))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(scriptingLabel1)
-                        .addComponent(scriptingSeperator1, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(scriptingDescription1)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(scriptInLabel1)
-                        .addComponent(scriptInText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(scriptInOpen1))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(scriptOutLabel1)
-                        .addComponent(scriptOutText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(scriptOutOpen1))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(extLibLabel1)
-                        .addComponent(extLibSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(libLabel1)
-                        .addComponent(libText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(libOpen1))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(saveConfSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(saveConfLabel1))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(configLabel1)
-                        .addComponent(configText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(configOpen1))
-                    .addGap(18, 18, 18)
-                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(configApply1)
-                        .addComponent(configSave1))
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(activeSSOProtocols)
+                        .addComponent(ssoLabel1)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(browserID1)
+                    .addComponent(oAuthv1)
+                    .addComponent(openID1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(openIDConnect1)
+                    .addComponent(oAuthv2)
+                    .addComponent(saml1)
+                    .addComponent(highlightSSO))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(cryptoLabel1)
+                    .addComponent(cryptoSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 5, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(schemaLabel1)
+                    .addComponent(schemaText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(schemaOpen1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(certLabel1)
+                    .addComponent(certText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(certOpen1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(privKeyLabel1)
+                    .addComponent(privKeyText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(privKeyOpen1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(pubKeyLabel1)
+                    .addComponent(pubKeyText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pubKeyOpen1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(scriptingLabel1)
+                    .addComponent(scriptingSeperator1, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(scriptingDescription1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(scriptInLabel1)
+                    .addComponent(scriptInText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(scriptInOpen1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(scriptOutLabel1)
+                    .addComponent(scriptOutText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(scriptOutOpen1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(extLibLabel1)
+                    .addComponent(extLibSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(libLabel1)
+                    .addComponent(libText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(libOpen1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(saveConfSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(saveConfLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(configLabel1)
+                    .addComponent(configText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(configOpen1))
+                .addGap(18, 18, 18)
+                .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(configApply1)
+                    .addComponent(configSave1))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         jScrollPane.setViewportView(scrollPanel);
@@ -545,15 +570,15 @@ public class UIOptions extends JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void openID1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openID1ActionPerformed
-        openIDBool = openID1.isSelected();
+        openIDActive = openID1.isSelected();
     }//GEN-LAST:event_openID1ActionPerformed
 
     private void browserID1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browserID1ActionPerformed
-        browserIDBool = browserID1.isSelected();
+        browserIDActive = browserID1.isSelected();
     }//GEN-LAST:event_browserID1ActionPerformed
 
     private void saml1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saml1ActionPerformed
-        samlBool = saml1.isSelected();
+        samlActive = saml1.isSelected();
     }//GEN-LAST:event_saml1ActionPerformed
 
     private void schemaText1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_schemaText1ActionPerformed
@@ -697,15 +722,53 @@ public class UIOptions extends JPanel {
     }//GEN-LAST:event_scriptOutOpen1ActionPerformed
 
     private void oAuthv1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_oAuthv1ActionPerformed
-        oAuthv1Bool = oAuthv1.isSelected();
+        oAuthv1Active = oAuthv1.isSelected();
     }//GEN-LAST:event_oAuthv1ActionPerformed
 
     private void oAuthv2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_oAuthv2ActionPerformed
-        oAuthv2Bool = oAuthv2.isSelected();
+        oAuthv2Active = oAuthv2.isSelected();
     }//GEN-LAST:event_oAuthv2ActionPerformed
+
+    private void highlightSSOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_highlightSSOActionPerformed
+        highlightBool = highlightSSO.isSelected();
+    }//GEN-LAST:event_highlightSSOActionPerformed
+
+    private void activeSSOProtocolsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_activeSSOProtocolsActionPerformed
+        boolean selected = activeSSOProtocols.isSelected();
+        if(selected){
+            oAuthv1.setEnabled(true);
+            oAuthv2.setEnabled(true);
+            saml1.setEnabled(true);
+            openID1.setEnabled(true);
+            openIDConnect1.setEnabled(true);
+            browserID1.setEnabled(true);
+            
+            oAuthv1Active = oAuthv1.isSelected();
+            oAuthv2Active = oAuthv2.isSelected();
+            samlActive = saml1.isSelected();
+            openIDActive = openID1.isSelected();
+            openIDConnectActive = openIDConnect1.isSelected();
+            browserIDActive = browserID1.isSelected();
+        } else {
+            oAuthv1.setEnabled(false);
+            oAuthv2.setEnabled(false);
+            saml1.setEnabled(false);
+            openID1.setEnabled(false);
+            openIDConnect1.setEnabled(false);
+            browserID1.setEnabled(false);
+            
+            oAuthv1Active = false;
+            oAuthv2Active = false;
+            samlActive = false;
+            openIDActive = false;
+            openIDConnectActive = false;
+            browserIDActive = false;
+        }
+    }//GEN-LAST:event_activeSSOProtocolsActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox activeSSOProtocols;
     private javax.swing.JCheckBox browserID1;
     private javax.swing.JLabel certLabel1;
     private javax.swing.JButton certOpen1;
@@ -719,6 +782,7 @@ public class UIOptions extends JPanel {
     private javax.swing.JSeparator cryptoSeparator1;
     private javax.swing.JLabel extLibLabel1;
     private javax.swing.JSeparator extLibSeparator1;
+    private javax.swing.JCheckBox highlightSSO;
     private javax.swing.JScrollPane jScrollPane;
     private javax.swing.JLabel libLabel1;
     private javax.swing.JButton libOpen1;

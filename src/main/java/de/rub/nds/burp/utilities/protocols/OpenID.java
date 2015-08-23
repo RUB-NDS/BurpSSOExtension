@@ -22,7 +22,12 @@ import burp.IBurpExtenderCallbacks;
 import burp.IHttpRequestResponse;
 import burp.IParameter;
 import burp.IRequestInfo;
+import de.rub.nds.burp.utilities.Encoding;
+import static de.rub.nds.burp.utilities.protocols.SSOProtocol.getIDOfLastList;
+import static de.rub.nds.burp.utilities.protocols.SSOProtocol.newProtocolflowID;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -30,30 +35,98 @@ import java.util.List;
  */
 public class OpenID extends SSOProtocol{
     
-    private IHttpRequestResponse ihrr; 
+    private String return_to = "";
 
     public OpenID(IParameter param, IBurpExtenderCallbacks callbacks, String protocol, IHttpRequestResponse ihrr) {
         super(param, callbacks);
         super.setProtocol(protocol);
-        this.ihrr = ihrr;
-        super.setID(findID());                
+        super.setMessage(ihrr);
+        super.setToken(findID());                
+    }
+    
+    public OpenID(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
+        super(message, protocol, callbacks);
+        super.setToken(findID());
+        super.setProtocolflowID(analyseProtocol());
+        add(this, getProtocolflowID());
     }
 
     @Override
     public String decode(String input) {
-        return super.getCallbacks().getHelpers().urlDecode(input);
+        if(Encoding.isURLEncoded(input)){
+            return super.getCallbacks().getHelpers().urlDecode(input);
+        }
+        return input;
     }
 
     @Override
     public String findID() {
-          IRequestInfo iri = super.getCallbacks().getHelpers().analyzeRequest(ihrr);
+          IRequestInfo iri = super.getCallbacks().getHelpers().analyzeRequest(super.getMessage());
           List<IParameter> list = iri.getParameters();
+          String id = "Not Found!";
           for(IParameter p : list){
-              if(p.getName().equals(SSOProtocol.OPENID_ID)){
-                  return decode(p.getValue());
+              if(p.getName().equals("openid.identity")){
+                  id = decode(p.getValue());
+                  continue;
+              }
+              if(p.getName().equals("openid.return_to")){
+                  return_to = p.getValue();
               }
           }
-          return "Not Found!";
+          return id;
+    }
+    
+    private String findReturnTo(IHttpRequestResponse message){
+        IRequestInfo iri = super.getCallbacks().getHelpers().analyzeRequest(message);
+          List<IParameter> list = iri.getParameters();
+          String returnTo = null;
+          for(IParameter p : list){
+              if(p.getName().equals("openid.return_to")){
+                  returnTo = p.getValue();
+                  break;
+              }
+          }
+          return returnTo;
+    }
+
+    @Override
+    public int analyseProtocol() {
+        printOut("\nAnalyse: "+getProtocol()+" with ID: "+getToken());
+        ArrayList<SSOProtocol> last_protocolflow = SSOProtocol.getLastProtocolFlow();
+        if(last_protocolflow != null){
+            double listsize = (double) last_protocolflow.size();
+            double protocol = 0;
+            double token = 0;
+            double traffic = 0;
+            for(SSOProtocol sso : last_protocolflow){
+                if(sso.getProtocol().substring(0, 5).equals(this.getProtocol().substring(0, 5))){
+                    printOut(sso.getProtocol());
+                    protocol++;
+                }
+                if(sso.getToken().equals(this.getToken())){
+                    printOut(sso.getToken());
+                    token++;
+                }
+                String returnTo = findReturnTo(sso.getMessage());
+                if(returnTo != null){
+                    if(return_to.equals(returnTo)){
+                        printOut(returnTo);
+                        traffic++;
+                    }
+                }
+                
+            }
+            
+            if(listsize >= 0){
+                double prob = ((protocol/listsize)+(token/listsize)+(traffic/listsize))/3;
+                printOut("Probability: "+prob);
+                if(prob >= 0.7){
+                    return getIDOfLastList();
+                }
+            }
+            
+        }
+        return newProtocolflowID();
     }
 
 }
