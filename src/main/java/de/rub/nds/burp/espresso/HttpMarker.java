@@ -29,6 +29,7 @@ import de.rub.nds.burp.espresso.gui.UIOptions;
 import static de.rub.nds.burp.utilities.ParameterUtilities.getFirstParameterByName;
 import static de.rub.nds.burp.utilities.ParameterUtilities.parameterListContainsParameterName;
 import de.rub.nds.burp.utilities.protocols.BrowserID;
+import de.rub.nds.burp.utilities.protocols.OAuth;
 import de.rub.nds.burp.utilities.protocols.OpenID;
 import de.rub.nds.burp.utilities.protocols.SAML;
 import de.rub.nds.burp.utilities.protocols.SSOProtocol;
@@ -52,6 +53,9 @@ import java.util.regex.Pattern;
 
 public class HttpMarker implements IHttpListener {
     
+        private IHttpRequestResponse prev_message = null;
+        private boolean oauth_code_requested = false;
+    
         private static int counter = 1;
 
 	private String[] OPENID_TOKEN_PARAMETER = {"openid.return_to"};
@@ -60,8 +64,14 @@ public class HttpMarker implements IHttpListener {
             new String[]{"openid.claimed_id", "openid.op_endpoint"}
 	));
 
-	private static final Set<String> IN_REQUEST_OAUTH_TOKEN_PARAMETER = new HashSet<String>(Arrays.asList(
-            new String[]{"redirect_uri", "scope", "client_id"}
+	private static final Set<String> IN_REQUEST_OAUTH_PARAMETER = new HashSet<String>(Arrays.asList(
+            new String[]{"redirect_uri", "scope", "client_id", "client_secret",  "response_type"}
+	));
+        private static final Set<String> IN_REQUEST_OAUTH_AUTH_CODE_GRANT_PARAMETER = new HashSet<String>(Arrays.asList(
+            new String[]{"grant_type", "response_type"}
+	));
+        private static final Set<String> IN_REQUEST_OAUTH_IMPLICIT_PARAMETER = new HashSet<String>(Arrays.asList(
+            new String[]{"access_token", "response_type"}
 	));
 
 	private static final Set<String> IN_REQUEST_SAML_TOKEN_PARAMETER = new HashSet<String>(Arrays.asList(
@@ -107,22 +117,23 @@ public class HttpMarker implements IHttpListener {
 	public void processHttpMessage(int toolFlag, boolean isRequest, IHttpRequestResponse httpRequestResponse) {
             // only flag messages sent/received by the proxy
             if (toolFlag == IBurpExtenderCallbacks.TOOL_PROXY && !isRequest) {
-                    TableEntry entry = processHttpRequest(httpRequestResponse);
+                    TableEntry entry = processSSOScan(httpRequestResponse);
                     if(entry != null){
                         updateTables(entry);
                     }
                     
-                    processHttpResponse(httpRequestResponse);
+                    processLoginPossibilities(httpRequestResponse);
+                    prev_message = httpRequestResponse;
             }
 	}
 
-	private void processHttpResponse(IHttpRequestResponse httpRequestResponse) {
+	private void processLoginPossibilities(IHttpRequestResponse httpRequestResponse) {
             final byte[] responseBytes = httpRequestResponse.getResponse();
             IResponseInfo responseInfo = helpers.analyzeResponse(responseBytes);
             checkRequestForOpenIdLoginMetadata(responseInfo, httpRequestResponse);
 	}
 
-	private TableEntry processHttpRequest(IHttpRequestResponse httpRequestResponse) {
+	private TableEntry processSSOScan(IHttpRequestResponse httpRequestResponse) {
             IRequestInfo requestInfo = helpers.analyzeRequest(httpRequestResponse);
             if(UIOptions.openIDActive){
                 SSOProtocol protocol = checkRequestForOpenId(requestInfo, httpRequestResponse);
@@ -132,7 +143,11 @@ public class HttpMarker implements IHttpListener {
                 }
             }
             if(UIOptions.oAuthv1Active || UIOptions.oAuthv2Active){
-                checkRequestHasOAuthParameters(requestInfo, httpRequestResponse);
+                SSOProtocol protocol = checkRequestHasOAuthParameters(requestInfo, httpRequestResponse);
+                if(protocol != null){
+                    protocol.setCounter(counter++);
+                    return protocol.toTableEntry();
+                }
             }
             if(UIOptions.samlActive){
                 SSOProtocol protocol = checkRequestForSaml(requestInfo, httpRequestResponse);
@@ -189,10 +204,103 @@ public class HttpMarker implements IHttpListener {
             return null;
 	}
 
-	private void checkRequestHasOAuthParameters(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
-            if (parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_OAUTH_TOKEN_PARAMETER)) {
-                markRequestResponse(httpRequestResponse, "OAuth", HIGHLIGHT_COLOR);
+	private SSOProtocol checkRequestHasOAuthParameters(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
+            OAuth oauth = null;
+            String comment = "OAuth";
+            if (parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_OAUTH_PARAMETER)) {
+                oauth =  new OAuth(httpRequestResponse, "OAuth", callbacks);
+                
+                if(parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_OAUTH_AUTH_CODE_GRANT_PARAMETER)){
+                    if(null != prev_message){
+                        IResponseInfo prev_responseInfo = helpers.analyzeResponse(prev_message.getResponse());
+                        //Check for OAuth Authorization Code Grant Request
+                        if(prev_responseInfo.getStatusCode() == 302){
+                            String pre_response = helpers.bytesToString(prev_message.getResponse());
+                            String request = helpers.bytesToString(httpRequestResponse.getRequest());
+                            if(!oauth_code_requested){
+                                Pattern p = Pattern.compile("&?response_type=code&?");
+                                Matcher pre_m = p.matcher(pre_response);
+                                Matcher m = p.matcher(request);
+                                if(m.find() || pre_m.find()){
+                                    comment = "OAuth ACG Request";
+                                    oauth_code_requested = true;
+                                }
+                            } else {
+                                // Check for OAuth Authorization Code Grant Code
+                                Pattern p = Pattern.compile("\\??&?code.*?&");
+                                Matcher pre_m = p.matcher(pre_response);
+                                Matcher m = p.matcher(request);
+                                if(m.find() || pre_m.find()){
+                                    comment = "OAuth ACG Code";
+                                    oauth_code_requested = false;
+                                }
+                                //Check for OAuth Authorization Code Grant Token Request
+                                p = Pattern.compile("grant_type=auth_code");
+                                m = p.matcher(request);
+                                if(m.find()){
+                                    comment = "OAuth ACG Token Request";
+                                }
+                            }
+                        }
+                    } else {
+                        //Check for other OAuth flows
+                        IParameter grant_type = helpers.getRequestParameter(httpRequestResponse.getRequest(), "grant_type");
+                        switch(grant_type.getValue()){
+                            case "authorization_code":
+                                comment = "OAuth Access Token Request";
+                                break;
+                            case "refresh_token":
+                                comment = "OAuth Refresh Token Request";
+                                break;
+                            case "password":
+                                comment = "OAuth Resource Owner Password Credentials Grant";
+                                break;
+                            case "client_credentials":
+                                comment = "OAuth Client Credentials Grant";
+                                break;
+                            case "urn:ietf:params:oauth:grant-type:jwt-bearer":
+                                comment = "OAuth Extension JWT Grant";
+                                break;
+                            case "urn:oasis:names:tc:SAML:2.0:cm:bearer":
+                                comment = "OAuth Extension SAML Grant";
+                                break;
+                            default:
+                                comment = "OAuth ACGF";
+                        }
+                    }
+                } else if(parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_OAUTH_IMPLICIT_PARAMETER)){
+                    if(null != prev_message){
+                        IResponseInfo prev_responseInfo = helpers.analyzeResponse(prev_message.getResponse());
+                        //Check for OAuth Implicit Grant Request
+                        if(prev_responseInfo.getStatusCode() == 302){
+                            String pre_response = helpers.bytesToString(prev_message.getResponse());
+                            String request = helpers.bytesToString(httpRequestResponse.getRequest());
+                            Pattern p = Pattern.compile("&?response_type=token&?");
+                            Matcher pre_m = p.matcher(pre_response);
+                            Matcher m = p.matcher(request);
+                            if(m.find() || pre_m.find()){
+                                comment = "OAuth Implicit Grant Request";
+                                oauth_code_requested = true;
+                            }
+                        }
+                    }
+                    // Check for OAuth Implicit Token
+                    if(helpers.analyzeResponse(httpRequestResponse.getResponse()).getStatusCode() == 302){
+                        String response = helpers.bytesToString(httpRequestResponse.getResponse());
+                        // Check for OAuth Implicit Token
+                        Pattern p = Pattern.compile("Location:.*?#.*?access_token=.*?&?");
+                        Matcher m = p.matcher(response);
+                        if(m.find()){
+                            comment = "OAuth Implicit Token";
+                            oauth_code_requested = false;
+                        }
+                    } else {
+                        comment = "OAuth (IF)";
+                    }
+                }
             }
+            markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
+            return oauth;
 	}
 
 	private SSOProtocol checkRequestForSaml(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
@@ -215,6 +323,7 @@ public class HttpMarker implements IHttpListener {
                 final int bodyOffset = responseInfo.getBodyOffset();
 		final String responseBody = (new String(responseBytes)).substring(bodyOffset);
                 final String response = helpers.bytesToString(responseBytes);
+                final String request = helpers.bytesToString(httpRequestResponse.getResponse());
                 
                 Pattern p = Pattern.compile("=[\"'][^\"']*openid[^\"']*[\"']", Pattern.CASE_INSENSITIVE);
                 Matcher m = p.matcher(responseBody);
@@ -226,6 +335,14 @@ public class HttpMarker implements IHttpListener {
                 }
                 p = Pattern.compile("rel=\"openid(.server|.delegate|2.provider|2.local_id)\"", Pattern.CASE_INSENSITIVE);
                 m = p.matcher(responseBody);
+                if (m.find()) {
+                    markRequestResponse(httpRequestResponse, "OpenID Metadata", "green");
+                    IRequestInfo iri = helpers.analyzeRequest(httpRequestResponse);
+                    callbacks.issueAlert("OpenID Login on: "+iri.getUrl().toString());
+                    return true;
+                }
+                p = Pattern.compile("openid(.server|.delegate|2.provider|2.local_id|.click)", Pattern.CASE_INSENSITIVE);
+                m = p.matcher(request);
                 if (m.find()) {
                     markRequestResponse(httpRequestResponse, "OpenID Metadata", "green");
                     IRequestInfo iri = helpers.analyzeRequest(httpRequestResponse);

@@ -257,4 +257,14 @@ public abstract class SSOProtocol {
     public ArrayList<SSOProtocol> get(int i){
         return protocolDB.get(i);
     }
+    
+    public boolean updateProtocols(String protocol){
+        if(protocolflow != null){
+            for(SSOProtocol sso : protocolflow){
+                sso.setProtocol(protocol);
+            }
+            return true;
+        }
+        return false;
+    }
 }
