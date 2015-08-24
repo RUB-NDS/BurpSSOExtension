@@ -31,6 +31,7 @@ import static de.rub.nds.burp.utilities.ParameterUtilities.parameterListContains
 import de.rub.nds.burp.utilities.protocols.BrowserID;
 import de.rub.nds.burp.utilities.protocols.OAuth;
 import de.rub.nds.burp.utilities.protocols.OpenID;
+import de.rub.nds.burp.utilities.protocols.OpenIDConnect;
 import de.rub.nds.burp.utilities.protocols.SAML;
 import de.rub.nds.burp.utilities.protocols.SSOProtocol;
 import de.rub.nds.burp.utilities.table.Table;
@@ -135,8 +136,8 @@ public class ScanAndMarkSSO implements IHttpListener {
 
 	private TableEntry processSSOScan(IHttpRequestResponse httpRequestResponse) {
             IRequestInfo requestInfo = helpers.analyzeRequest(httpRequestResponse);
-            if(UIOptions.openIDActive){
-                SSOProtocol protocol = checkRequestForOpenId(requestInfo, httpRequestResponse);
+            if(UIOptions.openIDConnectActive){
+                SSOProtocol protocol = checkRequestForOpenIdConnect(requestInfo, httpRequestResponse);
                 if(protocol != null){
                     protocol.setCounter(counter++);
                     return protocol.toTableEntry();
@@ -144,6 +145,13 @@ public class ScanAndMarkSSO implements IHttpListener {
             }
             if(UIOptions.oAuthv1Active || UIOptions.oAuthv2Active){
                 SSOProtocol protocol = checkRequestHasOAuthParameters(requestInfo, httpRequestResponse);
+                if(protocol != null){
+                    protocol.setCounter(counter++);
+                    return protocol.toTableEntry();
+                }
+            }
+            if(UIOptions.openIDActive){
+                SSOProtocol protocol = checkRequestForOpenId(requestInfo, httpRequestResponse);
                 if(protocol != null){
                     protocol.setCounter(counter++);
                     return protocol.toTableEntry();
@@ -163,9 +171,6 @@ public class ScanAndMarkSSO implements IHttpListener {
                     return protocol.toTableEntry();
                 }
             }
-            if(UIOptions.openIDConnectActive){
-                //TODO OpenID Connect
-            }
             return null;
 	}
         
@@ -178,6 +183,68 @@ public class ScanAndMarkSSO implements IHttpListener {
                 t.update();
             }
         }
+        
+        private SSOProtocol checkRequestForOpenIdConnect(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
+            final List<IParameter> parameterList = requestInfo.getParameters();
+            String request = helpers.bytesToString(httpRequestResponse.getRequest());
+            String response = helpers.bytesToString(httpRequestResponse.getResponse());
+            OpenIDConnect oidc = null;
+            String comment = "";
+            if(null != prev_message){
+                IResponseInfo prev_responseInfo = helpers.analyzeResponse(prev_message.getResponse());
+                //Check for OpenID Connect Authorization Code Flow Request
+                if(helpers.analyzeResponse(httpRequestResponse.getResponse()).getStatusCode() == 302){
+                    Pattern p1 = Pattern.compile("&?response_type=code&?", Pattern.CASE_INSENSITIVE);
+                    Pattern p2 = Pattern.compile("scope.{0,20}openid", Pattern.CASE_INSENSITIVE);
+                    Matcher m1 = p1.matcher(response);
+                    Matcher m2 = p2.matcher(response);
+                    if(m1.find() && m2.find()){
+                        comment = "OpenID Connect ACF Request";
+                        markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
+                        oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
+                    }
+                }
+                if(prev_responseInfo.getStatusCode() == 302 && oidc == null){
+                    String pre_response = helpers.bytesToString(prev_message.getResponse());
+                    
+                    Pattern p = Pattern.compile("&?response_type=code&?", Pattern.CASE_INSENSITIVE);
+                    Matcher pre_m = p.matcher(pre_response);
+                    Matcher m = p.matcher(request);
+                    if(m.find() || pre_m.find()){
+                        IParameter scope = helpers.getRequestParameter(httpRequestResponse.getRequest(), "scope");
+                        if(scope != null){
+                            p = Pattern.compile("openid", Pattern.CASE_INSENSITIVE);
+                            m = p.matcher(request);
+                            p = Pattern.compile("scope.{0,20}openid", Pattern.CASE_INSENSITIVE);
+                            pre_m = p.matcher(pre_response);
+                            if(m.find() && pre_m.find()){
+                                comment = "OpenID Connect ACF Request";
+                                markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
+                                oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
+                            }
+                        } else {
+                            p = Pattern.compile("scope.{0,20}openid", Pattern.CASE_INSENSITIVE);
+                            m = p.matcher(request);
+                            if(m.find()){
+                                comment = "OpenID Connect";
+                                markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
+                                oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
+                            }
+                        }
+                    }
+                } 
+            }
+            if(oidc == null){
+                Pattern p = Pattern.compile("code=[a-zA-Z0-9]*", Pattern.CASE_INSENSITIVE);
+                Matcher m = p.matcher(request);
+                if(m.find()){
+                    comment = "OpenID Connect / OAuth";
+                    markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
+                    oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
+                }
+            }
+            return oidc;
+	}
 
 	private SSOProtocol checkRequestForOpenId(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
             final List<IParameter> parameterList = requestInfo.getParameters();
@@ -218,7 +285,7 @@ public class ScanAndMarkSSO implements IHttpListener {
                             String pre_response = helpers.bytesToString(prev_message.getResponse());
                             String request = helpers.bytesToString(httpRequestResponse.getRequest());
                             if(!oauth_code_requested){
-                                Pattern p = Pattern.compile("&?response_type=code&?");
+                                Pattern p = Pattern.compile("&?response_type=code&?", Pattern.CASE_INSENSITIVE);
                                 Matcher pre_m = p.matcher(pre_response);
                                 Matcher m = p.matcher(request);
                                 if(m.find() || pre_m.find()){
@@ -227,7 +294,7 @@ public class ScanAndMarkSSO implements IHttpListener {
                                 }
                             } else {
                                 // Check for OAuth Authorization Code Grant Code
-                                Pattern p = Pattern.compile("\\??&?code.*?&");
+                                Pattern p = Pattern.compile("code=[a-zA-Z0-9]*", Pattern.CASE_INSENSITIVE);
                                 Matcher pre_m = p.matcher(pre_response);
                                 Matcher m = p.matcher(request);
                                 if(m.find() || pre_m.find()){
@@ -235,7 +302,7 @@ public class ScanAndMarkSSO implements IHttpListener {
                                     oauth_code_requested = false;
                                 }
                                 //Check for OAuth Authorization Code Grant Token Request
-                                p = Pattern.compile("grant_type=auth_code");
+                                p = Pattern.compile("grant_type=auth_code", Pattern.CASE_INSENSITIVE);
                                 m = p.matcher(request);
                                 if(m.find()){
                                     comment = "OAuth ACG Token Request";
@@ -275,7 +342,7 @@ public class ScanAndMarkSSO implements IHttpListener {
                         if(prev_responseInfo.getStatusCode() == 302){
                             String pre_response = helpers.bytesToString(prev_message.getResponse());
                             String request = helpers.bytesToString(httpRequestResponse.getRequest());
-                            Pattern p = Pattern.compile("&?response_type=token&?");
+                            Pattern p = Pattern.compile("&?response_type=token&?", Pattern.CASE_INSENSITIVE);
                             Matcher pre_m = p.matcher(pre_response);
                             Matcher m = p.matcher(request);
                             if(m.find() || pre_m.find()){
@@ -288,7 +355,7 @@ public class ScanAndMarkSSO implements IHttpListener {
                     if(helpers.analyzeResponse(httpRequestResponse.getResponse()).getStatusCode() == 302){
                         String response = helpers.bytesToString(httpRequestResponse.getResponse());
                         // Check for OAuth Implicit Token
-                        Pattern p = Pattern.compile("Location:.*?#.*?access_token=.*?&?");
+                        Pattern p = Pattern.compile("Location:.*?#.*?access_token=.*?&?", Pattern.CASE_INSENSITIVE);
                         Matcher m = p.matcher(response);
                         if(m.find()){
                             comment = "OAuth Implicit Token";
