@@ -1,7 +1,8 @@
 # EsPReSSO
 ![build](https://img.shields.io/badge/Build-success-brightgreen.svg)
 ![licence](https://img.shields.io/badge/License-GPLv2-brightgreen.svg)
-[[![release](https://img.shields.io/badge/Release-v1.4.0-blue.svg)](https://github.com/RUB-NDS/BurpSSOExtension-Development/releases)](https://img.shields.io/badge/Release-v1.4.0-blue.svg)
+[![release](https://img.shields.io/badge/Release-v1.4.5-blue.svg)](https://github.com/RUB-NDS/BurpSSOExtension-Development/releases)
+
 ## Extension for Processing and Recognition of Single Sign-On Protocols
 
 The extension is based on the BurpSSO Extension, developed by the [Chair of Network and Data Security, Ruhr University 
@@ -16,7 +17,7 @@ Supported Protocols:
 - [x] OpenID
 - [x] OAuth
 - [x] BrowserId
-- [ ] OpenID Connect
+- [x] OpenID Connect (40%)
 
 ### Attacking
 - [ ] scripting API
