@@ -270,7 +270,7 @@ public class ScanAndMarkSSO implements IHttpListener {
                 } 
             }
             if(oidc == null){
-                Pattern p = Pattern.compile("code=[a-zA-Z0-9]*", Pattern.CASE_INSENSITIVE);
+                Pattern p = Pattern.compile("code=[a-zA-Z0-9]*|&scope=[a-zA-Z0-9+]*?openid[a-zA-Z0-9+]*?&", Pattern.CASE_INSENSITIVE);
                 Matcher m = p.matcher(request);
                 if(m.find()){
                     comment = "OpenID Connect / OAuth";

@@ -38,8 +38,6 @@ import java.util.regex.Pattern;
  */
 public class OpenIDConnect extends SSOProtocol{
 
-    private IHttpRequestResponse ihrr;
-
     public OpenIDConnect(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
         super(message, protocol, callbacks);
         super.setToken(findID());
@@ -73,10 +71,18 @@ public class OpenIDConnect extends SSOProtocol{
                 id = p.getValue();
             }
         }
-        if(!id.equals("Not Found!")){
-            String response = super.getCallbacks().getHelpers().bytesToString(getMessage().getResponse());
+        if(id.equals("Not Found!")){
+            String response = getHelpers().bytesToString(getMessage().getResponse());
             Pattern pat = Pattern.compile("client_id=(.*?)\\\\u0026");
             Matcher m = pat.matcher(response);
+            if(m.find()){
+                id = m.group(1);
+            }
+        }
+        if(id.equals("Not Found!")){
+            String request = getHelpers().bytesToString(getMessage().getRequest());
+            Pattern pat = Pattern.compile("state=(.*?)&");
+            Matcher m = pat.matcher(request);
             if(m.find()){
                 id = m.group(1);
             }
