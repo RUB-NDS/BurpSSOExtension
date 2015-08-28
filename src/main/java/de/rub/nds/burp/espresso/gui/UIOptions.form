@@ -68,15 +68,18 @@
                               </Group>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="facebookConnect" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="oAuth" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" attributes="0">
-                                      <Component id="oAuthv1" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
                                       <Component id="browserID1" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="msAccount" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" attributes="0">
-                                      <Component id="oAuthv2" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
                                       <Component id="saml1" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="32767" attributes="0"/>
                                       <Component id="highlightSSO" min="-2" max="-2" attributes="0"/>
@@ -169,14 +172,17 @@
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="browserID1" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="oAuthv1" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="oAuth" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="browserID1" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="msAccount" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
                           <Component id="openID1" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="openIDConnect1" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="oAuthv2" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="facebookConnect" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="saml1" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="highlightSSO" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
@@ -291,30 +297,30 @@
                 <Property name="toolTipText" type="java.lang.String" value="Disable/Enable OpenID Connect"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JCheckBox" name="oAuthv1">
+            <Component class="javax.swing.JCheckBox" name="oAuth">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
                 <Property name="selected" type="boolean" value="true"/>
-                <Property name="text" type="java.lang.String" value="OAuth v1.0"/>
+                <Property name="text" type="java.lang.String" value="OAuth"/>
                 <Property name="toolTipText" type="java.lang.String" value="Disable/Enable OAuth v1.0"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="oAuthv1ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="oAuthActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JCheckBox" name="oAuthv2">
+            <Component class="javax.swing.JCheckBox" name="facebookConnect">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
                 <Property name="selected" type="boolean" value="true"/>
-                <Property name="text" type="java.lang.String" value="OAuth v2.0"/>
+                <Property name="text" type="java.lang.String" value="FacebookConnect"/>
                 <Property name="toolTipText" type="java.lang.String" value="Disable/Enable OAuth v2.0"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="oAuthv2ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="facebookConnectActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JCheckBox" name="browserID1">
@@ -679,6 +685,19 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="activeSSOProtocolsActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="msAccount">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Dialog" size="12" style="0"/>
+                </Property>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="text" type="java.lang.String" value="Microsoft Account"/>
+                <Property name="toolTipText" type="java.lang.String" value="Disable/Enable BrowserID"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="msAccountActionPerformed"/>
               </Events>
             </Component>
           </SubComponents>

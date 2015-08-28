@@ -39,8 +39,9 @@ public class UIOptions extends JPanel {
     public static boolean openIDActive=true;
     public static boolean openIDConnectActive=true;
     public static boolean browserIDActive=true;
-    public static boolean oAuthv1Active=true;
-    public static boolean oAuthv2Active=true;
+    public static boolean oAuthActive=true;
+    public static boolean facebookConnectActive=true;
+    public static boolean msAccountActive=true;
     public static boolean highlightBool=true;
     
     
@@ -67,8 +68,8 @@ public class UIOptions extends JPanel {
         ssoLabel1 = new javax.swing.JLabel();
         openID1 = new javax.swing.JCheckBox();
         openIDConnect1 = new javax.swing.JCheckBox();
-        oAuthv1 = new javax.swing.JCheckBox();
-        oAuthv2 = new javax.swing.JCheckBox();
+        oAuth = new javax.swing.JCheckBox();
+        facebookConnect = new javax.swing.JCheckBox();
         browserID1 = new javax.swing.JCheckBox();
         saml1 = new javax.swing.JCheckBox();
         highlightSSO = new javax.swing.JCheckBox();
@@ -108,6 +109,7 @@ public class UIOptions extends JPanel {
         configSave1 = new javax.swing.JButton();
         configApply1 = new javax.swing.JButton();
         activeSSOProtocols = new javax.swing.JCheckBox();
+        msAccount = new javax.swing.JCheckBox();
 
         ssoLabel1.setText("Active SSO Protocols");
 
@@ -126,23 +128,23 @@ public class UIOptions extends JPanel {
         openIDConnect1.setText("OpenID Connect");
         openIDConnect1.setToolTipText("Disable/Enable OpenID Connect");
 
-        oAuthv1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        oAuthv1.setSelected(true);
-        oAuthv1.setText("OAuth v1.0");
-        oAuthv1.setToolTipText("Disable/Enable OAuth v1.0");
-        oAuthv1.addActionListener(new java.awt.event.ActionListener() {
+        oAuth.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        oAuth.setSelected(true);
+        oAuth.setText("OAuth");
+        oAuth.setToolTipText("Disable/Enable OAuth v1.0");
+        oAuth.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                oAuthv1ActionPerformed(evt);
+                oAuthActionPerformed(evt);
             }
         });
 
-        oAuthv2.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        oAuthv2.setSelected(true);
-        oAuthv2.setText("OAuth v2.0");
-        oAuthv2.setToolTipText("Disable/Enable OAuth v2.0");
-        oAuthv2.addActionListener(new java.awt.event.ActionListener() {
+        facebookConnect.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        facebookConnect.setSelected(true);
+        facebookConnect.setText("FacebookConnect");
+        facebookConnect.setToolTipText("Disable/Enable OAuth v2.0");
+        facebookConnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                oAuthv2ActionPerformed(evt);
+                facebookConnectActionPerformed(evt);
             }
         });
 
@@ -371,6 +373,16 @@ public class UIOptions extends JPanel {
             }
         });
 
+        msAccount.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        msAccount.setSelected(true);
+        msAccount.setText("Microsoft Account");
+        msAccount.setToolTipText("Disable/Enable BrowserID");
+        msAccount.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                msAccountActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout scrollPanelLayout = new javax.swing.GroupLayout(scrollPanel);
         scrollPanel.setLayout(scrollPanelLayout);
         scrollPanelLayout.setHorizontalGroup(
@@ -403,14 +415,16 @@ public class UIOptions extends JPanel {
                             .addComponent(openID1))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(facebookConnect)
+                            .addComponent(oAuth))
+                        .addGap(18, 18, 18)
+                        .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(scrollPanelLayout.createSequentialGroup()
-                                .addComponent(oAuthv1)
-                                .addGap(18, 18, 18)
                                 .addComponent(browserID1)
+                                .addGap(18, 18, 18)
+                                .addComponent(msAccount)
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(scrollPanelLayout.createSequentialGroup()
-                                .addComponent(oAuthv2)
-                                .addGap(18, 18, 18)
                                 .addComponent(saml1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(highlightSSO))))
@@ -481,13 +495,15 @@ public class UIOptions extends JPanel {
                         .addComponent(ssoLabel1)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(browserID1)
-                    .addComponent(oAuthv1)
+                    .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(oAuth)
+                        .addComponent(browserID1)
+                        .addComponent(msAccount))
                     .addComponent(openID1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(openIDConnect1)
-                    .addComponent(oAuthv2)
+                    .addComponent(facebookConnect)
                     .addComponent(saml1)
                     .addComponent(highlightSSO))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -721,13 +737,13 @@ public class UIOptions extends JPanel {
         }
     }//GEN-LAST:event_scriptOutOpen1ActionPerformed
 
-    private void oAuthv1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_oAuthv1ActionPerformed
-        oAuthv1Active = oAuthv1.isSelected();
-    }//GEN-LAST:event_oAuthv1ActionPerformed
+    private void oAuthActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_oAuthActionPerformed
+        oAuthActive = oAuth.isSelected();
+    }//GEN-LAST:event_oAuthActionPerformed
 
-    private void oAuthv2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_oAuthv2ActionPerformed
-        oAuthv2Active = oAuthv2.isSelected();
-    }//GEN-LAST:event_oAuthv2ActionPerformed
+    private void facebookConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_facebookConnectActionPerformed
+        facebookConnectActive = facebookConnect.isSelected();
+    }//GEN-LAST:event_facebookConnectActionPerformed
 
     private void highlightSSOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_highlightSSOActionPerformed
         highlightBool = highlightSSO.isSelected();
@@ -736,35 +752,43 @@ public class UIOptions extends JPanel {
     private void activeSSOProtocolsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_activeSSOProtocolsActionPerformed
         boolean selected = activeSSOProtocols.isSelected();
         if(selected){
-            oAuthv1.setEnabled(true);
-            oAuthv2.setEnabled(true);
+            oAuth.setEnabled(true);
+            facebookConnect.setEnabled(true);
             saml1.setEnabled(true);
             openID1.setEnabled(true);
             openIDConnect1.setEnabled(true);
             browserID1.setEnabled(true);
+            msAccount.setEnabled(true);
             
-            oAuthv1Active = oAuthv1.isSelected();
-            oAuthv2Active = oAuthv2.isSelected();
+            oAuthActive = oAuth.isSelected();
+            facebookConnectActive = facebookConnect.isSelected();
             samlActive = saml1.isSelected();
             openIDActive = openID1.isSelected();
             openIDConnectActive = openIDConnect1.isSelected();
             browserIDActive = browserID1.isSelected();
+            msAccountActive = msAccount.isSelected();
         } else {
-            oAuthv1.setEnabled(false);
-            oAuthv2.setEnabled(false);
+            oAuth.setEnabled(false);
+            facebookConnect.setEnabled(false);
             saml1.setEnabled(false);
             openID1.setEnabled(false);
             openIDConnect1.setEnabled(false);
             browserID1.setEnabled(false);
+            msAccount.setEnabled(false);
             
-            oAuthv1Active = false;
-            oAuthv2Active = false;
+            oAuthActive = false;
+            facebookConnectActive = false;
             samlActive = false;
             openIDActive = false;
             openIDConnectActive = false;
             browserIDActive = false;
+            msAccountActive = false;
         }
     }//GEN-LAST:event_activeSSOProtocolsActionPerformed
+
+    private void msAccountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_msAccountActionPerformed
+        msAccountActive = msAccount.isSelected();
+    }//GEN-LAST:event_msAccountActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -782,13 +806,14 @@ public class UIOptions extends JPanel {
     private javax.swing.JSeparator cryptoSeparator1;
     private javax.swing.JLabel extLibLabel1;
     private javax.swing.JSeparator extLibSeparator1;
+    private javax.swing.JCheckBox facebookConnect;
     private javax.swing.JCheckBox highlightSSO;
     private javax.swing.JScrollPane jScrollPane;
     private javax.swing.JLabel libLabel1;
     private javax.swing.JButton libOpen1;
     private javax.swing.JTextField libText1;
-    private javax.swing.JCheckBox oAuthv1;
-    private javax.swing.JCheckBox oAuthv2;
+    private javax.swing.JCheckBox msAccount;
+    private javax.swing.JCheckBox oAuth;
     private javax.swing.JCheckBox openID1;
     private javax.swing.JCheckBox openIDConnect1;
     private javax.swing.JLabel privKeyLabel1;
