@@ -57,10 +57,6 @@ public class OAuth extends SSOProtocol{
             if(p.getName().equals(OAUTH_ID)){
                 return decode(p.getValue());
             }
-            if(p.getName().equals(OAUTH_ID_FACEBOOK)){
-                setProtocol(getProtocol()+" Facebook");
-                return decode(p.getValue());
-            }
         }
         String response = super.getCallbacks().getHelpers().bytesToString(getMessage().getResponse());
         Pattern p = Pattern.compile("client_id=(.*?)\\\\u0026");
@@ -86,7 +82,7 @@ public class OAuth extends SSOProtocol{
             boolean wait = true;
             
             for(SSOProtocol sso : last_protocolflow){
-                if(sso.getProtocol().substring(0, 4).equals(this.getProtocol().substring(0, 4))){
+                if(sso.getProtocol().contains(this.getProtocol())){
                     printOut(sso.getProtocol());
                     protocol++;
                 }

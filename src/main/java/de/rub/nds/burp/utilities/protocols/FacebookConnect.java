@@ -18,10 +18,100 @@
  */
 package de.rub.nds.burp.utilities.protocols;
 
+import burp.IBurpExtenderCallbacks;
+import burp.IHttpRequestResponse;
+import burp.IParameter;
+import burp.IRequestInfo;
+import static de.rub.nds.burp.utilities.protocols.SSOProtocol.OAUTH_ID;
+import static de.rub.nds.burp.utilities.protocols.SSOProtocol.OAUTH_ID_FACEBOOK;
+import static de.rub.nds.burp.utilities.protocols.SSOProtocol.getIDOfLastList;
+import static de.rub.nds.burp.utilities.protocols.SSOProtocol.newProtocolflowID;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author Tim Guenther
  */
-public class FacebookConnect {
+public class FacebookConnect extends SSOProtocol{
+    
+    public FacebookConnect(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
+        super(message, protocol, callbacks);
+        super.setToken(findID());
+        super.setProtocolflowID(analyseProtocol());
+        add(this, getProtocolflowID());
+    }
+
+    @Override
+    public int analyseProtocol() {
+        printOut("\nAnalyse: "+getProtocol()+" with ID: "+getToken());
+        ArrayList<SSOProtocol> last_protocolflow = SSOProtocol.getLastProtocolFlow();
+        if(last_protocolflow != null){
+            double listsize = (double) last_protocolflow.size();
+            double protocol = 0;
+            double token = 0;
+            
+            long tmp = 0;
+            long curr_time = 0;
+            long last_time = 0;
+            boolean wait = true;
+            
+            for(SSOProtocol sso : last_protocolflow){
+                if(sso.getProtocol().contains(this.getProtocol())){
+                    printOut(sso.getProtocol());
+                    protocol++;
+                }
+                if(sso.getToken().equals(this.getToken())){
+                    printOut(sso.getToken());
+                    token++;
+                }
+                if(wait){
+                    wait = false;
+                } else {
+                    curr_time = sso.getTimestamp();
+                    tmp += curr_time-last_time;
+                    printOut("Diff: "+(curr_time-last_time));
+                }
+                last_time = sso.getTimestamp();
+            }
+            
+            if(listsize >= 0){
+                double diff_time = ((double)tmp/listsize);
+                double curr_diff_time = getTimestamp() - last_protocolflow.get(last_protocolflow.size()-1).getTimestamp();
+                double time_bonus = 0;
+                printOut("CurrDiff:"+curr_diff_time+" Diff:"+diff_time);
+                if(curr_diff_time <= (diff_time+4000)){
+                    time_bonus = 0.35;
+                }
+                double prob = ((protocol/listsize)+(token/listsize)*2)/3+(time_bonus);
+                printOut("Probability: "+prob);
+                if(prob >= 0.7){
+                    return getIDOfLastList();
+                }
+            }
+            
+        }
+        return newProtocolflowID();
+    }
+
+    @Override
+    public String decode(String input) {
+        return getHelpers().urlDecode(input);
+    }
+
+    @Override
+    public String findID() {
+        IRequestInfo iri = super.getCallbacks().getHelpers().analyzeRequest(getMessage());
+        List<IParameter> list = iri.getParameters();
+        for(IParameter p : list){
+            if(p.getName().equals(OAUTH_ID)){
+                return decode(p.getValue());
+            }
+            if(p.getName().equals(OAUTH_ID_FACEBOOK)){
+                return decode(p.getValue());
+            }
+        }
+        return "Not Found!";
+    }
     
 }

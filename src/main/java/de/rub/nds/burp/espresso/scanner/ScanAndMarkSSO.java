@@ -29,6 +29,8 @@ import de.rub.nds.burp.espresso.gui.UIOptions;
 import static de.rub.nds.burp.utilities.ParameterUtilities.getFirstParameterByName;
 import static de.rub.nds.burp.utilities.ParameterUtilities.parameterListContainsParameterName;
 import de.rub.nds.burp.utilities.protocols.BrowserID;
+import de.rub.nds.burp.utilities.protocols.FacebookConnect;
+import de.rub.nds.burp.utilities.protocols.MicrosoftAccount;
 import de.rub.nds.burp.utilities.protocols.OAuth;
 import de.rub.nds.burp.utilities.protocols.OpenID;
 import de.rub.nds.burp.utilities.protocols.OpenIDConnect;
@@ -86,6 +88,15 @@ public class ScanAndMarkSSO implements IHttpListener {
 	private static final Set<String> IN_REQUEST_BROWSERID_PARAMETER = new HashSet<String>(Arrays.asList(
             new String[]{"browserid_state", "assertion"}
 	));
+        
+        private static final Set<String> IN_REQUEST_FACEBOOKCONNECT_PARAMETER = new HashSet<String>(Arrays.asList(
+            new String[]{"app_id", "domain", "origin",  "sdk"}
+	));
+        
+        //Monolitic protocol hosts
+        private final String FBC_HOST = "facebook.com";
+        private final String MSA_HOST = "live.com";
+        private final String BID_HOST = "persona.org";
 
 	private static final String HIGHLIGHT_COLOR = "yellow";
 	private static final String MIMETYPE_HTML = "HTML";
@@ -136,35 +147,44 @@ public class ScanAndMarkSSO implements IHttpListener {
 
 	private TableEntry processSSOScan(IHttpRequestResponse httpRequestResponse) {
             IRequestInfo requestInfo = helpers.analyzeRequest(httpRequestResponse);
-            
+            String host = requestInfo.getUrl().getHost();
             //The order is very important!
-            if(UIOptions.openIDConnectActive){
-                SSOProtocol protocol = checkRequestForOpenIdConnect(requestInfo, httpRequestResponse);
-                if(protocol != null){
-                    protocol.setCounter(counter++);
-                    return protocol.toTableEntry();
+            if(UIOptions.facebookConnectActive){
+                if(host.contains(FBC_HOST)){
+                    SSOProtocol protocol = checkRequestForFacebookConnect(requestInfo, httpRequestResponse);
+                    if(protocol != null){
+                        protocol.setCounter(counter++);
+                        return protocol.toTableEntry();
+                    }
                 }
             }
-            //ToDo:
-            if(UIOptions.facebookConnectActive){
-//                SSOProtocol protocol = checkRequestForFacebookConnect(requestInfo, httpRequestResponse);
-//                if(protocol != null){
-//                    protocol.setCounter(counter++);
-//                    return protocol.toTableEntry();
-//                }
-            }
             if(UIOptions.msAccountActive){
-//                SSOProtocol protocol = checkRequestForMicrosoftAccount(requestInfo, httpRequestResponse);
-//                if(protocol != null){
-//                    protocol.setCounter(counter++);
-//                    return protocol.toTableEntry();
-//                }
+                if(host.contains(MSA_HOST)){
+                    SSOProtocol protocol = checkRequestForMicrosoftAccount(requestInfo, httpRequestResponse);
+                    if(protocol != null){
+                        protocol.setCounter(counter++);
+                        return protocol.toTableEntry();
+                    }
+                }
+            }
+            if(UIOptions.openIDConnectActive){
+                //Exclude all monolithic protocols
+                if(!host.contains(FBC_HOST) || !host.contains(MSA_HOST) || !host.contains(BID_HOST)){
+                    SSOProtocol protocol = checkRequestForOpenIdConnect(requestInfo, httpRequestResponse);
+                    if(protocol != null){
+                        protocol.setCounter(counter++);
+                        return protocol.toTableEntry();
+                    }
+                }
             }
             if(UIOptions.oAuthActive){
-                SSOProtocol protocol = checkRequestHasOAuthParameters(requestInfo, httpRequestResponse);
-                if(protocol != null){
-                    protocol.setCounter(counter++);
-                    return protocol.toTableEntry();
+                //Exclude all monolithic protocols
+                if(!host.contains(FBC_HOST) || !host.contains(MSA_HOST) || !host.contains(BID_HOST)){
+                    SSOProtocol protocol = checkRequestForOAuth(requestInfo, httpRequestResponse);
+                    if(protocol != null){
+                        protocol.setCounter(counter++);
+                        return protocol.toTableEntry();
+                    }
                 }
             }
             if(UIOptions.openIDActive){
@@ -258,7 +278,7 @@ public class ScanAndMarkSSO implements IHttpListener {
                                 oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
                             }
                         } else {
-                            p = Pattern.compile("scope.{0,20}openid", Pattern.CASE_INSENSITIVE);
+                            p = Pattern.compile("scope=.*?openid", Pattern.CASE_INSENSITIVE);
                             m = p.matcher(request);
                             if(m.find()){
                                 comment = "OpenID Connect";
@@ -275,7 +295,7 @@ public class ScanAndMarkSSO implements IHttpListener {
                 if(m.find()){
                     comment = "OpenID Connect / OAuth";
                     markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
-                    oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
+                    oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect / OAuth", callbacks);
                 } else if(null != helpers.getRequestParameter(httpRequestResponse.getRequest(), "id_token")){
                     comment = "OpenID Connect Implicit Flow Response";
                     markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
@@ -330,11 +350,81 @@ public class ScanAndMarkSSO implements IHttpListener {
 	}
         
         private SSOProtocol checkRequestForFacebookConnect(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
-            return null;
+            String comment = "";
+            FacebookConnect fbc = null;
+            if((requestInfo.getUrl().toString()).contains("/ping?")){
+                comment = "Facebook Connect Ping Request";
+                fbc = new FacebookConnect(httpRequestResponse, "Facebook Connect", callbacks);
+            }
+            if(null != helpers.getRequestParameter(httpRequestResponse.getRequest(), "signed_request") && fbc == null){
+                comment = "Facebook Connect Authentication Request";
+                fbc = new FacebookConnect(httpRequestResponse, "Facebook Connect", callbacks);
+            }
+            if(null != helpers.getRequestParameter(httpRequestResponse.getRequest(), "response_type") && fbc == null){
+                IParameter respose_type = helpers.getRequestParameter(httpRequestResponse.getRequest(), "response_type");
+                if(respose_type.getValue().contains("signed_request") && fbc == null){
+                    comment = "Facebook Connect Authentication Response";
+                    fbc = new FacebookConnect(httpRequestResponse, "Facebook Connect", callbacks);
+                }
+            }
+            if(parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_FACEBOOKCONNECT_PARAMETER) && fbc == null){
+                comment = "Facebook Connect";
+                fbc = new FacebookConnect(httpRequestResponse, "Facebook Connect", callbacks);
+            } else {
+                SSOProtocol possible_oauth = checkRequestForOAuth(requestInfo,httpRequestResponse);
+                if(null != possible_oauth && fbc == null){
+                    comment = "Facebook Connect";
+                    fbc = new FacebookConnect(httpRequestResponse, "Facebook Connect", callbacks);
+                }
+            }
+
+            if(fbc != null){
+                markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
+            }
+            return fbc;
         }
         
         private SSOProtocol checkRequestForMicrosoftAccount(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
-            return null;
+            String comment = "";
+            MicrosoftAccount msa = null;
+            IParameter scope = helpers.getRequestParameter(httpRequestResponse.getRequest(), "scope");
+            if(scope != null){
+                String scope_value = scope.getValue();
+                Pattern p = Pattern.compile("wl\\.basic|wl\\.offline_access|wl\\.signin");
+                Matcher m = p. matcher(scope_value);
+                if(m.find()){
+                    comment = "Microsoft Account with OAuth";
+                    msa = new MicrosoftAccount(httpRequestResponse, "Microsoft Account", callbacks);
+                }
+                if(scope_value.contains("openid")){
+                    SSOProtocol possible_oidc = checkRequestForOpenIdConnect(requestInfo, httpRequestResponse);
+                    if(possible_oidc != null){
+                        comment = "Micrsoft Account";
+                        msa = new MicrosoftAccount(httpRequestResponse, "Microsoft Account", callbacks);
+                    }
+                }
+            }
+            
+            if(msa == null){
+                IParameter wa = helpers.getRequestParameter(httpRequestResponse.getRequest(), "wa");
+                if(wa != null){
+                    if(wa.getValue().equals("wsignin1.0")){
+                        comment = "Microsoft Account with WS-Federation";
+                        msa = new MicrosoftAccount(httpRequestResponse, "Microsoft Account", callbacks);
+                    }
+                } else {
+                    SSOProtocol possible_oauth = checkRequestForOAuth(requestInfo,httpRequestResponse);
+                    if(null != possible_oauth && msa == null){
+                        comment = "Microsoft Account";
+                        msa = new MicrosoftAccount(httpRequestResponse, "Microsoft Account", callbacks);
+                    }
+                }
+            }
+            
+            if(msa != null){
+                markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
+            }
+            return msa;
         }
 
 	private SSOProtocol checkRequestForOpenId(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
@@ -362,7 +452,7 @@ public class ScanAndMarkSSO implements IHttpListener {
             return null;
 	}
 
-	private SSOProtocol checkRequestHasOAuthParameters(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
+	private SSOProtocol checkRequestForOAuth(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
             OAuth oauth = null;
             String comment = "OAuth";
             if (parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_OAUTH_PARAMETER)) {
@@ -403,27 +493,29 @@ public class ScanAndMarkSSO implements IHttpListener {
                     } else {
                         //Check for other OAuth flows
                         IParameter grant_type = helpers.getRequestParameter(httpRequestResponse.getRequest(), "grant_type");
-                        switch(grant_type.getValue()){
-                            case "authorization_code":
-                                comment = "OAuth Access Token Request";
-                                break;
-                            case "refresh_token":
-                                comment = "OAuth Refresh Token Request";
-                                break;
-                            case "password":
-                                comment = "OAuth Resource Owner Password Credentials Grant";
-                                break;
-                            case "client_credentials":
-                                comment = "OAuth Client Credentials Grant";
-                                break;
-                            case "urn:ietf:params:oauth:grant-type:jwt-bearer":
-                                comment = "OAuth Extension JWT Grant";
-                                break;
-                            case "urn:oasis:names:tc:SAML:2.0:cm:bearer":
-                                comment = "OAuth Extension SAML Grant";
-                                break;
-                            default:
-                                comment = "OAuth ACGF";
+                        if(grant_type != null){
+                            switch(grant_type.getValue()){
+                                case "authorization_code":
+                                    comment = "OAuth Access Token Request";
+                                    break;
+                                case "refresh_token":
+                                    comment = "OAuth Refresh Token Request";
+                                    break;
+                                case "password":
+                                    comment = "OAuth Resource Owner Password Credentials Grant";
+                                    break;
+                                case "client_credentials":
+                                    comment = "OAuth Client Credentials Grant";
+                                    break;
+                                case "urn:ietf:params:oauth:grant-type:jwt-bearer":
+                                    comment = "OAuth Extension JWT Grant";
+                                    break;
+                                case "urn:oasis:names:tc:SAML:2.0:cm:bearer":
+                                    comment = "OAuth Extension SAML Grant";
+                                    break;
+                                default:
+                                    comment = "OAuth ACGF";
+                            }
                         }
                     }
                 } else if(parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_OAUTH_IMPLICIT_PARAMETER)){
@@ -529,9 +621,12 @@ public class ScanAndMarkSSO implements IHttpListener {
         
 	private SSOProtocol checkRequestForBrowserId(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
             final List<IParameter> parameterList = requestInfo.getParameters();
-            if (parameterListContainsParameterName(parameterList, IN_REQUEST_BROWSERID_PARAMETER)) {
-                markRequestResponse(httpRequestResponse, "BrowserID", HIGHLIGHT_COLOR);
-                return new BrowserID(httpRequestResponse, "BrowserID", callbacks);
+            String host = requestInfo.getUrl().getHost();
+            if(host.contains("persona.org")){
+                if (parameterListContainsParameterName(parameterList, IN_REQUEST_BROWSERID_PARAMETER)) {
+                    markRequestResponse(httpRequestResponse, "BrowserID", HIGHLIGHT_COLOR);
+                    return new BrowserID(httpRequestResponse, "BrowserID", callbacks);
+                }
             }
             return null;
 	}
@@ -546,6 +641,5 @@ public class ScanAndMarkSSO implements IHttpListener {
             } else {
                     httpRequestResponse.setComment(message);
             }
-
 	}
 }
