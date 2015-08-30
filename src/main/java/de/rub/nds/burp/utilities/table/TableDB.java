@@ -76,6 +76,15 @@ public abstract class TableDB {
         return true;
     }
     
+    public static boolean clear(){
+        try{
+            tableList.clear();
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+    
     /**
      * 
      * @return The count of the tables.

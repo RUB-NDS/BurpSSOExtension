@@ -40,6 +40,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -103,6 +104,7 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
         //context menu
         ssoHistoryTable.addMouseListener(new TableMouseListener(ssoHistoryTable));
         JPopupMenu menu = new JPopupMenu();
+        JPopupMenu.Separator separator = new JPopupMenu.Separator();
         JMenuItem item = new JMenuItem("Follow SSO Protocol");
         item.addActionListener(new ActionListener() {
 
@@ -115,6 +117,52 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
                 SSOProtocol sso = entry.getSSOProtocol();
                 
                 addNewTable(protocol+" "+(tab_counter++), new Integer(sso.getProtocolflowID()).toString(), sso);
+            }
+        });
+        menu.add(item);
+        menu.add(separator);
+        item = new JMenuItem("Send to Attacker");
+        item.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                JOptionPane.showMessageDialog(historyContainer,
+                            "This Action is not yet implemented!",
+                            "Warning",
+                            JOptionPane.WARNING_MESSAGE);
+            }
+        });
+        menu.add(item);
+        separator = new JPopupMenu.Separator();
+        menu.add(separator);
+        item = new JMenuItem("Add Selected to Table");
+        item.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                JOptionPane.showMessageDialog(historyContainer,
+                            "This Action is not yet implemented!",
+                            "Warning",
+                            JOptionPane.WARNING_MESSAGE);
+            }
+        });
+        menu.add(item);
+        item = new JMenuItem("Clear History");
+        item.addActionListener(new ActionListener() {
+
+            //TODO
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                JOptionPane.showMessageDialog(historyContainer,
+                            "This Action is not yet implemented!",
+                            "Warning",
+                            JOptionPane.WARNING_MESSAGE);
+//                for(int i = 1; i <= TableDB.size(); i++){
+//                    Table t = TableDB.getTable(i);
+//                    historyContainer.removeTabAt(historyContainer.indexOfTab(t.getName()));
+//                    t.getTableHelper().clear();
+//                }
+//                TableDB.clear();
             }
         });
         menu.add(item);

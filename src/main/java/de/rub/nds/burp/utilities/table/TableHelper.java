@@ -63,6 +63,16 @@ public class TableHelper extends AbstractTableModel{
         return true;
     }
     
+    public boolean clear(){
+        try{
+            list.clear();
+            fireTableDataChanged();
+        } catch(Exception e) {
+            return false;
+        }
+        return true;
+    }
+    
     /**
      * 
      * @return Number of rows.
