@@ -19,10 +19,8 @@
 package de.rub.nds.burp.utilities.protocols;
 
 import burp.IBurpExtenderCallbacks;
-import burp.IExtensionHelpers;
 import burp.IHttpRequestResponse;
 import burp.IParameter;
-import de.rub.nds.burp.espresso.attacker.SSOAttacker;
 import de.rub.nds.burp.utilities.Compression;
 import de.rub.nds.burp.utilities.Encoding;
 import java.io.IOException;
