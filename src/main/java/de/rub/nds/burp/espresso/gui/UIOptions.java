@@ -18,10 +18,22 @@
  */
 package de.rub.nds.burp.espresso.gui;
 
+import burp.BurpExtender;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  * The options to control the extension.
@@ -51,6 +63,201 @@ public class UIOptions extends JPanel {
      */
     public UIOptions() {
         initComponents();
+        String path = System.getProperty("user.home")+"/EsPReSSO";
+        String decoded_path = null;
+        try {
+            if(path != null){
+                decoded_path = URLDecoder.decode(path, "UTF-8");
+                if(decoded_path != null){
+                    File file = new File(decoded_path);
+                    if(!file.exists()){
+                        file.mkdir();
+                    }
+                    path = decoded_path + "/config.json";
+                    file = new File(path);                    
+                    if(!file.exists()){
+                        // First start no config created
+                        file.createNewFile();
+                        configText1.setText(path);
+                        saveConfig(path);
+                    } else {
+                        // load previous config
+                        configText1.setText(path);
+                        loadConfig(path);
+                    }
+                }
+            }
+        } catch (UnsupportedEncodingException ex) {
+            JOptionPane.showMessageDialog(this,
+                        ex.toString(),
+                        "ERROR 2",
+                        JOptionPane.ERROR_MESSAGE);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this,
+                        ex.toString(),
+                        "ERROR 2",
+                        JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void loadConfig(String path){
+        File file = new File(path);
+        if(!file.exists()){
+            JOptionPane.showMessageDialog(this,
+                        "The config file does not exist!",
+                        "File does not exist",
+                        JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(!file.isDirectory() && file.canRead()){
+            JSONParser parser = new JSONParser();
+            try {
+                FileReader fr = new FileReader(file);
+                JSONObject json_conf = (JSONObject) parser.parse(fr);
+                
+                openIDActive = (boolean) json_conf.get("OpenIDActive");
+                openID1.setSelected(openIDActive);
+                openIDConnectActive = (boolean) json_conf.get("OpenIDConnectActive");
+                openIDConnect1.setSelected(openIDConnectActive);
+                oAuthActive = (boolean) json_conf.get("OAuthActive");
+                oAuth.setSelected(oAuthActive);
+                facebookConnectActive = (boolean) json_conf.get("FacebookConnectActive");
+                facebookConnect.setSelected(facebookConnectActive);
+                browserIDActive = (boolean) json_conf.get("BrowserIDActive");
+                browserID1.setSelected(browserIDActive);
+                samlActive = (boolean) json_conf.get("SAMLActive");
+                saml1.setSelected(samlActive);
+                msAccountActive = (boolean) json_conf.get("MicrosoftAccountActive");
+                msAccount.setSelected(msAccountActive);
+                
+                boolean asp = (boolean) json_conf.get("SSOActive");
+                activeSSOProtocols.setSelected(asp);
+                if(!asp){
+                    oAuth.setEnabled(false);
+                    facebookConnect.setEnabled(false);
+                    saml1.setEnabled(false);
+                    openID1.setEnabled(false);
+                    openIDConnect1.setEnabled(false);
+                    browserID1.setEnabled(false);
+                    msAccount.setEnabled(false);
+                }
+                
+                highlightBool = (boolean) json_conf.get("HighlightActive");
+                highlightSSO.setSelected(highlightBool);
+                
+                String str = (String) json_conf.get("Schema");
+                schemaText1.setText(str);
+                str = (String) json_conf.get("Certificate");
+                certText1.setText(str);
+                str = (String) json_conf.get("Private Key");
+                privKeyText1.setText(str);
+                str = (String) json_conf.get("Public Key");
+                pubKeyText1.setText(str);
+                
+                str = (String) json_conf.get("Input Script");
+                scriptInText1.setText(str);
+                str = (String) json_conf.get("Output Script");
+                scriptOutText1.setText(str);
+                
+                str = (String) json_conf.get("Libraries");
+                libText1.setText(str);
+                
+                str = (String) json_conf.get("Config");
+                
+//                JOptionPane.showMessageDialog(this,
+//                            "The config from "+str+" is imported.",
+//                            "Import successfull",
+//                            JOptionPane.INFORMATION_MESSAGE);
+//                
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this,
+                            "Can not read the config file!\n\nError:\n"+ex.toString(),
+                            "Can not read config file",
+                            JOptionPane.ERROR_MESSAGE);
+            } catch (ParseException ex){
+                JOptionPane.showMessageDialog(this,
+                            "The content can not be parsed!\n\nError:\n"+ex.toString(),
+                            "JSON Parsing Error",
+                            JOptionPane.ERROR_MESSAGE);
+            }
+            
+        } else {
+            JOptionPane.showMessageDialog(this,
+                            "The file:\n"+path+"\n is not readable or directory.",
+                            "File not Found!",
+                            JOptionPane.ERROR_MESSAGE);
+        }
+        saveConfig(path);
+    }
+    
+    private void saveConfig(String path){
+        File file = new File(path);
+        if(!file.exists()){
+            try {
+                file.createNewFile();
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this,
+                            "Can not create the config file.",
+                            "Can not create file.",
+                            JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        if(!file.isDirectory() && file.canWrite() && file.canRead()){
+            
+            JSONObject config_obj = new JSONObject();
+            config_obj.put("SSOActive", activeSSOProtocols.isSelected());
+            config_obj.put("OpenIDActive", openID1.isSelected());
+            config_obj.put("OpenIDConnectActive", openIDConnect1.isSelected());
+            config_obj.put("OAuthActive", oAuth.isSelected());
+            config_obj.put("FacebookConnectActive", facebookConnect.isSelected());
+            config_obj.put("BrowserIDActive", browserID1.isSelected());
+            config_obj.put("SAMLActive", saml1.isSelected());
+            config_obj.put("MicrosoftAccountActive", msAccount.isSelected());
+            
+            config_obj.put("HighlightActive", highlightBool);
+            
+            config_obj.put("Schema", schemaText1.getText());
+            config_obj.put("Certificate", certText1.getText());
+            config_obj.put("Private Key", privKeyText1.getText());
+            config_obj.put("Public Key", pubKeyText1.getText());
+            
+            config_obj.put("Input Script", scriptInText1.getText());
+            config_obj.put("Output Script", scriptOutText1.getText());
+            
+            config_obj.put("Libraries", libText1.getText());
+            
+            config_obj.put("Config", path);
+            
+            try {
+                FileWriter fw = new FileWriter(file);
+                try{
+                    fw.write(config_obj.toJSONString());
+//                    JOptionPane.showMessageDialog(this,
+//                                "The config is now saved.",
+//                                "Saved successfully.",
+//                                JOptionPane.INFORMATION_MESSAGE);
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(this,
+                                "The config file can not be written!\n\nError:\n"+ex.toString(),
+                                "Can not write in config file",
+                                JOptionPane.ERROR_MESSAGE);
+                } finally {
+                    fw.flush();
+                    fw.close();
+                }
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this,
+                            "Can not open the config file!\n\nError:\n"+ex.toString(),
+                            "Can not open config file",
+                            JOptionPane.ERROR_MESSAGE);
+            }
+            
+        } else {
+            JOptionPane.showMessageDialog(this,
+                            "The file:\n"+path+"\n is not readable/writable.",
+                            "File not Found!",
+                            JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -104,12 +311,12 @@ public class UIOptions extends JPanel {
         saveConfSeparator1 = new javax.swing.JSeparator();
         saveConfLabel1 = new javax.swing.JLabel();
         configLabel1 = new javax.swing.JLabel();
-        configText1 = new javax.swing.JTextField();
-        configOpen1 = new javax.swing.JButton();
+        configText1 = new javax.swing.JLabel();
         configSave1 = new javax.swing.JButton();
-        configApply1 = new javax.swing.JButton();
+        configImport = new javax.swing.JButton();
         activeSSOProtocols = new javax.swing.JCheckBox();
         msAccount = new javax.swing.JCheckBox();
+        configApply = new javax.swing.JButton();
 
         ssoLabel1.setText("Active SSO Protocols");
 
@@ -322,30 +529,15 @@ public class UIOptions extends JPanel {
             }
         });
 
-        saveConfLabel1.setText("Save Configurations");
+        saveConfLabel1.setText("Configurations");
 
         configLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         configLabel1.setText("Config file:");
 
-        configText1.setToolTipText("Save the extension configuration.");
-        configText1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                configText1ActionPerformed(evt);
-            }
-        });
-
-        configOpen1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        configOpen1.setText("...");
-        configOpen1.setToolTipText("open file");
-        configOpen1.setMargin(new java.awt.Insets(0, 10, 0, 10));
-        configOpen1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                configOpen1ActionPerformed(evt);
-            }
-        });
+        configText1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
 
         configSave1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        configSave1.setText("save");
+        configSave1.setText("Export");
         configSave1.setToolTipText("Save all data to the configuration file.");
         configSave1.setMargin(new java.awt.Insets(0, 14, 0, 14));
         configSave1.addActionListener(new java.awt.event.ActionListener() {
@@ -354,12 +546,12 @@ public class UIOptions extends JPanel {
             }
         });
 
-        configApply1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        configApply1.setText("apply");
-        configApply1.setMargin(new java.awt.Insets(0, 14, 0, 14));
-        configApply1.addActionListener(new java.awt.event.ActionListener() {
+        configImport.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        configImport.setText("Import");
+        configImport.setMargin(new java.awt.Insets(0, 14, 0, 14));
+        configImport.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                configApply1ActionPerformed(evt);
+                configImportActionPerformed(evt);
             }
         });
 
@@ -383,6 +575,16 @@ public class UIOptions extends JPanel {
             }
         });
 
+        configApply.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        configApply.setText("Apply");
+        configApply.setToolTipText("Save all data to the configuration file.");
+        configApply.setMargin(new java.awt.Insets(0, 14, 0, 14));
+        configApply.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                configApplyActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout scrollPanelLayout = new javax.swing.GroupLayout(scrollPanel);
         scrollPanel.setLayout(scrollPanelLayout);
         scrollPanelLayout.setHorizontalGroup(
@@ -390,11 +592,6 @@ public class UIOptions extends JPanel {
             .addGroup(scrollPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, scrollPanelLayout.createSequentialGroup()
-                        .addGap(534, 594, Short.MAX_VALUE)
-                        .addComponent(configApply1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(configSave1))
                     .addGroup(scrollPanelLayout.createSequentialGroup()
                         .addComponent(ssoLabel1)
                         .addGap(2, 2, 2)
@@ -459,7 +656,7 @@ public class UIOptions extends JPanel {
                         .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(scriptInOpen1, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(scriptOutOpen1, javax.swing.GroupLayout.Alignment.TRAILING)))
-                    .addComponent(scriptingDescription1, javax.swing.GroupLayout.DEFAULT_SIZE, 730, Short.MAX_VALUE)
+                    .addComponent(scriptingDescription1, javax.swing.GroupLayout.DEFAULT_SIZE, 772, Short.MAX_VALUE)
                     .addGroup(scrollPanelLayout.createSequentialGroup()
                         .addComponent(extLibLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -468,8 +665,7 @@ public class UIOptions extends JPanel {
                         .addComponent(configLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(configText1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(configOpen1))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(scrollPanelLayout.createSequentialGroup()
                         .addComponent(libLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -479,7 +675,15 @@ public class UIOptions extends JPanel {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, scrollPanelLayout.createSequentialGroup()
                         .addComponent(saveConfLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(saveConfSeparator1)))
+                        .addComponent(saveConfSeparator1))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, scrollPanelLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, scrollPanelLayout.createSequentialGroup()
+                                .addComponent(configImport)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(configSave1))
+                            .addComponent(configApply, javax.swing.GroupLayout.Alignment.TRAILING))))
                 .addContainerGap())
         );
         scrollPanelLayout.setVerticalGroup(
@@ -562,13 +766,14 @@ public class UIOptions extends JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(configLabel1)
-                    .addComponent(configText1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(configOpen1))
+                    .addComponent(configText1))
                 .addGap(18, 18, 18)
                 .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(configApply1)
+                    .addComponent(configImport)
                     .addComponent(configSave1))
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(configApply)
+                .addContainerGap(43, Short.MAX_VALUE))
         );
 
         jScrollPane.setViewportView(scrollPanel);
@@ -577,7 +782,7 @@ public class UIOptions extends JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane)
+            .addComponent(jScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 757, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -686,30 +891,33 @@ public class UIOptions extends JPanel {
         }
     }//GEN-LAST:event_libOpen1ActionPerformed
 
-    private void configText1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configText1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_configText1ActionPerformed
-
-    private void configOpen1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configOpen1ActionPerformed
+    private void configSave1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configSave1ActionPerformed
         fc = new JFileChooser();
+        File file;
         int returnVal = fc.showOpenDialog(this);
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-           config = fc.getSelectedFile();
-           configText1.setText(config.getPath());
+           file = fc.getSelectedFile();
         } else {
-            JOptionPane.showMessageDialog(this,"The selected file could not be found","File not found",JOptionPane.ERROR_MESSAGE);
-            configText1.setText("File not found");
+            return;
         }
-    }//GEN-LAST:event_configOpen1ActionPerformed
-
-    private void configSave1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configSave1ActionPerformed
-        // TODO add your handling code here:
+        String path = file.getPath();
+        saveConfig(path);
     }//GEN-LAST:event_configSave1ActionPerformed
 
-    private void configApply1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configApply1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_configApply1ActionPerformed
+    private void configImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configImportActionPerformed
+        fc = new JFileChooser();
+        File file;
+        int returnVal = fc.showOpenDialog(this);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+           file = fc.getSelectedFile();
+        } else {
+            return;
+        }
+        String path = file.getPath();
+        loadConfig(path);
+    }//GEN-LAST:event_configImportActionPerformed
 
     private void certOpen1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_certOpen1ActionPerformed
         fc = new JFileChooser();
@@ -790,6 +998,10 @@ public class UIOptions extends JPanel {
         msAccountActive = msAccount.isSelected();
     }//GEN-LAST:event_msAccountActionPerformed
 
+    private void configApplyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configApplyActionPerformed
+        saveConfig(configText1.getText());
+    }//GEN-LAST:event_configApplyActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox activeSSOProtocols;
@@ -797,11 +1009,11 @@ public class UIOptions extends JPanel {
     private javax.swing.JLabel certLabel1;
     private javax.swing.JButton certOpen1;
     private javax.swing.JTextField certText1;
-    private javax.swing.JButton configApply1;
+    private javax.swing.JButton configApply;
+    private javax.swing.JButton configImport;
     private javax.swing.JLabel configLabel1;
-    private javax.swing.JButton configOpen1;
     private javax.swing.JButton configSave1;
-    private javax.swing.JTextField configText1;
+    private javax.swing.JLabel configText1;
     private javax.swing.JLabel cryptoLabel1;
     private javax.swing.JSeparator cryptoSeparator1;
     private javax.swing.JLabel extLibLabel1;
