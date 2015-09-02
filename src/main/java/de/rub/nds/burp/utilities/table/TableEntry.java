@@ -42,7 +42,9 @@ public class TableEntry {
     private String length = "";
     private String comment = "";
     private IHttpRequestResponsePersisted fullMessage = null;
-    private SSOProtocol ssoProtocol = null;
+    private SSOProtocol ssoProtocol = null; 
+    private IBurpExtenderCallbacks callbacks;
+    private IExtensionHelpers helpers;
 
     /**
      * Construct a new table entry.
@@ -53,7 +55,8 @@ public class TableEntry {
      * @param callbacks Helper provided by the Burp Suite api.
      */
     public TableEntry(String counter, String protocol, String token, IHttpRequestResponsePersisted requestResponse, IBurpExtenderCallbacks callbacks) {
-        IExtensionHelpers helpers = callbacks.getHelpers();
+        this.callbacks = callbacks;
+        this.helpers = callbacks.getHelpers();
         
         this.counter = counter;
         this.protocol = protocol;
@@ -70,7 +73,8 @@ public class TableEntry {
     }
     
     public TableEntry(SSOProtocol ssoProtocol, IBurpExtenderCallbacks callbacks) {
-        IExtensionHelpers helpers = callbacks.getHelpers();
+        this.callbacks = callbacks;
+        this.helpers = callbacks.getHelpers();
         
         this.counter = ""+ssoProtocol.getCounter();
         this.protocol = ssoProtocol.getProtocol();

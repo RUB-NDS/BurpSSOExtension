@@ -21,7 +21,6 @@ package de.rub.nds.burp.utilities.protocols;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IHttpRequestResponse;
-import burp.IParameter;
 import de.rub.nds.burp.utilities.table.Table;
 import de.rub.nds.burp.utilities.table.TableEntry;
 import de.rub.nds.burp.utilities.table.TableHelper;
@@ -77,9 +76,6 @@ public abstract class SSOProtocol {
     private IExtensionHelpers helpers;
     private PrintWriter stdout;
     private PrintWriter stderr;
-    
-    public SSOProtocol(){        
-    }
 
     public SSOProtocol(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
         this.message = message;
