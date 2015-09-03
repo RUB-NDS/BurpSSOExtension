@@ -24,6 +24,7 @@ import de.rub.nds.burp.espresso.editor.JSONEditor;
 import de.rub.nds.burp.espresso.editor.JWTEditor;
 import de.rub.nds.burp.espresso.editor.SamlRequestEditor;
 import de.rub.nds.burp.espresso.editor.SamlResponseEditor;
+import de.rub.nds.burp.utilities.Logging;
 import java.io.PrintWriter;
 
 
@@ -41,7 +42,8 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener{
     public static final String EXTENSION_NAME = "EsPReSSO";
     
     private UITab tab;
-    private PrintWriter stdout;
+    public static PrintWriter stdout;
+    public static PrintWriter stderr;
     
     /**
      * Register all new functions like for the internals and GUI.
@@ -55,8 +57,9 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener{
         //set extension name - ExPReSSO - Extension for Processing and Recognition of Single Sign-On
         callbacks.setExtensionName(EXTENSION_NAME);
         
-        //optain output stream
+        //optain streams
         stdout = new PrintWriter(callbacks.getStdout(), true);
+        stderr = new PrintWriter(callbacks.getStderr(), true);
         
         //register a new Tab
         tab = new UITab(callbacks);
@@ -66,9 +69,14 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener{
 	callbacks.registerHttpListener(scanAndMark);
 	callbacks.registerMessageEditorTabFactory(new SamlResponseEditor(callbacks));
 	callbacks.registerMessageEditorTabFactory(new SamlRequestEditor(callbacks));
+        
+        //New Editors
         callbacks.registerMessageEditorTabFactory(new JSONEditor(callbacks));
         callbacks.registerMessageEditorTabFactory(new JWTEditor(callbacks));
         callbacks.registerExtensionStateListener(this);
+        
+        //Start logging
+        Logging.getInstance().log(getClass().getName(), "All functions registered.", false);
     }
     /**
      * Print a notification on the standard output when extension is unloaded.
@@ -76,7 +84,7 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener{
 
     @Override
     public void extensionUnloaded() {
-        stdout.println("Extension is now unloaded.");
+        Logging.getInstance().log(getClass().getName(), "Extension is now unloaded.", false);
     }
  
 }

@@ -23,6 +23,7 @@ import burp.IHttpRequestResponse;
 import burp.IParameter;
 import de.rub.nds.burp.utilities.Compression;
 import de.rub.nds.burp.utilities.Encoding;
+import de.rub.nds.burp.utilities.Logging;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -138,26 +139,30 @@ public class SAML extends SSOProtocol{
 
     @Override
     public int analyseProtocol() {
-        printOut("\nAnalyse: "+getProtocol()+" with ID: "+getToken());
+        //printOut("\nAnalyse: "+getProtocol()+" with ID: "+getToken());
+        Logging.getInstance().log(getClass().getName(), "Analyse: "+getProtocol()+" with ID: "+getToken(), false);
         ArrayList<SSOProtocol> last_protocolflow = SSOProtocol.getLastProtocolFlow();
         if(last_protocolflow != null){
             double listsize = (double) last_protocolflow.size();
             double protocol = 0;
             double token = 0;
-            printOut("Size:"+listsize);
+            //printOut("Size:"+listsize);
+            String protocols = "";
             for(SSOProtocol sso : last_protocolflow){
                 if(sso.getProtocol().equals(this.getProtocol())){
-                    printOut(sso.getProtocol());
+                    protocols += sso.getProtocol()+" ";
                     protocol++;
                 }
                 if(sso.getToken().equals(this.getToken())){
-                    printOut(sso.getToken());
+                    //printOut(sso.getToken());
                     token++;
-                } 
+                }
             }
+            Logging.getInstance().log(getClass().getName(), "("+protocols+")", false);
             if(listsize >= 0){
                 double prob = ((protocol/listsize)*2+(token/listsize))/3;
-                printOut("Probability: "+prob);
+                //printOut("Probability: "+prob);
+                Logging.getInstance().log(getClass().getName(), "Probability: "+prob, false);
                 if(prob >= 0.7){
                     return getIDOfLastList();
                 }
