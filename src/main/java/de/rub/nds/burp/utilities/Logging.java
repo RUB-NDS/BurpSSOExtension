@@ -48,6 +48,7 @@ public class Logging {
         LocalTime t = LocalTime.now();
         String time = t.toString().substring(0, t.toString().length()-4);
         if(error){
+            stdout.println(time+" - ["+tag+"]:\t"+"An Error happend, see Error tab.");
             stderr.println(time+" - ["+tag+"]:\t"+message);
         } else {
             stdout.println(time+" - ["+tag+"]:\t"+message);
