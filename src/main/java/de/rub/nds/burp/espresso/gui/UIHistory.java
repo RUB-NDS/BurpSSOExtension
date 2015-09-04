@@ -23,6 +23,7 @@ import burp.IHttpRequestResponse;
 import burp.IHttpService;
 import burp.IMessageEditor;
 import burp.IMessageEditorController;
+import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.protocols.SSOProtocol;
 import de.rub.nds.burp.utilities.table.Table;
 import de.rub.nds.burp.utilities.table.TableDB;
@@ -116,7 +117,7 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
                 TableEntry entry = (TableEntry) ssoHistoryTable.getTableEntry(row);
                 SSOProtocol sso = entry.getSSOProtocol();
                 
-                addNewTable(protocol+" "+(tab_counter++), new Integer(sso.getProtocolflowID()).toString(), sso);
+                addNewTable(protocol+" "+(tab_counter++), (new Integer(sso.getProtocolflowID())).toString(), sso);
             }
         });
         menu.add(item);
@@ -126,10 +127,19 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
 
             @Override
             public void actionPerformed(ActionEvent ae) {
-                JOptionPane.showMessageDialog(historyContainer,
-                            "This Action is not yet implemented!",
-                            "Warning",
-                            JOptionPane.WARNING_MESSAGE);
+                int row = ssoHistoryTable.getSelectedRow();
+                String protocol = (String) ssoHistoryTable.getValueAt(row, 1);
+                
+                TableEntry entry = (TableEntry) ssoHistoryTable.getTableEntry(row);
+                SSOProtocol sso = entry.getSSOProtocol();
+                
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        new UIAttacker(sso).setVisible(true);
+                    }
+                });
             }
         });
         menu.add(item);
@@ -186,7 +196,7 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
     public boolean addNewTable(String tableName, String id, SSOProtocol sso){
         //find tables with same name
         if(TableDB.getTable(id) != null){
-            sso.printErr("Can't create new table for "+sso.getProtocol()+" message no. "+sso.getCounter()+", table already exists.");
+            Logging.getInstance().log(getClass().getName(), "Can't create new table. Table already exists.", true);
             return false;
         }
         
@@ -243,6 +253,8 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
 
                             historyContainer.removeTabAt(index);
                             TableDB.removeTable(t);
+                            Logging.getInstance().log(getClass().getName(), "Closed Table {"+t.getName()+"}.", false);
+                            
                         }
                     }
 
@@ -292,6 +304,7 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
 //);
                 
                 TableDB.addTable(t);
+                Logging.getInstance().log(getClass().getName(), "Add the new Table {"+sso.getProtocol()+" "+tab_counter+"} as a tab.", false);
             }
         });
         
