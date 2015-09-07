@@ -21,10 +21,12 @@ package de.rub.nds.burp.espresso.editor;
 import de.rub.nds.burp.utilities.XMLHelper;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
+import burp.IInterceptedProxyMessage;
 import burp.IMessageEditorController;
 import burp.IMessageEditorTab;
 import burp.IMessageEditorTabFactory;
 import burp.IParameter;
+import burp.IProxyListener;
 import burp.ITextEditor;
 import de.rub.nds.burp.espresso.gui.UISourceViewer;
 import de.rub.nds.burp.utilities.Compression;
@@ -39,8 +41,8 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
  * @author Christian Mainka
  */
 
-public class SamlRequestEditor implements IMessageEditorTabFactory {
-
+public class SamlRequestEditor implements IMessageEditorTabFactory{
+        
 	private IBurpExtenderCallbacks callbacks;
 	private IExtensionHelpers helpers;
 
@@ -55,14 +57,14 @@ public class SamlRequestEditor implements IMessageEditorTabFactory {
 	@Override
 	public IMessageEditorTab createNewInstance(IMessageEditorController controller, boolean editable) {
 		// create a new instance of our custom editor tab
-		return new Base64InputTab(controller, editable);
+                return new Base64InputTab(controller, editable);
 	}
 
 	//
 	// class implementing IMessageEditorTab
 	//
-	class Base64InputTab implements IMessageEditorTab {
-
+	class Base64InputTab implements IMessageEditorTab{
+                
 		private boolean editable;
 		private ITextEditor txtInput;
                 private JTabbedPane editor;
@@ -119,6 +121,8 @@ public class SamlRequestEditor implements IMessageEditorTabFactory {
 				// clear our display
 				txtInput.setText(null);
 				txtInput.setEditable(false);
+                                sourceViewer.setText(null, null);
+                                editor.setEnabled(false);
 			} else {
 				// retrieve the data parameter
 				IParameter parameter;

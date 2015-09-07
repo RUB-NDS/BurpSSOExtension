@@ -21,12 +21,15 @@ package de.rub.nds.burp.espresso.editor;
 import de.rub.nds.burp.utilities.XMLHelper;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
+import burp.IInterceptedProxyMessage;
 import burp.IMessageEditorController;
 import burp.IMessageEditorTab;
 import burp.IMessageEditorTabFactory;
 import burp.IParameter;
+import burp.IProxyListener;
 import burp.ITextEditor;
 import de.rub.nds.burp.espresso.gui.UISourceViewer;
+import de.rub.nds.burp.utilities.Logging;
 import java.awt.Component;
 import javax.swing.JTabbedPane;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -36,8 +39,8 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
  * @author Christian Mainka
  */
 
-public class SamlResponseEditor implements IMessageEditorTabFactory {
-
+public class SamlResponseEditor implements IMessageEditorTabFactory{
+        
 	private IBurpExtenderCallbacks callbacks;
 	private IExtensionHelpers helpers;
 
@@ -116,6 +119,8 @@ public class SamlResponseEditor implements IMessageEditorTabFactory {
 				// clear our display
 				txtInput.setText(null);
 				txtInput.setEditable(false);
+                                sourceViewer.setText(null, null);
+                                editor.setEnabled(false);
 			} else {
 				// retrieve the data parameter
 				IParameter parameter;
