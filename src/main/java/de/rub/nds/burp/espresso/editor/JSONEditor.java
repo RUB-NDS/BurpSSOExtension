@@ -133,6 +133,8 @@ public class JSONEditor implements IMessageEditorTabFactory{
 				// clear our display
 				txtInput.setText(null);
 				txtInput.setEditable(false);
+                                sourceViewer.setText(null, null);
+                                editor.setEnabled(false);
 			} else {
                             
 				String input = getJSON(content, isRequest);
