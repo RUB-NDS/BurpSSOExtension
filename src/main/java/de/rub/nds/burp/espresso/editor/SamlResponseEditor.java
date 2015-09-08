@@ -41,6 +41,7 @@ public class SamlResponseEditor implements IMessageEditorTabFactory{
         
 	private IBurpExtenderCallbacks callbacks;
 	private IExtensionHelpers helpers;
+        private UISAMLAttacker uisa = null;
 
 	public SamlResponseEditor(IBurpExtenderCallbacks callbacks) {
 		this.callbacks = callbacks;
@@ -130,8 +131,9 @@ public class SamlResponseEditor implements IMessageEditorTabFactory{
                                 String xml = helpers.bytesToString(helpers.base64Decode(helpers.urlDecode(parameter.getValue())));
                                 
                                 //If editable is true, it is in the Burp Intercepter
-                                if(editable){
-                                    editor.addTab("Attacker", new UISAMLAttacker(xml, txtInput));
+                                if(editable && uisa == null){
+                                    uisa = new UISAMLAttacker(xml, txtInput);
+                                    editor.addTab("Attacker", uisa);
                                 }
                                 
                                 String xmlpretty = XMLHelper.format(xml, 2);
