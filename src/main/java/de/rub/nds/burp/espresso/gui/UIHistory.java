@@ -106,7 +106,7 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
         ssoHistoryTable.addMouseListener(new TableMouseListener(ssoHistoryTable));
         JPopupMenu menu = new JPopupMenu();
         JPopupMenu.Separator separator = new JPopupMenu.Separator();
-        JMenuItem item = new JMenuItem("Follow SSO Protocol");
+        JMenuItem item = new JMenuItem("Analyse SSO Protocol");
         item.addActionListener(new ActionListener() {
 
             @Override
@@ -122,27 +122,6 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
         });
         menu.add(item);
         menu.add(separator);
-        item = new JMenuItem("Send to Attacker");
-        item.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                int row = ssoHistoryTable.getSelectedRow();
-                String protocol = (String) ssoHistoryTable.getValueAt(row, 1);
-                
-                TableEntry entry = (TableEntry) ssoHistoryTable.getTableEntry(row);
-                SSOProtocol sso = entry.getSSOProtocol();
-                
-                SwingUtilities.invokeLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        new UIAttacker(sso).setVisible(true);
-                    }
-                });
-            }
-        });
-        menu.add(item);
         separator = new JPopupMenu.Separator();
         menu.add(separator);
         item = new JMenuItem("Add Selected to Table");
