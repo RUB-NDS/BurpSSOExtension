@@ -18,16 +18,25 @@
  */
 package de.rub.nds.burp.espresso.gui.attacker;
 
+import burp.ITextEditor;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  *
  * @author Tim Guenther
  */
 public class UISigWrapAttack extends javax.swing.JPanel {
+    
+    private String xmlMessage = null;
+    private ITextEditor txtInput = null;
 
     /**
      * Creates new form UISigWrapAttack
      */
-    public UISigWrapAttack() {
+    public UISigWrapAttack(String xmlMessage, ITextEditor txtInput) {
+        this.xmlMessage = xmlMessage;
+        this.txtInput = txtInput;
         initComponents();
     }
 
@@ -41,12 +50,52 @@ public class UISigWrapAttack extends javax.swing.JPanel {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        attackSlider = new javax.swing.JSlider();
+        attackNumber = new javax.swing.JTextField();
+        attackSliderLabel = new javax.swing.JLabel();
+        attackLabel = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        attackDescriptionTextArea = new javax.swing.JTextArea();
+        jButton1 = new javax.swing.JButton();
 
         jLabel1.setText("Signature Wrapping Attack");
 
-        jLabel2.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        jLabel2.setText("Not yet implemented!");
+        attackSlider.setMaximum(200);
+        attackSlider.setToolTipText("Choose an attack.");
+        attackSlider.setValue(0);
+        attackSlider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                attackSliderStateChanged(evt);
+            }
+        });
+
+        attackNumber.setText("000");
+        attackNumber.setToolTipText("Set the attack manually");
+        attackNumber.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                attackNumberActionPerformed(evt);
+            }
+        });
+
+        attackSliderLabel.setText("Choose Attack");
+
+        attackLabel.setText("Attack Description:");
+
+        attackDescriptionTextArea.setEditable(false);
+        attackDescriptionTextArea.setBackground(new java.awt.Color(238, 238, 238));
+        attackDescriptionTextArea.setColumns(20);
+        attackDescriptionTextArea.setRows(5);
+        attackDescriptionTextArea.setText("No attack description.");
+        attackDescriptionTextArea.setFocusable(false);
+        jScrollPane1.setViewportView(attackDescriptionTextArea);
+
+        jButton1.setText("modify");
+        jButton1.setToolTipText("Modify the current message.");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -55,24 +104,76 @@ public class UISigWrapAttack extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
-                .addContainerGap(196, Short.MAX_VALUE))
+                    .addComponent(attackLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(attackSliderLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(attackSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(attackNumber))
+                    .addComponent(jScrollPane1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jButton1))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(attackNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(attackSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(attackSliderLabel))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel2)
-                .addContainerGap(246, Short.MAX_VALUE))
+                .addComponent(attackLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jButton1)
+                .addContainerGap(91, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void attackSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_attackSliderStateChanged
+        int attack = attackSlider.getValue();
+        attackNumber.setText((new Integer(attack)).toString());
+    }//GEN-LAST:event_attackSliderStateChanged
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void attackNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_attackNumberActionPerformed
+        String attack = attackNumber.getText();
+        Pattern p = Pattern.compile("^[0-9]{0,3}$");
+        Matcher m = p.matcher(attack);
+        if(m.find()){
+            int attackNo = Integer.parseInt(attack);
+            attackSlider.setValue(attackNo);
+        } else {
+            attackNumber.setText((new Integer(attackSlider.getValue())).toString());
+        }
+    }//GEN-LAST:event_attackNumberActionPerformed
+
+    private void displayAttack(int attack){
+        
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextArea attackDescriptionTextArea;
+    private javax.swing.JLabel attackLabel;
+    private javax.swing.JTextField attackNumber;
+    private javax.swing.JSlider attackSlider;
+    private javax.swing.JLabel attackSliderLabel;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }

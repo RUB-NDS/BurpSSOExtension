@@ -79,7 +79,7 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
         settingsContainer = new JPanel(new CardLayout());
         settingsContainer.add(new JPanel(), NO_ATTACK);
         settingsContainer.add(new UISigFakeAttack(xmlMessage, txtInput), SIGNATURE_FAKING);
-        settingsContainer.add(new UISigWrapAttack(), SIGNATURE_WRAPPING);
+        settingsContainer.add(new UISigWrapAttack(xmlMessage, txtInput), SIGNATURE_WRAPPING);
         
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
