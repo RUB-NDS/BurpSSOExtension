@@ -21,14 +21,13 @@ package de.rub.nds.burp.espresso.editor;
 import de.rub.nds.burp.utilities.XMLHelper;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
-import burp.IInterceptedProxyMessage;
 import burp.IMessageEditorController;
 import burp.IMessageEditorTab;
 import burp.IMessageEditorTabFactory;
 import burp.IParameter;
-import burp.IProxyListener;
 import burp.ITextEditor;
 import de.rub.nds.burp.espresso.gui.UISourceViewer;
+import de.rub.nds.burp.espresso.gui.attacker.UISAMLAttacker;
 import de.rub.nds.burp.utilities.Compression;
 import java.awt.Component;
 import java.io.IOException;
@@ -71,6 +70,7 @@ public class SamlRequestEditor implements IMessageEditorTabFactory{
                 private UISourceViewer sourceViewer;
                 
 		private byte[] currentMessage;
+                private String xmlMessage = null;
 
 		final String parameterName = "SAMLRequest";
 
@@ -132,6 +132,12 @@ public class SamlRequestEditor implements IMessageEditorTabFactory{
 				try {
                                         //Pretty print XML
                                         String xml = decodeRedirectFormat(parameter.getValue());
+                                        
+                                        //If editable is true, it is in the Burp Intercepter
+                                        if(editable){
+                                            editor.addTab("Attacker", new UISAMLAttacker(xmlMessage, txtInput));
+                                        }
+                                        
                                         String xmlpretty = XMLHelper.format(xml, 2);
                                         txtInput.setText(xml.getBytes());
                                         
@@ -194,6 +200,8 @@ public class SamlRequestEditor implements IMessageEditorTabFactory{
 			String result = new String(decompressed);
 			return result;
 		}
+                
+                
 
 	}
 }

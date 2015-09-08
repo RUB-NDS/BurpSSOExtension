@@ -21,15 +21,13 @@ package de.rub.nds.burp.espresso.editor;
 import de.rub.nds.burp.utilities.XMLHelper;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
-import burp.IInterceptedProxyMessage;
 import burp.IMessageEditorController;
 import burp.IMessageEditorTab;
 import burp.IMessageEditorTabFactory;
 import burp.IParameter;
-import burp.IProxyListener;
 import burp.ITextEditor;
 import de.rub.nds.burp.espresso.gui.UISourceViewer;
-import de.rub.nds.burp.utilities.Logging;
+import de.rub.nds.burp.espresso.gui.attacker.UISAMLAttacker;
 import java.awt.Component;
 import javax.swing.JTabbedPane;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -69,6 +67,7 @@ public class SamlResponseEditor implements IMessageEditorTabFactory{
                 private UISourceViewer sourceViewer;
                 
 		private byte[] currentMessage;
+                private String xmlMessage = null;
                 
 		final String parameterName = "SAMLResponse";
 
@@ -129,6 +128,12 @@ public class SamlResponseEditor implements IMessageEditorTabFactory{
 				// deserialize the parameter value
                                 //Pretty print XML
                                 String xml = helpers.bytesToString(helpers.base64Decode(helpers.urlDecode(parameter.getValue())));
+                                
+                                //If editable is true, it is in the Burp Intercepter
+                                if(editable){
+                                    editor.addTab("Attacker", new UISAMLAttacker(xml, txtInput));
+                                }
+                                
                                 String xmlpretty = XMLHelper.format(xml, 2);
                                 txtInput.setText(xml.getBytes());
                                 txtInput.setEditable(editable);
