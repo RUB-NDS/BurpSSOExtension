@@ -19,33 +19,37 @@
 package de.rub.nds.burp.espresso.gui.attacker;
 
 import burp.ITextEditor;
+import de.rub.nds.burp.espresso.gui.UIError;
 import de.rub.nds.burp.utilities.Logging;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import org.xml.sax.SAXException;
 
 /**
  *
  * @author Tim Guenther
  */
 public class UISAMLAttacker extends JPanel implements ItemListener{
-    
+
     private final String NO_ATTACK = "No Attack";
     private final String SIGNATURE_WRAPPING = "Signature Wrapping";
     private final String SIGNATURE_FAKING = "Signature Faking";
-    
+
     private JComboBox attackComboBox;
     private JLabel descriptionLabel;
     private JPanel comboBoxConatiner;
     private JPanel settingsContainer;
-    
+
     private String xmlMessage = null;
     private ITextEditor txtInput = null;
 
@@ -55,16 +59,15 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
     public UISAMLAttacker(String xmlMessage, ITextEditor txtInput) {
         this.xmlMessage = xmlMessage;
         this.txtInput = txtInput;
-        Logging.getInstance().log(getClass().getName(), xmlMessage, false);
         initComponents();
     }
-    
+
     @Override
     public void itemStateChanged(ItemEvent ie) {
         CardLayout cl = (CardLayout)(settingsContainer.getLayout());
         cl.show(settingsContainer, (String) ie.getItem());
     }
-                  
+
     private void initComponents() {
         descriptionLabel = new JLabel();
         descriptionLabel.setFont(new Font("Dialog", 0, 12)); // NOI18N
@@ -75,12 +78,17 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
         String[] attackArray = {NO_ATTACK, SIGNATURE_FAKING, SIGNATURE_WRAPPING};
         attackComboBox.setModel(new DefaultComboBoxModel(attackArray));
         attackComboBox.addItemListener(this);
-        
+
         settingsContainer = new JPanel(new CardLayout());
         settingsContainer.add(new JPanel(), NO_ATTACK);
         settingsContainer.add(new UISigFakeAttack(xmlMessage, txtInput), SIGNATURE_FAKING);
-        settingsContainer.add(new UISigWrapAttack(xmlMessage, txtInput), SIGNATURE_WRAPPING);
-        
+	try {
+		settingsContainer.add(new UISigWrapAttack(xmlMessage, txtInput), SIGNATURE_WRAPPING);
+	} catch (Exception ex) {
+		Logging.getInstance().log(getClass().getName(), ex);
+                settingsContainer.add(new UIError(), SIGNATURE_WRAPPING);
+	}
+
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -103,5 +111,5 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
                 .addGap(18, 18, 18)
                 .addComponent(settingsContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-    }               
+    }
 }

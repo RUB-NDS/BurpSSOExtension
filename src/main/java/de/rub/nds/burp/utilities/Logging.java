@@ -55,5 +55,15 @@ public class Logging {
         }
     }
     
-    
+    public void log(String tag, Exception e){
+        LocalTime t = LocalTime.now();
+        String time = t.toString().substring(0, t.toString().length()-4);
+        StackTraceElement[] stacktrace = e.getStackTrace();
+        String trace = e.toString()+"\n";
+        for(StackTraceElement ste : stacktrace){
+            trace += "\t"+ste.toString()+"\n";
+        }
+        stdout.println(time+" - ["+tag+"]:\t"+"An Error happend, see Error tab.");
+        stderr.println(time+" - ["+tag+"]:\t"+trace);
+    }    
 }
