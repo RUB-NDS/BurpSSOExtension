@@ -76,6 +76,7 @@ public class UISigWrapAttack extends javax.swing.JPanel {
                 selectedPayloadList = new javax.swing.JList();
                 payloadXmlScrollPane = new org.fife.ui.rtextarea.RTextScrollPane();
                 payloadXml = new org.fife.ui.rsyntaxtextarea.RSyntaxTextArea();
+                jButton1 = new javax.swing.JButton();
 
                 jLabel1.setText("Signature Wrapping Attack");
 
@@ -135,6 +136,13 @@ public class UISigWrapAttack extends javax.swing.JPanel {
                 });
                 payloadXmlScrollPane.setViewportView(payloadXml);
 
+                jButton1.setText("Do");
+                jButton1.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                jButton1ActionPerformed(evt);
+                        }
+                });
+
                 javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
                 this.setLayout(layout);
                 layout.setHorizontalGroup(
@@ -156,9 +164,12 @@ public class UISigWrapAttack extends javax.swing.JPanel {
                                                 .addComponent(jLabel1)
                                                 .addGap(0, 0, Short.MAX_VALUE))
                                         .addGroup(layout.createSequentialGroup()
-                                                .addComponent(selectedPayloadListScrollBar, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addComponent(payloadXmlScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                                .addComponent(selectedPayloadListScrollBar, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(payloadXmlScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addGap(0, 0, Short.MAX_VALUE)
+                                                .addComponent(jButton1)))
                                 .addContainerGap())
                 );
                 layout.setVerticalGroup(
@@ -168,20 +179,21 @@ public class UISigWrapAttack extends javax.swing.JPanel {
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGap(10, 10, 10)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(payloadXmlScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(selectedPayloadListScrollBar))
+                                        .addComponent(selectedPayloadListScrollBar, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(attackSliderLabel, javax.swing.GroupLayout.Alignment.TRAILING)
                                         .addComponent(attackNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(attackSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(attackSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(attackSliderLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(attackLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton1))
                 );
 
                 bindingGroup.bind();
@@ -204,6 +216,11 @@ public class UISigWrapAttack extends javax.swing.JPanel {
 		updateWrappingOracle();
         }//GEN-LAST:event_payloadXmlInputMethodTextChanged
 
+        private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+                // TODO add your handling code here:
+		System.out.println(signatureManager.getPayloads().get(0).getValue());
+        }//GEN-LAST:event_jButton1ActionPerformed
+
 	private void displayAttack(int attack) {
 
 	}
@@ -214,6 +231,7 @@ public class UISigWrapAttack extends javax.swing.JPanel {
         private javax.swing.JTextField attackNumber;
         private javax.swing.JSlider attackSlider;
         private javax.swing.JLabel attackSliderLabel;
+        private javax.swing.JButton jButton1;
         private javax.swing.JLabel jLabel1;
         private javax.swing.JLabel jLabel2;
         private javax.swing.JScrollPane jScrollPane1;
