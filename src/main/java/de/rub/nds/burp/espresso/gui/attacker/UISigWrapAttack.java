@@ -65,24 +65,24 @@ public class UISigWrapAttack extends javax.swing.JPanel {
 
                 signatureManager = signatureManager;
                 payloadBean = new de.rub.nds.burp.espresso.gui.attacker.util.PayloadBean();
-                jLabel1 = new javax.swing.JLabel();
                 attackSlider = new javax.swing.JSlider();
                 attackNumber = new javax.swing.JTextField();
                 attackSliderLabel = new javax.swing.JLabel();
-                attackLabel = new javax.swing.JLabel();
-                jScrollPane1 = new javax.swing.JScrollPane();
-                attackDescriptionTextArea = new javax.swing.JTextArea();
                 jLabel2 = new javax.swing.JLabel();
-                selectedPayloadListScrollBar = new javax.swing.JScrollPane();
-                selectedPayloadList = new javax.swing.JList();
-                payloadXmlScrollPane = new org.fife.ui.rtextarea.RTextScrollPane();
-                payloadXml = new org.fife.ui.rsyntaxtextarea.RSyntaxTextArea();
                 jButton1 = new javax.swing.JButton();
+                jLabel3 = new javax.swing.JLabel();
+                updateOracle = new javax.swing.JToggleButton();
+                jLabel4 = new javax.swing.JLabel();
+                finalPayloadScrollPane = new org.fife.ui.rtextarea.RTextScrollPane();
+                finalPayload = new org.fife.ui.rsyntaxtextarea.RSyntaxTextArea();
+                payloadComboBox = new javax.swing.JComboBox();
+                jScrollPane1 = new javax.swing.JScrollPane();
+                attackDescriptionTextArea = new org.fife.ui.rsyntaxtextarea.RSyntaxTextArea();
+                rTextScrollPane1 = new org.fife.ui.rtextarea.RTextScrollPane();
+                payloadValue = new org.fife.ui.rsyntaxtextarea.RSyntaxTextArea();
 
-                org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, selectedPayloadList, org.jdesktop.beansbinding.ELProperty.create("${selectedElement_IGNORE_ADJUSTING}"), payloadBean, org.jdesktop.beansbinding.BeanProperty.create("payload"));
+                org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, payloadComboBox, org.jdesktop.beansbinding.ELProperty.create("${selectedItem}"), payloadBean, org.jdesktop.beansbinding.BeanProperty.create("payload"));
                 bindingGroup.addBinding(binding);
-
-                jLabel1.setText("Signature Wrapping Attack");
 
                 attackSlider.setMaximum(200);
                 attackSlider.setToolTipText("Choose an attack.");
@@ -98,40 +98,9 @@ public class UISigWrapAttack extends javax.swing.JPanel {
                 binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, attackSlider, org.jdesktop.beansbinding.ELProperty.create("${value}"), attackNumber, org.jdesktop.beansbinding.BeanProperty.create("text"));
                 bindingGroup.addBinding(binding);
 
-                attackSliderLabel.setText("Choose Attack");
+                attackSliderLabel.setText("(3.) Choose Attack Vector");
 
-                attackLabel.setText("Attack Description:");
-
-                attackDescriptionTextArea.setEditable(false);
-                attackDescriptionTextArea.setBackground(new java.awt.Color(238, 238, 238));
-                attackDescriptionTextArea.setColumns(20);
-                attackDescriptionTextArea.setRows(5);
-                attackDescriptionTextArea.setText("No attack description.");
-                attackDescriptionTextArea.setFocusable(false);
-                jScrollPane1.setViewportView(attackDescriptionTextArea);
-
-                jLabel2.setText("Payload");
-
-                selectedPayloadList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-
-                org.jdesktop.beansbinding.ELProperty eLProperty = org.jdesktop.beansbinding.ELProperty.create("${payloads}");
-                org.jdesktop.swingbinding.JListBinding jListBinding = org.jdesktop.swingbinding.SwingBindings.createJListBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, signatureManager, eLProperty, selectedPayloadList);
-                jListBinding.setDetailBinding(org.jdesktop.beansbinding.ELProperty.create("${signedElement.tagName}"));
-                bindingGroup.addBinding(jListBinding);
-
-                selectedPayloadListScrollBar.setViewportView(selectedPayloadList);
-
-                payloadXmlScrollPane.setLineNumbersEnabled(true);
-
-                payloadXml.setColumns(20);
-                payloadXml.setLineWrap(true);
-                payloadXml.setRows(5);
-                payloadXml.setSyntaxEditingStyle("text/xml");
-
-                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, payloadBean, org.jdesktop.beansbinding.ELProperty.create("${payload.value}"), payloadXml, org.jdesktop.beansbinding.BeanProperty.create("text"));
-                bindingGroup.addBinding(binding);
-
-                payloadXmlScrollPane.setViewportView(payloadXml);
+                jLabel2.setText("(1.) Configure Payload:");
 
                 jButton1.setText("Do");
                 jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -140,55 +109,119 @@ public class UISigWrapAttack extends javax.swing.JPanel {
                         }
                 });
 
+                jLabel3.setText("(2.) Generate Wrapping Oracle:");
+
+                updateOracle.setText("Update Oracle");
+                updateOracle.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                updateOracleActionPerformed(evt);
+                        }
+                });
+
+                jLabel4.setText("(4.) Fine Tune XSW Vector:");
+
+                finalPayloadScrollPane.setLineNumbersEnabled(true);
+
+                finalPayload.setColumns(20);
+                finalPayload.setLineWrap(true);
+                finalPayload.setRows(5);
+                finalPayload.setSyntaxEditingStyle("text/xml");
+                finalPayloadScrollPane.setViewportView(finalPayload);
+
+                org.jdesktop.beansbinding.ELProperty eLProperty = org.jdesktop.beansbinding.ELProperty.create("${payloads}");
+                org.jdesktop.swingbinding.JComboBoxBinding jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_ONCE, signatureManager, eLProperty, payloadComboBox);
+                bindingGroup.addBinding(jComboBoxBinding);
+
+                payloadComboBox.addItemListener(new java.awt.event.ItemListener() {
+                        public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                                payloadComboBoxItemStateChanged(evt);
+                        }
+                });
+
+                attackDescriptionTextArea.setEditable(false);
+                attackDescriptionTextArea.setBackground(getBackground());
+                attackDescriptionTextArea.setColumns(20);
+                attackDescriptionTextArea.setRows(5);
+                jScrollPane1.setViewportView(attackDescriptionTextArea);
+
+                payloadValue.setColumns(20);
+                payloadValue.setLineWrap(true);
+                payloadValue.setRows(5);
+                payloadValue.setSyntaxEditingStyle("text/xml");
+
+                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, payloadBean, org.jdesktop.beansbinding.ELProperty.create("${payload.value}"), payloadValue, org.jdesktop.beansbinding.BeanProperty.create("text"));
+                bindingGroup.addBinding(binding);
+
+                payloadValue.addKeyListener(new java.awt.event.KeyAdapter() {
+                        public void keyReleased(java.awt.event.KeyEvent evt) {
+                                payloadValueKeyReleased(evt);
+                        }
+                });
+                rTextScrollPane1.setViewportView(payloadValue);
+
                 javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
                 this.setLayout(layout);
                 layout.setHorizontalGroup(
                         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(attackLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addGroup(layout.createSequentialGroup()
+                                                .addContainerGap()
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(attackSliderLabel)
-                                                        .addComponent(jLabel2))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(attackSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(attackNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addComponent(jScrollPane1)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addComponent(jLabel2)
+                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                .addComponent(attackSliderLabel)
+                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                                .addComponent(attackSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 345, Short.MAX_VALUE)))
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(attackNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                                .addComponent(jLabel4)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                .addComponent(jButton1))
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addComponent(jLabel3)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                .addComponent(updateOracle))
+                                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                                .addGap(34, 34, 34)
+                                                                .addComponent(finalPayloadScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                                         .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jLabel1)
-                                                .addGap(0, 0, Short.MAX_VALUE))
+                                                .addGap(45, 45, 45)
+                                                .addComponent(jScrollPane1))
                                         .addGroup(layout.createSequentialGroup()
-                                                .addComponent(selectedPayloadListScrollBar, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(payloadXmlScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE))
-                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                                .addGap(0, 0, Short.MAX_VALUE)
-                                                .addComponent(jButton1)))
+                                                .addGap(45, 45, 45)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(payloadComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(rTextScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                                 .addContainerGap())
                 );
                 layout.setVerticalGroup(
                         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGap(0, 0, 0)
                                 .addComponent(jLabel2)
-                                .addGap(10, 10, 10)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(payloadXmlScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(selectedPayloadListScrollBar, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(payloadComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(rTextScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel3)
+                                        .addComponent(updateOracle))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(attackNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(attackSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(attackSliderLabel))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(attackLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel4)
+                                .addGap(16, 16, 16)
+                                .addComponent(finalPayloadScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButton1))
                 );
@@ -201,8 +234,8 @@ public class UISigWrapAttack extends javax.swing.JPanel {
 	    try {
 		    Document attackDoc = wrappingOracle.getPossibility(attack);
 		    String attackString = DomUtilities.domToString(attackDoc);
-		    payloadXml.setText(attackString);
 		    attackDescriptionTextArea.setText(WeaknessLog.representation());
+		    finalPayload.setText(attackString);
 	    } catch (InvalidWeaknessException ex) {
 		    Logging.getInstance().log(getClass().getName(), ex);
 	    }
@@ -210,35 +243,17 @@ public class UISigWrapAttack extends javax.swing.JPanel {
 
         private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
                 // TODO add your handling code here:
-		jButton1.setText(payloadBean.getPayload().getSignedElement().getLocalName());
+		System.out.println("Test");
         }//GEN-LAST:event_jButton1ActionPerformed
 
-        // Variables declaration - do not modify//GEN-BEGIN:variables
-        private javax.swing.JTextArea attackDescriptionTextArea;
-        private javax.swing.JLabel attackLabel;
-        private javax.swing.JTextField attackNumber;
-        private javax.swing.JSlider attackSlider;
-        private javax.swing.JLabel attackSliderLabel;
-        private javax.swing.JButton jButton1;
-        private javax.swing.JLabel jLabel1;
-        private javax.swing.JLabel jLabel2;
-        private javax.swing.JScrollPane jScrollPane1;
-        private de.rub.nds.burp.espresso.gui.attacker.util.PayloadBean payloadBean;
-        private org.fife.ui.rsyntaxtextarea.RSyntaxTextArea payloadXml;
-        private org.fife.ui.rtextarea.RTextScrollPane payloadXmlScrollPane;
-        private javax.swing.JList selectedPayloadList;
-        private javax.swing.JScrollPane selectedPayloadListScrollBar;
-        private wsattacker.library.signatureWrapping.util.signature.SignatureManager signatureManager;
-        private org.jdesktop.beansbinding.BindingGroup bindingGroup;
-        // End of variables declaration//GEN-END:variables
+        private void payloadComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_payloadComboBoxItemStateChanged
+		final int selected = payloadComboBox.getSelectedIndex();
+		final Payload p = signatureManager.getPayloads().get(selected);
+		payloadBean.setPayload(p);
 
-	private void initXsw() throws SAXException {
-		Document doc = DomUtilities.stringToDom(xmlMessage);
-		signatureManager = new SignatureManager();
-		signatureManager.setDocument(doc);
-	}
+        }//GEN-LAST:event_payloadComboBoxItemStateChanged
 
-	private void updateWrappingOracle() {
+        private void updateOracleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateOracleActionPerformed
 		Document samlDoc = signatureManager.getDocument();
 		List<Payload> payloadList = signatureManager.getPayloads();
 		wrappingOracle = new WrappingOracle(samlDoc, payloadList, samlSchemaAnalyser);
@@ -247,6 +262,39 @@ public class UISigWrapAttack extends javax.swing.JPanel {
 		if (max > 0) {
 			attackSlider.setValue(1);
 		}
+		attackSliderLabel.setText("(3.) Choose Attack Vector (Max: " + max + ")");
+
+        }//GEN-LAST:event_updateOracleActionPerformed
+
+        private void payloadValueKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_payloadValueKeyReleased
+		payloadBean.getPayload().setValue(payloadValue.getText());
+        }//GEN-LAST:event_payloadValueKeyReleased
+
+        // Variables declaration - do not modify//GEN-BEGIN:variables
+        private org.fife.ui.rsyntaxtextarea.RSyntaxTextArea attackDescriptionTextArea;
+        private javax.swing.JTextField attackNumber;
+        private javax.swing.JSlider attackSlider;
+        private javax.swing.JLabel attackSliderLabel;
+        private org.fife.ui.rsyntaxtextarea.RSyntaxTextArea finalPayload;
+        private org.fife.ui.rtextarea.RTextScrollPane finalPayloadScrollPane;
+        private javax.swing.JButton jButton1;
+        private javax.swing.JLabel jLabel2;
+        private javax.swing.JLabel jLabel3;
+        private javax.swing.JLabel jLabel4;
+        private javax.swing.JScrollPane jScrollPane1;
+        private de.rub.nds.burp.espresso.gui.attacker.util.PayloadBean payloadBean;
+        private javax.swing.JComboBox payloadComboBox;
+        private org.fife.ui.rsyntaxtextarea.RSyntaxTextArea payloadValue;
+        private org.fife.ui.rtextarea.RTextScrollPane rTextScrollPane1;
+        private wsattacker.library.signatureWrapping.util.signature.SignatureManager signatureManager;
+        private javax.swing.JToggleButton updateOracle;
+        private org.jdesktop.beansbinding.BindingGroup bindingGroup;
+        // End of variables declaration//GEN-END:variables
+
+	private void initXsw() throws SAXException {
+		Document doc = DomUtilities.stringToDom(xmlMessage);
+		signatureManager = new SignatureManager();
+		signatureManager.setDocument(doc);
 	}
 
 	private WrappingOracle wrappingOracle;
