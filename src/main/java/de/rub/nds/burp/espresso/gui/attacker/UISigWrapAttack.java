@@ -27,6 +27,7 @@ import wsattacker.library.schemaanalyzer.SchemaAnalyzer;
 import wsattacker.library.schemaanalyzer.SchemaAnalyzerFactory;
 import wsattacker.library.signatureWrapping.option.Payload;
 import wsattacker.library.signatureWrapping.util.exception.InvalidWeaknessException;
+import wsattacker.library.signatureWrapping.util.signature.SignatureManager;
 import wsattacker.library.signatureWrapping.xpath.weakness.util.WeaknessLog;
 import wsattacker.library.signatureWrapping.xpath.wrapping.WrappingOracle;
 import wsattacker.library.xmlutilities.dom.DomUtilities;
@@ -62,7 +63,7 @@ public class UISigWrapAttack extends javax.swing.JPanel {
         private void initComponents() {
                 bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
-                signatureManager = new wsattacker.library.signatureWrapping.util.signature.SignatureManager();
+                signatureManager = signatureManager;
                 jLabel1 = new javax.swing.JLabel();
                 attackSlider = new javax.swing.JSlider();
                 attackNumber = new javax.swing.JTextField();
@@ -226,6 +227,7 @@ public class UISigWrapAttack extends javax.swing.JPanel {
 
 	private void initXsw() throws SAXException {
 		Document doc = DomUtilities.stringToDom(xmlMessage);
+		signatureManager = new SignatureManager();
 		signatureManager.setDocument(doc);
 	}
 

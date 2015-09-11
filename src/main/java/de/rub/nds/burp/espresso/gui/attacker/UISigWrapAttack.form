@@ -3,6 +3,9 @@
 <Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <NonVisualComponents>
     <Component class="wsattacker.library.signatureWrapping.util.signature.SignatureManager" name="signatureManager">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="signatureManager;"/>
+      </AuxValues>
     </Component>
   </NonVisualComponents>
   <AuxValues>
