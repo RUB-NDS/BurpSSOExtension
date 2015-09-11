@@ -64,6 +64,7 @@ public class UISigWrapAttack extends javax.swing.JPanel {
                 bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
                 signatureManager = signatureManager;
+                payloadBean = new de.rub.nds.burp.espresso.gui.attacker.util.PayloadBean();
                 jLabel1 = new javax.swing.JLabel();
                 attackSlider = new javax.swing.JSlider();
                 attackNumber = new javax.swing.JTextField();
@@ -78,6 +79,9 @@ public class UISigWrapAttack extends javax.swing.JPanel {
                 payloadXml = new org.fife.ui.rsyntaxtextarea.RSyntaxTextArea();
                 jButton1 = new javax.swing.JButton();
 
+                org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, selectedPayloadList, org.jdesktop.beansbinding.ELProperty.create("${selectedElement_IGNORE_ADJUSTING}"), payloadBean, org.jdesktop.beansbinding.BeanProperty.create("payload"));
+                bindingGroup.addBinding(binding);
+
                 jLabel1.setText("Signature Wrapping Attack");
 
                 attackSlider.setMaximum(200);
@@ -91,7 +95,7 @@ public class UISigWrapAttack extends javax.swing.JPanel {
 
                 attackNumber.setToolTipText("Set the attack manually");
 
-                org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, attackSlider, org.jdesktop.beansbinding.ELProperty.create("${value}"), attackNumber, org.jdesktop.beansbinding.BeanProperty.create("text"));
+                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, attackSlider, org.jdesktop.beansbinding.ELProperty.create("${value}"), attackNumber, org.jdesktop.beansbinding.BeanProperty.create("text"));
                 bindingGroup.addBinding(binding);
 
                 attackSliderLabel.setText("Choose Attack");
@@ -124,16 +128,9 @@ public class UISigWrapAttack extends javax.swing.JPanel {
                 payloadXml.setRows(5);
                 payloadXml.setSyntaxEditingStyle("text/xml");
 
-                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, selectedPayloadList, org.jdesktop.beansbinding.ELProperty.create("${selectedElement.value}"), payloadXml, org.jdesktop.beansbinding.BeanProperty.create("text"));
+                binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, payloadBean, org.jdesktop.beansbinding.ELProperty.create("${payload.value}"), payloadXml, org.jdesktop.beansbinding.BeanProperty.create("text"));
                 bindingGroup.addBinding(binding);
 
-                payloadXml.addInputMethodListener(new java.awt.event.InputMethodListener() {
-                        public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
-                                payloadXmlInputMethodTextChanged(evt);
-                        }
-                        public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-                        }
-                });
                 payloadXmlScrollPane.setViewportView(payloadXml);
 
                 jButton1.setText("Do");
@@ -211,19 +208,10 @@ public class UISigWrapAttack extends javax.swing.JPanel {
 	    }
     }//GEN-LAST:event_attackSliderStateChanged
 
-        private void payloadXmlInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_payloadXmlInputMethodTextChanged
-		// TODO add your handling code here:
-		updateWrappingOracle();
-        }//GEN-LAST:event_payloadXmlInputMethodTextChanged
-
         private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
                 // TODO add your handling code here:
-		System.out.println(signatureManager.getPayloads().get(0).getValue());
+		jButton1.setText(payloadBean.getPayload().getSignedElement().getLocalName());
         }//GEN-LAST:event_jButton1ActionPerformed
-
-	private void displayAttack(int attack) {
-
-	}
 
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JTextArea attackDescriptionTextArea;
@@ -235,6 +223,7 @@ public class UISigWrapAttack extends javax.swing.JPanel {
         private javax.swing.JLabel jLabel1;
         private javax.swing.JLabel jLabel2;
         private javax.swing.JScrollPane jScrollPane1;
+        private de.rub.nds.burp.espresso.gui.attacker.util.PayloadBean payloadBean;
         private org.fife.ui.rsyntaxtextarea.RSyntaxTextArea payloadXml;
         private org.fife.ui.rtextarea.RTextScrollPane payloadXmlScrollPane;
         private javax.swing.JList selectedPayloadList;
@@ -263,4 +252,5 @@ public class UISigWrapAttack extends javax.swing.JPanel {
 	private WrappingOracle wrappingOracle;
 
 	private static SchemaAnalyzer samlSchemaAnalyser = SchemaAnalyzerFactory.getInstance(SchemaAnalyzerFactory.SAML);
+
 }

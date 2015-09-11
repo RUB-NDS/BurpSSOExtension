@@ -7,6 +7,11 @@
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="signatureManager;"/>
       </AuxValues>
     </Component>
+    <Component class="de.rub.nds.burp.espresso.gui.attacker.util.PayloadBean" name="payloadBean">
+      <BindingProperties>
+        <BindingProperty name="payload" source="selectedPayloadList" sourcePath="${selectedElement_IGNORE_ADJUSTING}" target="payloadBean" targetPath="payload" updateStrategy="1" immediately="false"/>
+      </BindingProperties>
+    </Component>
   </NonVisualComponents>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
@@ -180,13 +185,10 @@
             <Property name="syntaxEditingStyle" type="java.lang.String" value="text/xml"/>
           </Properties>
           <BindingProperties>
-            <BindingProperty name="text" source="selectedPayloadList" sourcePath="${selectedElement.value}" target="payloadXml" targetPath="text" updateStrategy="0" immediately="false">
+            <BindingProperty name="text" source="payloadBean" sourcePath="${payload.value}" target="payloadXml" targetPath="text" updateStrategy="0" immediately="false">
               <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_TYPE"/>
             </BindingProperty>
           </BindingProperties>
-          <Events>
-            <EventHandler event="inputMethodTextChanged" listener="java.awt.event.InputMethodListener" parameters="java.awt.event.InputMethodEvent" handler="payloadXmlInputMethodTextChanged"/>
-          </Events>
         </Component>
       </SubComponents>
     </Container>
