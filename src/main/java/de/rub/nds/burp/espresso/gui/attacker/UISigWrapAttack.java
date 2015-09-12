@@ -19,7 +19,6 @@
 package de.rub.nds.burp.espresso.gui.attacker;
 
 import burp.ITextEditor;
-import de.rub.nds.burp.utilities.DomUtilities;
 import de.rub.nds.burp.utilities.Logging;
 import java.util.List;
 import org.w3c.dom.Document;
@@ -30,6 +29,7 @@ import wsattacker.library.signatureWrapping.option.Payload;
 import wsattacker.library.signatureWrapping.util.exception.InvalidWeaknessException;
 import wsattacker.library.signatureWrapping.xpath.weakness.util.WeaknessLog;
 import wsattacker.library.signatureWrapping.xpath.wrapping.WrappingOracle;
+import wsattacker.library.xmlutilities.dom.DomUtilities;
 //import wsattacker.library.xmlutilities.dom.DomUtilities;
 
 

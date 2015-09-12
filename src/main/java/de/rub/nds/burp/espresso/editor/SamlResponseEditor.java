@@ -28,6 +28,10 @@ import burp.IParameter;
 import burp.ITextEditor;
 import de.rub.nds.burp.espresso.gui.UISourceViewer;
 import de.rub.nds.burp.espresso.gui.attacker.UISAMLAttacker;
+import de.rub.nds.burp.utilities.Logging;
+import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
+import de.rub.nds.burp.utilities.listeners.ICodeListener;
+import de.rub.nds.burp.utilities.listeners.SourceCode;
 import java.awt.Component;
 import javax.swing.JTabbedPane;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -60,7 +64,7 @@ public class SamlResponseEditor implements IMessageEditorTabFactory{
 	//
 	// class implementing IMessageEditorTab
 	//
-	class Base64InputTab implements IMessageEditorTab {
+	class Base64InputTab implements IMessageEditorTab, ICodeListener {
 
 		private boolean editable;
 		private ITextEditor txtInput;
@@ -134,6 +138,7 @@ public class SamlResponseEditor implements IMessageEditorTabFactory{
                                 if(editable && uisa == null){
                                     uisa = new UISAMLAttacker(xml, txtInput);
                                     editor.addTab("Attacker", uisa);
+                                    SourceCode.addCodeListener(this);
                                 }
                                 
                                 String xmlpretty = XMLHelper.format(xml, 2);
@@ -170,5 +175,18 @@ public class SamlResponseEditor implements IMessageEditorTabFactory{
 		public byte[] getSelectedData() {
 			return txtInput.getSelectedText();
 		}
+
+                @Override
+                public void setCode(AbstractCodeEvent evt) {
+                    String samlRaw = evt.getCode();
+                    txtInput.setText(samlRaw.getBytes());
+                    String samlPretty = XMLHelper.format(samlRaw, 2);
+                    sourceViewer.setText(samlPretty, SyntaxConstants.SYNTAX_STYLE_XML);
+                }
+                
+                protected void finalize( ) throws Throwable   {
+                    SourceCode.removeCodeListener(this);
+                    super.finalize();
+                }
 	}
 }

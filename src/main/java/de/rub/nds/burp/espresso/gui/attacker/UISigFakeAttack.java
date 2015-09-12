@@ -20,8 +20,8 @@ package de.rub.nds.burp.espresso.gui.attacker;
 
 import burp.ITextEditor;
 import de.rub.nds.burp.utilities.Logging;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import de.rub.nds.burp.utilities.listeners.SourceCode;
+import de.rub.nds.burp.utilities.listeners.saml.SamlCodeEvent;
 import wsattacker.library.signatureFaking.SignatureFakingOracle;
 import wsattacker.library.signatureFaking.exceptions.SignatureFakingException;
 
@@ -100,10 +100,11 @@ public class UISigFakeAttack extends javax.swing.JPanel {
         try {
             SignatureFakingOracle sof = new SignatureFakingOracle(xmlMessage);
             Logging.getInstance().log(getClass().getName(), "Signature faked...", false);
-            //sof.fakeSignatures();
-            txtInput.setText((sof.getDocument()+"!!!FAKE!!!").getBytes());
+            sof.fakeSignatures();
+            txtInput.setText((sof.getDocument()).getBytes());
+            SourceCode.notifyAll(new SamlCodeEvent(this, "<fake>"+xmlMessage+"</fake>"));
         } catch (SignatureFakingException ex) {
-            Logging.getInstance().log(getClass().getName(), ex.toString(), true);
+            Logging.getInstance().log(getClass().getName(), ex);
         }
     }//GEN-LAST:event_modifyButtonActionPerformed
 

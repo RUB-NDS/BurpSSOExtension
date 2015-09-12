@@ -29,6 +29,10 @@ import burp.ITextEditor;
 import de.rub.nds.burp.espresso.gui.UISourceViewer;
 import de.rub.nds.burp.espresso.gui.attacker.UISAMLAttacker;
 import de.rub.nds.burp.utilities.Compression;
+import de.rub.nds.burp.utilities.Logging;
+import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
+import de.rub.nds.burp.utilities.listeners.ICodeListener;
+import de.rub.nds.burp.utilities.listeners.SourceCode;
 import java.awt.Component;
 import java.io.IOException;
 import java.util.zip.DataFormatException;
@@ -63,7 +67,7 @@ public class SamlRequestEditor implements IMessageEditorTabFactory{
 	//
 	// class implementing IMessageEditorTab
 	//
-	class Base64InputTab implements IMessageEditorTab{
+	class Base64InputTab implements IMessageEditorTab, ICodeListener{
                 
 		private boolean editable;
 		private ITextEditor txtInput;
@@ -138,6 +142,7 @@ public class SamlRequestEditor implements IMessageEditorTabFactory{
                                         if(editable && uisa == null){
                                             uisa = new UISAMLAttacker(xmlMessage, txtInput);
                                             editor.addTab("Attacker", uisa);
+                                            SourceCode.addCodeListener(this);
                                         }
                                         
                                         String xmlpretty = XMLHelper.format(xml, 2);
@@ -203,7 +208,17 @@ public class SamlRequestEditor implements IMessageEditorTabFactory{
 			return result;
 		}
                 
+                @Override
+                public void setCode(AbstractCodeEvent evt) {
+                    String samlRaw = evt.getCode();
+                    txtInput.setText(samlRaw.getBytes());
+                    String samlPretty = XMLHelper.format(samlRaw, 2);
+                    sourceViewer.setText(samlPretty, SyntaxConstants.SYNTAX_STYLE_XML);
+                }
                 
-
+                protected void finalize( ) throws Throwable   {
+                    SourceCode.removeCodeListener(this);
+                    super.finalize();
+                }
 	}
 }
