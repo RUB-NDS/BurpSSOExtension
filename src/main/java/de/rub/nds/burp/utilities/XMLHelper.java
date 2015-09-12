@@ -40,7 +40,7 @@ public abstract class XMLHelper {
     * Attention: Pretty printed XML doesn't work for requests. 
     * @param input The XML raw data.
     * @param indent The indents width.
-    * @return Indented XML or null if an Exception is thrown.
+    * @return Indented XML or original input if an Exception is thrown internally.
     */
 
     public static String format(String input, int indent) {
@@ -57,7 +57,7 @@ public abstract class XMLHelper {
             transformer.transform(xmlInput, xmlOutput);
             return xmlOutput.getWriter().toString();
         } catch (IllegalArgumentException | TransformerException e) {
-            return null;
+            return input;
         }
     }
 }
