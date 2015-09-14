@@ -83,7 +83,8 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
         settingsContainer.add(new JPanel(), NO_ATTACK);
         settingsContainer.add(new UISigFakeAttack(xmlMessage, txtInput), SIGNATURE_FAKING);
 	try {
-		settingsContainer.add(new UISigWrapAttack(xmlMessage, txtInput), SIGNATURE_WRAPPING);
+		final UISigWrapAttack uiSigWrapAttack = new UISigWrapAttack(xmlMessage, txtInput);
+		settingsContainer.add(uiSigWrapAttack, SIGNATURE_WRAPPING);
 	} catch (Exception ex) {
 		Logging.getInstance().log(getClass().getName(), ex);
                 settingsContainer.add(new UIError(), SIGNATURE_WRAPPING);
