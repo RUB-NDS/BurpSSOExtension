@@ -128,7 +128,11 @@ public class SamlRequestEditor implements IMessageEditorTabFactory{
 				txtInput.setEditable(false);
                                 sourceViewer.setText(null, null);
                                 editor.setEnabled(false);
+                                if(uisa != null){
+                                    uisa.setEnabled(false);
+                                }
 			} else {
+                                editor.setEnabled(true);
 				// retrieve the data parameter
 				IParameter parameter;
 				parameter = getSamlRequest(content);
@@ -137,6 +141,7 @@ public class SamlRequestEditor implements IMessageEditorTabFactory{
 				try {
                                         //Pretty print XML
                                         String xml = decodeRedirectFormat(parameter.getValue());
+                                        xmlMessage = xml;
                                         
                                         //If editable is true, it is in the Burp Intercepter
                                         if(editable && uisa == null){

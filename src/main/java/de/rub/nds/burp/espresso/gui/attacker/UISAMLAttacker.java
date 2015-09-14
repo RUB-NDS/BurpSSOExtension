@@ -21,19 +21,15 @@ package de.rub.nds.burp.espresso.gui.attacker;
 import burp.ITextEditor;
 import de.rub.nds.burp.espresso.gui.UIError;
 import de.rub.nds.burp.utilities.Logging;
-import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import org.xml.sax.SAXException;
 
 /**
  *
@@ -112,5 +108,13 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
                 .addGap(18, 18, 18)
                 .addComponent(settingsContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+    }
+    
+    @Override
+    public void setEnabled(boolean enabled){
+        super.setEnabled(enabled);
+        CardLayout cl = (CardLayout)(settingsContainer.getLayout());
+        cl.show(settingsContainer, NO_ATTACK);
+        attackComboBox.setEnabled(enabled);
     }
 }
