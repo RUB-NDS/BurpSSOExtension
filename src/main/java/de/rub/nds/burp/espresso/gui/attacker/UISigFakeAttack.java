@@ -61,7 +61,7 @@ public class UISigFakeAttack extends javax.swing.JPanel {
         descriptionLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         descriptionLabel.setText("For the Signature Faking Attack is no Configuration needed. Click on the button below to modify the current Message.");
 
-        modifyButton.setText("modify");
+        modifyButton.setText("Modify");
         modifyButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 modifyButtonActionPerformed(evt);

@@ -62,7 +62,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="modifyButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="modify"/>
+        <Property name="text" type="java.lang.String" value="Modify"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="modifyButtonActionPerformed"/>
