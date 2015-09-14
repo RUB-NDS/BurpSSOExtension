@@ -18,8 +18,6 @@
  */
 package de.rub.nds.burp.espresso.gui;
 
-import burp.IBurpExtenderCallbacks;
-import burp.IExtensionHelpers;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -32,26 +30,9 @@ import org.fife.ui.rtextarea.RTextScrollPane;
  * @version 1.0
  */
 public class UISourceViewer extends JPanel{
-    
-    private IBurpExtenderCallbacks callbacks;
-    private String sourceCode = "<demo></demo>";
+    private String sourceCode = "<error>Something went wrong during init.!</error>";
     private String codeStyle = SyntaxConstants.SYNTAX_STYLE_XML;
     private RSyntaxTextArea textArea;
-
-    /**
-     * Create a new Source Code Viewer.
-     * @param callbacks Provided by the Burp Suite api.
-     */
-    public UISourceViewer(IBurpExtenderCallbacks callbacks) {
-        super(new BorderLayout());
-        this.callbacks = callbacks;
-        this.codeStyle = codeStyle;
-        
-        //set source code
-        IExtensionHelpers helpers = callbacks.getHelpers();
-        
-        initComponent();
-    }
 
     /**
      * Create a new Source Code Viewer.
