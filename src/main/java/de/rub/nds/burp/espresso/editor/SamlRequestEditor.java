@@ -149,6 +149,7 @@ public class SamlRequestEditor implements IMessageEditorTabFactory{
                                             editor.addTab("Attacker", uisa);
                                             SourceCode.addCodeListener(this);
                                         }
+                                        uisa.setEnabled(true);
                                         
                                         String xmlpretty = XMLHelper.format(xml, 2);
                                         txtInput.setText(xml.getBytes());
