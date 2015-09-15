@@ -22,8 +22,7 @@ import de.rub.nds.burp.espresso.gui.UITab;
 import de.rub.nds.burp.espresso.scanner.ScanAndMarkSSO;
 import de.rub.nds.burp.espresso.editor.JSONEditor;
 import de.rub.nds.burp.espresso.editor.JWTEditor;
-import de.rub.nds.burp.espresso.editor.SamlRequestEditor;
-import de.rub.nds.burp.espresso.editor.SamlResponseEditor;
+import de.rub.nds.burp.espresso.editor.SAMLEditor;
 import de.rub.nds.burp.utilities.Logging;
 import java.io.PrintWriter;
 
@@ -67,8 +66,7 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener{
         //integrate the extension of Christian Mainka
         final ScanAndMarkSSO scanAndMark = new ScanAndMarkSSO(callbacks);
 	callbacks.registerHttpListener(scanAndMark);
-	callbacks.registerMessageEditorTabFactory(new SamlResponseEditor(callbacks));
-	callbacks.registerMessageEditorTabFactory(new SamlRequestEditor(callbacks));
+        callbacks.registerMessageEditorTabFactory(new SAMLEditor(callbacks));
         
         //New Editors
         callbacks.registerMessageEditorTabFactory(new JSONEditor(callbacks));
