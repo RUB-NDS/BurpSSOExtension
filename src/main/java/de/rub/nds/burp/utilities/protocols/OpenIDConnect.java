@@ -59,15 +59,15 @@ public class OpenIDConnect extends SSOProtocol{
         List<IParameter> list = iri.getParameters();
         String id = "Not Found!";
         for(IParameter p : list){
+            if(p.getName().equals("state")){
+                id = p.getValue();
+                continue;
+            }
             if(p.getName().equals("openid.identity")){
                 id = decode(p.getValue());
                 continue;
             }
             if(p.getName().equals(OAUTH_ID)){
-                id = p.getValue();
-                continue;
-            }
-            if(p.getName().equals("state")){
                 id = p.getValue();
             }
         }
