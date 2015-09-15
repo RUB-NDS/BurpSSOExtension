@@ -159,6 +159,7 @@ public class JWTEditor implements IMessageEditorTabFactory{
                 sourceViewerSignature.setText(null, null);
                 editor.setEnabled(false);
             } else {
+                editor.setEnabled(true);
                 
                 String jwt = getJWT(content, isRequest);
                 if(jwt != null){

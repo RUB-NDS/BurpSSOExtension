@@ -130,22 +130,23 @@ public class JSONEditor implements IMessageEditorTabFactory{
 		@Override
 		public void setMessage(byte[] content, boolean isRequest) {
 			if (content == null) {
-				// clear our display
-				txtInput.setText(null);
-				txtInput.setEditable(false);
-                                sourceViewer.setText(null, null);
-                                editor.setEnabled(false);
+                            // clear our display
+                            txtInput.setText(null);
+                            txtInput.setEditable(false);
+                            sourceViewer.setText(null, null);
+                            editor.setEnabled(false);
 			} else {
+                            editor.setEnabled(true);
                             
-				String input = getJSON(content, isRequest);
+                            String input = getJSON(content, isRequest);
 
-				// deserialize the parameter value
-                                String json = decode(input);
-                                txtInput.setText(json.getBytes());
-                                sourceViewer.setText(new JSONObject(json).toString(2), SyntaxConstants.SYNTAX_STYLE_JSON);
-                                txtInput.setText(helpers.stringToBytes(input));
-				
-				txtInput.setEditable(editable);
+                            // deserialize the parameter value
+                            String json = decode(input);
+                            txtInput.setText(json.getBytes());
+                            sourceViewer.setText(new JSONObject(json).toString(2), SyntaxConstants.SYNTAX_STYLE_JSON);
+                            txtInput.setText(helpers.stringToBytes(input));
+
+                            txtInput.setEditable(editable);
 			}
 
 			// remember the displayed content
