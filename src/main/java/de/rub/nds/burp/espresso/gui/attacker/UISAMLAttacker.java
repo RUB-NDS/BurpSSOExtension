@@ -82,8 +82,13 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
 		final UISigWrapAttack uiSigWrapAttack = new UISigWrapAttack(xmlMessage, txtInput);
 		settingsContainer.add(uiSigWrapAttack, SIGNATURE_WRAPPING);
 	} catch (Exception ex) {
-		Logging.getInstance().log(getClass().getName(), ex);
+        try {
+		final UISigWrapAttack uiSigWrapAttack = new UISigWrapAttack(xmlMessage, txtInput);
+		settingsContainer.add(uiSigWrapAttack, SIGNATURE_WRAPPING);
+            } catch (Exception e) {
+		Logging.getInstance().log(getClass().getName(), e);
                 settingsContainer.add(new UIError(), SIGNATURE_WRAPPING);
+            }
 	}
 
         GroupLayout layout = new GroupLayout(this);
