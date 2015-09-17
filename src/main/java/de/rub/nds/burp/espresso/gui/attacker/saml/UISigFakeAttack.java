@@ -16,11 +16,12 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package de.rub.nds.burp.espresso.gui.attacker;
+package de.rub.nds.burp.espresso.gui.attacker.saml;
 
-import burp.ITextEditor;
+import de.rub.nds.burp.espresso.gui.attacker.saml.IAttack;
 import de.rub.nds.burp.utilities.Logging;
-import de.rub.nds.burp.utilities.listeners.SourceCode;
+import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
+import de.rub.nds.burp.utilities.listeners.CodeListenerController;
 import de.rub.nds.burp.utilities.listeners.saml.SamlCodeEvent;
 import wsattacker.library.signatureFaking.SignatureFakingOracle;
 import wsattacker.library.signatureFaking.exceptions.SignatureFakingException;
@@ -29,17 +30,14 @@ import wsattacker.library.signatureFaking.exceptions.SignatureFakingException;
  *
  * @author Tim Guenther
  */
-public class UISigFakeAttack extends javax.swing.JPanel {
-    
-    private String xmlMessage = null;
-    private ITextEditor txtInput = null;
+public class UISigFakeAttack extends javax.swing.JPanel implements IAttack{
+    private String code = null;
+    private CodeListenerController listeners = null;
 
     /**
      * Creates new form UISigFakeAttack
      */
-    public UISigFakeAttack(String xmlMessage, ITextEditor txtInput) {
-        this.xmlMessage = xmlMessage;
-        this.txtInput = txtInput;
+    public UISigFakeAttack() {
         initComponents();
     }
 
@@ -97,17 +95,40 @@ public class UISigFakeAttack extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void modifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyButtonActionPerformed
-        try {
-            SignatureFakingOracle sof = new SignatureFakingOracle(xmlMessage);
-            Logging.getInstance().log(getClass().getName(), "Signature faked...", false);
-            sof.fakeSignatures();
-            txtInput.setText((sof.getDocument()).getBytes());
-            SourceCode.notifyAll(new SamlCodeEvent(this, "<fake>"+xmlMessage+"</fake>"));
-        } catch (SignatureFakingException ex) {
-            Logging.getInstance().log(getClass().getName(), ex);
+        if(code != null){
+            Logging.getInstance().log(getClass().getName(), "Start signature faking.", false);
+            try {
+                SignatureFakingOracle sof = new SignatureFakingOracle(code);
+                sof.fakeSignatures();
+                
+                notifyAllTabs(code);
+                
+                Logging.getInstance().log(getClass().getName(), "Signature faking successfull.", false);
+            } catch (SignatureFakingException ex) {
+                Logging.getInstance().log(getClass().getName(), ex);
+            }
+        } else {
+            Logging.getInstance().log(getClass().getName(), "No data to fake the signature, code is null.", true);
         }
     }//GEN-LAST:event_modifyButtonActionPerformed
 
+    @Override
+    public void setCode(AbstractCodeEvent evt) {
+        this.code = evt.getCode();
+    }
+
+    @Override
+    public void notifyAllTabs(String code) {
+        if(listeners != null){
+            listeners.notifyAll(new SamlCodeEvent(this, code));
+        }
+    }
+
+    @Override
+    public void setListener(CodeListenerController listeners) {
+        this.listeners = listeners;
+        this.listeners.addCodeListener(this);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel descriptionLabel;

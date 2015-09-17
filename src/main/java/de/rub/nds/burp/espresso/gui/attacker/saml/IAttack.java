@@ -16,33 +16,14 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package de.rub.nds.burp.utilities.listeners;
+package de.rub.nds.burp.espresso.gui.attacker.saml;
 
-import de.rub.nds.burp.utilities.Logging;
-import javax.swing.event.EventListenerList;
+import de.rub.nds.burp.utilities.listeners.ICodeListener;
 
 /**
  *
  * @author Tim Guenther
  */
-public class SourceCode {
-    private static EventListenerList listeners = new EventListenerList();
-    
-    private SourceCode(){
-    }
-    
-    public static void addCodeListener(ICodeListener listener){
-      listeners.add(ICodeListener.class, listener);
-    }
-
-    public static void removeCodeListener(ICodeListener listener){
-      listeners.remove(ICodeListener.class, listener);
-    }
-
-    public static synchronized void notifyAll(AbstractCodeEvent event)
-    {
-        for (ICodeListener l : listeners.getListeners(ICodeListener.class)){
-            l.setCode(event);
-        }
-    }
+public interface IAttack extends ICodeListener{
+    public void notifyAllTabs(String code);
 }

@@ -35,7 +35,7 @@ public abstract class AbstractCodeEvent extends EventObject{
     }
     
     public String getCode(){
-        Logging.getInstance().log(getClass().getName(), "getCode", false);
+        Logging.getInstance().log(getClass().getName(), "getCode "+this.toString(), false);
         return code;
     }
     

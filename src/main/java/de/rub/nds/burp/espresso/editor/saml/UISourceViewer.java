@@ -16,8 +16,13 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package de.rub.nds.burp.espresso.gui;
+package de.rub.nds.burp.espresso.editor.saml;
 
+import de.rub.nds.burp.utilities.Logging;
+import de.rub.nds.burp.utilities.XMLHelper;
+import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
+import de.rub.nds.burp.utilities.listeners.ICodeListener;
+import de.rub.nds.burp.utilities.listeners.CodeListenerController;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -29,10 +34,11 @@ import org.fife.ui.rtextarea.RTextScrollPane;
  * @author Tim Guenther
  * @version 1.0
  */
-public class UISourceViewer extends JPanel{
+public class UISourceViewer extends JPanel implements ICodeListener{
     private String sourceCode = "<error>Something went wrong during init.!</error>";
     private String codeStyle = SyntaxConstants.SYNTAX_STYLE_XML;
     private RSyntaxTextArea textArea;
+    private CodeListenerController listeners = null;
 
     /**
      * Create a new Source Code Viewer.
@@ -76,6 +82,35 @@ public class UISourceViewer extends JPanel{
         textArea.setText(sourceCode);
         this.updateUI();
     }
-      
     
+    /**
+     * Set the source code and highlighting.
+     * @param sourceCode The Code that should be highlighted.
+     * @param indent The indent level. (Default = 2).
+     */
+    public void setPrettyXML(String sourceCode, int indent){
+        sourceCode = XMLHelper.format(sourceCode, indent);
+        setText(sourceCode, SyntaxConstants.SYNTAX_STYLE_XML);
+    }
+
+    @Override
+    public void setCode(AbstractCodeEvent evt) {
+        setPrettyXML(evt.getCode(), 2);
+    }
+    
+    @Override
+    public void setEnabled(boolean enabled){
+        textArea.setEnabled(enabled);
+        if(enabled){
+           textArea.setText(sourceCode);
+        } else {
+           textArea.setText("");
+        }
+    }
+
+    @Override
+    public void setListener(CodeListenerController listeners) {
+        this.listeners = listeners;
+        this.listeners.addCodeListener(this);
+    }
 }

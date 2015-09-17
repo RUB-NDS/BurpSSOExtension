@@ -18,13 +18,33 @@
  */
 package de.rub.nds.burp.utilities.listeners;
 
-import java.util.EventListener;
+import de.rub.nds.burp.utilities.Logging;
+import javax.swing.event.EventListenerList;
 
 /**
  *
  * @author Tim Guenther
  */
-public interface ICodeListener extends EventListener {
-    void setCode(AbstractCodeEvent evt);
-    void setListener(CodeListenerController listeners);
+public class CodeListenerController {
+    private EventListenerList listeners = new EventListenerList();
+    
+    public CodeListenerController(){
+    }
+    
+    public void addCodeListener(ICodeListener listener){
+      listeners.add(ICodeListener.class, listener);
+    }
+
+    public void removeCodeListener(ICodeListener listener){
+      listeners.remove(ICodeListener.class, listener);
+    }
+
+    public synchronized void notifyAll(AbstractCodeEvent event)
+    {
+        for (ICodeListener l : listeners.getListeners(ICodeListener.class)){
+            l.setCode(event);
+        }
+    }
+    
+    
 }

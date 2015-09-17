@@ -16,11 +16,10 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package de.rub.nds.burp.espresso.gui.attacker;
+package de.rub.nds.burp.espresso.gui.attacker.saml;
 
 import burp.ITextEditor;
-import de.rub.nds.burp.espresso.gui.UIError;
-import de.rub.nds.burp.utilities.Logging;
+import de.rub.nds.burp.utilities.listeners.CodeListenerController;
 import java.awt.CardLayout;
 import java.awt.Font;
 import java.awt.event.ItemEvent;
@@ -43,20 +42,15 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
 
     private JComboBox attackComboBox;
     private JLabel descriptionLabel;
-    private JPanel comboBoxConatiner;
     private JPanel settingsContainer;
-
-    private String xmlMessage = null;
-    private ITextEditor txtInput = null;
-
-    /**
-     * Creates new form UIInterceptAttacker
-     */
-    public UISAMLAttacker(String xmlMessage, ITextEditor txtInput) {
-        this.xmlMessage = xmlMessage;
-        this.txtInput = txtInput;
+    
+    private UISigWrapAttack uiSigWrapAttack = null;
+    private UISigFakeAttack uiSigFakeAttack = null;
+    
+    public UISAMLAttacker(){
         initComponents();
     }
+    
 
     @Override
     public void itemStateChanged(ItemEvent ie) {
@@ -77,19 +71,10 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
 
         settingsContainer = new JPanel(new CardLayout());
         settingsContainer.add(new JPanel(), NO_ATTACK);
-        settingsContainer.add(new UISigFakeAttack(xmlMessage, txtInput), SIGNATURE_FAKING);
-	try {
-		final UISigWrapAttack uiSigWrapAttack = new UISigWrapAttack(xmlMessage, txtInput);
-		settingsContainer.add(uiSigWrapAttack, SIGNATURE_WRAPPING);
-	} catch (Exception ex) {
-        try {
-		final UISigWrapAttack uiSigWrapAttack = new UISigWrapAttack(xmlMessage, txtInput);
-		settingsContainer.add(uiSigWrapAttack, SIGNATURE_WRAPPING);
-            } catch (Exception e) {
-		Logging.getInstance().log(getClass().getName(), e);
-                settingsContainer.add(new UIError(), SIGNATURE_WRAPPING);
-            }
-	}
+        uiSigFakeAttack = new UISigFakeAttack();
+        settingsContainer.add(uiSigFakeAttack, SIGNATURE_FAKING);
+        uiSigWrapAttack = new UISigWrapAttack();
+	settingsContainer.add(uiSigWrapAttack, SIGNATURE_WRAPPING);
 
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
@@ -118,8 +103,18 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
     @Override
     public void setEnabled(boolean enabled){
         super.setEnabled(enabled);
-        CardLayout cl = (CardLayout)(settingsContainer.getLayout());
-        cl.show(settingsContainer, NO_ATTACK);
+        CardLayout cl;
+        cl = (CardLayout)(settingsContainer.getLayout());
+        if(!enabled){
+            cl.show(settingsContainer, NO_ATTACK);
+        } else {
+            cl.show(settingsContainer, attackComboBox.getSelectedItem().toString());
+        }
         attackComboBox.setEnabled(enabled);
+    }
+    
+    public void setListeners(CodeListenerController listeners){
+        uiSigFakeAttack.setListener(listeners);
+        uiSigWrapAttack.setListener(listeners);
     }
 }
