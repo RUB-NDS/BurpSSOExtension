@@ -22,7 +22,7 @@ import de.rub.nds.burp.espresso.gui.UITab;
 import de.rub.nds.burp.espresso.scanner.ScanAndMarkSSO;
 import de.rub.nds.burp.espresso.editor.JSONEditor;
 import de.rub.nds.burp.espresso.editor.JWTEditor;
-import de.rub.nds.burp.espresso.editor.SAMLEditor;
+import de.rub.nds.burp.espresso.editor.saml.SAMLEditor;
 import de.rub.nds.burp.utilities.Logging;
 import java.io.PrintWriter;
 
@@ -82,7 +82,7 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener{
 
     @Override
     public void extensionUnloaded() {
-        Logging.getInstance().log(getClass().getName(), "Extension is now unloaded.", false);
+        Logging.getInstance().log(getClass().getName(), "Extension is now unloaded.\n", false);
     }
  
 }
