@@ -386,11 +386,14 @@ public class UIOptions extends JPanel {
         });
 
         cryptoLabel1.setText("Cryptography");
+        cryptoLabel1.setEnabled(false);
 
         schemaLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         schemaLabel1.setText("Schema:");
+        schemaLabel1.setEnabled(false);
 
         schemaText1.setToolTipText("Insert a path to a schema file.");
+        schemaText1.setEnabled(false);
         schemaText1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 schemaText1ActionPerformed(evt);
@@ -400,6 +403,7 @@ public class UIOptions extends JPanel {
         schemaOpen1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         schemaOpen1.setText("...");
         schemaOpen1.setToolTipText("open file");
+        schemaOpen1.setEnabled(false);
         schemaOpen1.setMargin(new java.awt.Insets(0, 10, 0, 10));
         schemaOpen1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -409,8 +413,10 @@ public class UIOptions extends JPanel {
 
         certLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         certLabel1.setText("Certificate:");
+        certLabel1.setEnabled(false);
 
         certText1.setToolTipText("Insert a path to a certificat file.");
+        certText1.setEnabled(false);
         certText1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 certText1ActionPerformed(evt);
@@ -420,6 +426,7 @@ public class UIOptions extends JPanel {
         certOpen1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         certOpen1.setText("...");
         certOpen1.setToolTipText("open file");
+        certOpen1.setEnabled(false);
         certOpen1.setMargin(new java.awt.Insets(0, 10, 0, 10));
         certOpen1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -429,8 +436,10 @@ public class UIOptions extends JPanel {
 
         privKeyLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         privKeyLabel1.setText("Private Key:");
+        privKeyLabel1.setEnabled(false);
 
         privKeyText1.setToolTipText("Insert a path to a private key file.");
+        privKeyText1.setEnabled(false);
         privKeyText1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 privKeyText1ActionPerformed(evt);
@@ -440,6 +449,7 @@ public class UIOptions extends JPanel {
         privKeyOpen1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         privKeyOpen1.setText("...");
         privKeyOpen1.setToolTipText("open file");
+        privKeyOpen1.setEnabled(false);
         privKeyOpen1.setMargin(new java.awt.Insets(0, 10, 0, 10));
         privKeyOpen1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -449,8 +459,10 @@ public class UIOptions extends JPanel {
 
         pubKeyLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         pubKeyLabel1.setText("Public Key:");
+        pubKeyLabel1.setEnabled(false);
 
         pubKeyText1.setToolTipText("Insert a path to a public key file.");
+        pubKeyText1.setEnabled(false);
         pubKeyText1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 pubKeyText1ActionPerformed(evt);
@@ -460,6 +472,7 @@ public class UIOptions extends JPanel {
         pubKeyOpen1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         pubKeyOpen1.setText("...");
         pubKeyOpen1.setToolTipText("open file");
+        pubKeyOpen1.setEnabled(false);
         pubKeyOpen1.setMargin(new java.awt.Insets(0, 10, 0, 10));
         pubKeyOpen1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -468,14 +481,18 @@ public class UIOptions extends JPanel {
         });
 
         scriptingLabel1.setText("Scripting");
+        scriptingLabel1.setEnabled(false);
 
         scriptingDescription1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         scriptingDescription1.setText("The scripts are used as an interface to external attacking or processing libraries.");
+        scriptingDescription1.setEnabled(false);
 
         scriptInLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         scriptInLabel1.setText("Input Processing Script:");
+        scriptInLabel1.setEnabled(false);
 
         scriptInText1.setToolTipText("Insert a path to a python script.");
+        scriptInText1.setEnabled(false);
         scriptInText1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 scriptInText1ActionPerformed(evt);
@@ -485,6 +502,7 @@ public class UIOptions extends JPanel {
         scriptInOpen1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         scriptInOpen1.setText("...");
         scriptInOpen1.setToolTipText("open file");
+        scriptInOpen1.setEnabled(false);
         scriptInOpen1.setMargin(new java.awt.Insets(0, 10, 0, 10));
         scriptInOpen1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -494,12 +512,15 @@ public class UIOptions extends JPanel {
 
         scriptOutLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         scriptOutLabel1.setText("Output Processing Script:");
+        scriptOutLabel1.setEnabled(false);
 
         scriptOutText1.setToolTipText("Insert a path to a python script.");
+        scriptOutText1.setEnabled(false);
 
         scriptOutOpen1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         scriptOutOpen1.setText("...");
         scriptOutOpen1.setToolTipText("open file");
+        scriptOutOpen1.setEnabled(false);
         scriptOutOpen1.setMargin(new java.awt.Insets(0, 10, 0, 10));
         scriptOutOpen1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -508,11 +529,14 @@ public class UIOptions extends JPanel {
         });
 
         extLibLabel1.setText("External Libraries");
+        extLibLabel1.setEnabled(false);
 
         libLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         libLabel1.setText("Libraries:");
+        libLabel1.setEnabled(false);
 
         libText1.setToolTipText("Insert a path to a .jar file.");
+        libText1.setEnabled(false);
         libText1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 libText1ActionPerformed(evt);
@@ -522,6 +546,7 @@ public class UIOptions extends JPanel {
         libOpen1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         libOpen1.setText("...");
         libOpen1.setToolTipText("open file");
+        libOpen1.setEnabled(false);
         libOpen1.setMargin(new java.awt.Insets(0, 10, 0, 10));
         libOpen1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -656,7 +681,7 @@ public class UIOptions extends JPanel {
                         .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(scriptInOpen1, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(scriptOutOpen1, javax.swing.GroupLayout.Alignment.TRAILING)))
-                    .addComponent(scriptingDescription1, javax.swing.GroupLayout.DEFAULT_SIZE, 772, Short.MAX_VALUE)
+                    .addComponent(scriptingDescription1, javax.swing.GroupLayout.DEFAULT_SIZE, 804, Short.MAX_VALUE)
                     .addGroup(scrollPanelLayout.createSequentialGroup()
                         .addComponent(extLibLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -773,7 +798,7 @@ public class UIOptions extends JPanel {
                     .addComponent(configSave1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(configApply)
-                .addContainerGap(43, Short.MAX_VALUE))
+                .addContainerGap(74, Short.MAX_VALUE))
         );
 
         jScrollPane.setViewportView(scrollPanel);
@@ -782,7 +807,7 @@ public class UIOptions extends JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 757, Short.MAX_VALUE)
+            .addComponent(jScrollPane)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

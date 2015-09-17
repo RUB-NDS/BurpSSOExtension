@@ -16,7 +16,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jScrollPane" alignment="0" pref="757" max="32767" attributes="0"/>
+          <Component id="jScrollPane" alignment="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -120,7 +120,7 @@
                                   <Component id="scriptOutOpen1" alignment="1" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <Component id="scriptingDescription1" alignment="0" pref="772" max="32767" attributes="0"/>
+                          <Component id="scriptingDescription1" alignment="0" pref="804" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="extLibLabel1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -266,7 +266,7 @@
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="configApply" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="43" max="32767" attributes="0"/>
+                      <EmptySpace pref="74" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -372,6 +372,7 @@
             <Component class="javax.swing.JLabel" name="cryptoLabel1">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Cryptography"/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="schemaLabel1">
@@ -380,11 +381,13 @@
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Schema:"/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="schemaText1">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" value="Insert a path to a schema file."/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="schemaText1ActionPerformed"/>
@@ -397,6 +400,7 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="..."/>
                 <Property name="toolTipText" type="java.lang.String" value="open file"/>
+                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
                   <Insets value="[0, 10, 0, 10]"/>
                 </Property>
@@ -411,11 +415,13 @@
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Certificate:"/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="certText1">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" value="Insert a path to a certificat file."/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="certText1ActionPerformed"/>
@@ -428,6 +434,7 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="..."/>
                 <Property name="toolTipText" type="java.lang.String" value="open file"/>
+                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
                   <Insets value="[0, 10, 0, 10]"/>
                 </Property>
@@ -442,11 +449,13 @@
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Private Key:"/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="privKeyText1">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" value="Insert a path to a private key file."/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="privKeyText1ActionPerformed"/>
@@ -459,6 +468,7 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="..."/>
                 <Property name="toolTipText" type="java.lang.String" value="open file"/>
+                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
                   <Insets value="[0, 10, 0, 10]"/>
                 </Property>
@@ -473,11 +483,13 @@
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Public Key:"/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="pubKeyText1">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" value="Insert a path to a public key file."/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="pubKeyText1ActionPerformed"/>
@@ -490,6 +502,7 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="..."/>
                 <Property name="toolTipText" type="java.lang.String" value="open file"/>
+                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
                   <Insets value="[0, 10, 0, 10]"/>
                 </Property>
@@ -503,6 +516,7 @@
             <Component class="javax.swing.JLabel" name="scriptingLabel1">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Scripting"/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="scriptingDescription1">
@@ -511,6 +525,7 @@
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="The scripts are used as an interface to external attacking or processing libraries."/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="scriptInLabel1">
@@ -519,11 +534,13 @@
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Input Processing Script:"/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="scriptInText1">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" value="Insert a path to a python script."/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="scriptInText1ActionPerformed"/>
@@ -536,6 +553,7 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="..."/>
                 <Property name="toolTipText" type="java.lang.String" value="open file"/>
+                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
                   <Insets value="[0, 10, 0, 10]"/>
                 </Property>
@@ -550,11 +568,13 @@
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Output Processing Script:"/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="scriptOutText1">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" value="Insert a path to a python script."/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="scriptOutOpen1">
@@ -564,6 +584,7 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="..."/>
                 <Property name="toolTipText" type="java.lang.String" value="open file"/>
+                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
                   <Insets value="[0, 10, 0, 10]"/>
                 </Property>
@@ -577,6 +598,7 @@
             <Component class="javax.swing.JLabel" name="extLibLabel1">
               <Properties>
                 <Property name="text" type="java.lang.String" value="External Libraries"/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="libLabel1">
@@ -585,11 +607,13 @@
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Libraries:"/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="libText1">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" value="Insert a path to a .jar file."/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="libText1ActionPerformed"/>
@@ -602,6 +626,7 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="..."/>
                 <Property name="toolTipText" type="java.lang.String" value="open file"/>
+                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
                   <Insets value="[0, 10, 0, 10]"/>
                 </Property>

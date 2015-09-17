@@ -59,10 +59,14 @@ public class UIHelp extends javax.swing.JPanel {
         oauth1Pane = new javax.swing.JPanel();
         oauth2Pane = new javax.swing.JPanel();
 
-        headline.setText("Help for Using this Extension at: https://github.com/some_uri");
+        setEnabled(false);
+
+        headline.setText("Help for Using this Extension at: https://github.com/");
 
         subheadline.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        subheadline.setText("API and Scripting Help...");
+        subheadline.setText("Help in progress!");
+
+        helpContainerPanel.setEnabled(false);
 
         javax.swing.GroupLayout apiPanelLayout = new javax.swing.GroupLayout(apiPanel);
         apiPanel.setLayout(apiPanelLayout);
