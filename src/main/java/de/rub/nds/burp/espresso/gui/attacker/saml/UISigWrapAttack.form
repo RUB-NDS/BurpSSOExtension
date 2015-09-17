@@ -53,7 +53,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
-                              <Component id="updateOracle" min="-2" max="-2" attributes="0"/>
+                              <Component id="updateButton" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
@@ -89,7 +89,7 @@
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="updateOracle" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="updateButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
@@ -118,17 +118,16 @@
       </Properties>
       <Events>
         <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="attackSliderStateChanged"/>
+        <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="attackSliderMouseReleased"/>
       </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="attackNumber">
       <Properties>
         <Property name="toolTipText" type="java.lang.String" value="Set the attack manually"/>
       </Properties>
-      <BindingProperties>
-        <BindingProperty name="text" source="attackSlider" sourcePath="${value}" target="attackNumber" targetPath="text" updateStrategy="0" immediately="false">
-          <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_TYPE"/>
-        </BindingProperty>
-      </BindingProperties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="attackNumberActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="attackSliderLabel">
       <Properties>
@@ -154,14 +153,6 @@
         <Property name="text" type="java.lang.String" value="(2.) Generate Wrapping Oracle:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JToggleButton" name="updateOracle">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Update Oracle"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="updateOracleActionPerformed"/>
-      </Events>
-    </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>
         <Property name="text" type="java.lang.String" value="(4.) Fine Tune XSW Vector:"/>
@@ -185,11 +176,9 @@
       </SubComponents>
     </Container>
     <Component class="javax.swing.JComboBox" name="payloadComboBox">
-      <BindingProperties>
-        <BindingProperty name="elements" source="signatureManager" sourcePath="${payloads}" target="payloadComboBox" targetPath="elements" updateStrategy="2" immediately="false"/>
-      </BindingProperties>
       <Events>
         <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="payloadComboBoxItemStateChanged"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="payloadComboBoxActionPerformed"/>
       </Events>
     </Component>
     <Container class="javax.swing.JScrollPane" name="jScrollPane1">
@@ -222,16 +211,19 @@
             <Property name="rows" type="int" value="5"/>
             <Property name="syntaxEditingStyle" type="java.lang.String" value="text/xml"/>
           </Properties>
-          <BindingProperties>
-            <BindingProperty name="text" source="payloadBean" sourcePath="${payload.value}" target="payloadValue" targetPath="text" updateStrategy="1" immediately="false">
-              <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_TYPE"/>
-            </BindingProperty>
-          </BindingProperties>
           <Events>
             <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="payloadValueKeyReleased"/>
           </Events>
         </Component>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JButton" name="updateButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Update Oracle"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="updateButtonActionPerformed"/>
+      </Events>
+    </Component>
   </SubComponents>
 </Form>
