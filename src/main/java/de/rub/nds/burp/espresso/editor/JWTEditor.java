@@ -26,8 +26,9 @@ import burp.IMessageEditorTabFactory;
 import burp.IParameter;
 import burp.IRequestInfo;
 import burp.ITextEditor;
-import de.rub.nds.burp.espresso.gui.UISourceViewer;
+import de.rub.nds.burp.espresso.editor.saml.UISourceViewer;
 import de.rub.nds.burp.utilities.Encoding;
+import de.rub.nds.burp.utilities.Logging;
 import java.awt.Component;
 import java.io.PrintWriter;
 import java.util.Base64;
@@ -116,7 +117,11 @@ public class JWTEditor implements IMessageEditorTabFactory{
 
         @Override
         public boolean isEnabled(byte[] content, boolean isRequest) {
-                return isJWT(content, isRequest);
+                if(isJWT(content, isRequest)){
+                    Logging.getInstance().log(getClass(), "Editor@"+System.identityHashCode(this)+" attached.", Logging.DEBUG);
+                    return true;
+                }
+                return false;
         }
 
         private boolean isJWT(byte[] content, boolean isRequest) {
@@ -126,6 +131,8 @@ public class JWTEditor implements IMessageEditorTabFactory{
         private String getJWT(byte[] content, boolean isRequest){
             if(content != null){
                 IParameter jwt = helpers.getRequestParameter(content, "assertion");
+                jwt = helpers.getRequestParameter(content, "id_token");
+                jwt = helpers.getRequestParameter(content, "access_token");
                 if(jwt == null){
                     if(isRequest){
                             IRequestInfo iri = helpers.analyzeRequest(content);
@@ -135,7 +142,7 @@ public class JWTEditor implements IMessageEditorTabFactory{
                                     JSONObject json = (JSONObject)new JSONParser().parse(body);
                                     body = json.getString("assertion");
                                 } catch (Exception e) {
-                                    new PrintWriter(callbacks.getStderr(),true).println("JWTEditor.getJWT: "+e.toString());
+                                    Logging.getInstance().log(getClass(), e);
                                     return "";
                                 }
                                 return body;
@@ -174,7 +181,7 @@ public class JWTEditor implements IMessageEditorTabFactory{
                         sourceViewerPayload.setText(new JSONObject(jwt_list[1]).toString(1), SyntaxConstants.SYNTAX_STYLE_JSON);
                         sourceViewerSignature.setText(jwt_list[2], SyntaxConstants.SYNTAX_STYLE_NONE);
                     } catch(Exception e){
-                        new PrintWriter(callbacks.getStderr(),true).println("JWTEditor.setMessage: "+e.toString());
+                        Logging.getInstance().log(getClass(), e);
                     }
                 }
             }
@@ -231,7 +238,7 @@ public class JWTEditor implements IMessageEditorTabFactory{
 
                 return tmp;
             } catch(Exception e){
-                new PrintWriter(callbacks.getStderr(),true).println("JWTEditor.decode: "+e.toString());
+                Logging.getInstance().log(getClass(), e);
             }
             return null;
         }

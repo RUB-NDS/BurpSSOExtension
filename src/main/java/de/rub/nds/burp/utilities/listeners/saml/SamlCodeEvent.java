@@ -29,7 +29,6 @@ public class SamlCodeEvent extends AbstractCodeEvent{
 
     public SamlCodeEvent(Object source, String code) {
         super(source, code);
-        Logging.getInstance().log(getClass().getName(), "Constructor", false);
     }
     
 }

@@ -74,7 +74,7 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener{
         callbacks.registerExtensionStateListener(this);
         
         //Start logging
-        Logging.getInstance().log(getClass().getName(), "All functions registered.", false);
+        Logging.getInstance().log(getClass(), "All functions registered.", Logging.INFO);
     }
     /**
      * Print a notification on the standard output when extension is unloaded.
@@ -82,7 +82,9 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener{
 
     @Override
     public void extensionUnloaded() {
-        Logging.getInstance().log(getClass().getName(), "Extension is now unloaded.\n", false);
+        Logging.getInstance().log(getClass(), "Extension is now unloaded.", Logging.INFO);
+        stdout.println("");
+        stderr.println("");
     }
  
 }

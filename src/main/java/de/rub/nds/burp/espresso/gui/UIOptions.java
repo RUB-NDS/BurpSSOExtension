@@ -18,16 +18,13 @@
  */
 package de.rub.nds.burp.espresso.gui;
 
-import burp.BurpExtender;
+import de.rub.nds.burp.utilities.Logging;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
 import java.net.URLDecoder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -55,6 +52,8 @@ public class UIOptions extends JPanel {
     public static boolean facebookConnectActive=true;
     public static boolean msAccountActive=true;
     public static boolean highlightBool=true;
+    
+    public static int LoggingLevel = 2; //0 = Info, 1 = Debug, 2 = Verbose
     
     
 
@@ -164,6 +163,9 @@ public class UIOptions extends JPanel {
                 
                 str = (String) json_conf.get("Config");
                 
+                LoggingLevel = ((Long) json_conf.get("LogLvl")).intValue();
+                logginglvlComboBox.setSelectedIndex(LoggingLevel);
+                
 //                JOptionPane.showMessageDialog(this,
 //                            "The config from "+str+" is imported.",
 //                            "Import successfull",
@@ -174,11 +176,15 @@ public class UIOptions extends JPanel {
                             "Can not read the config file!\n\nError:\n"+ex.toString(),
                             "Can not read config file",
                             JOptionPane.ERROR_MESSAGE);
+                Logging.getInstance().log(getClass(), ex);
             } catch (ParseException ex){
                 JOptionPane.showMessageDialog(this,
                             "The content can not be parsed!\n\nError:\n"+ex.toString(),
                             "JSON Parsing Error",
                             JOptionPane.ERROR_MESSAGE);
+                Logging.getInstance().log(getClass(), ex);
+            } catch (Exception ex){
+                Logging.getInstance().log(getClass(), ex);
             }
             
         } else {
@@ -186,8 +192,10 @@ public class UIOptions extends JPanel {
                             "The file:\n"+path+"\n is not readable or directory.",
                             "File not Found!",
                             JOptionPane.ERROR_MESSAGE);
+            Logging.getInstance().log(getClass(), "The file:\n"+path+"\n is not readable or directory.", Logging.ERROR);
         }
         saveConfig(path);
+        Logging.getInstance().log(getClass(), "The config from "+path+" is now loaded.", Logging.INFO);
     }
     
     private void saveConfig(String path){
@@ -200,6 +208,9 @@ public class UIOptions extends JPanel {
                             "Can not create the config file.",
                             "Can not create file.",
                             JOptionPane.ERROR_MESSAGE);
+                Logging.getInstance().log(getClass(), ex);
+            } catch(Exception ex) {
+                Logging.getInstance().log(getClass(), ex);
             }
         }
         if(!file.isDirectory() && file.canWrite() && file.canRead()){
@@ -228,6 +239,8 @@ public class UIOptions extends JPanel {
             
             config_obj.put("Config", path);
             
+            config_obj.put("LogLvl", LoggingLevel);
+            
             try {
                 FileWriter fw = new FileWriter(file);
                 try{
@@ -241,6 +254,7 @@ public class UIOptions extends JPanel {
                                 "The config file can not be written!\n\nError:\n"+ex.toString(),
                                 "Can not write in config file",
                                 JOptionPane.ERROR_MESSAGE);
+                    Logging.getInstance().log(getClass(), ex);
                 } finally {
                     fw.flush();
                     fw.close();
@@ -250,6 +264,9 @@ public class UIOptions extends JPanel {
                             "Can not open the config file!\n\nError:\n"+ex.toString(),
                             "Can not open config file",
                             JOptionPane.ERROR_MESSAGE);
+                Logging.getInstance().log(getClass(), ex);
+            } catch(Exception ex) {
+                Logging.getInstance().log(getClass(), ex);
             }
             
         } else {
@@ -257,6 +274,7 @@ public class UIOptions extends JPanel {
                             "The file:\n"+path+"\n is not readable/writable.",
                             "File not Found!",
                             JOptionPane.ERROR_MESSAGE);
+            Logging.getInstance().log(getClass(), "The file:"+path+" is not readable/writable.", Logging.ERROR);
         }
     }
 
@@ -317,6 +335,10 @@ public class UIOptions extends JPanel {
         activeSSOProtocols = new javax.swing.JCheckBox();
         msAccount = new javax.swing.JCheckBox();
         configApply = new javax.swing.JButton();
+        logginglvlComboBox = new javax.swing.JComboBox();
+        logginglvlLabel = new javax.swing.JLabel();
+        hintLabel = new javax.swing.JLabel();
+        hintTextLabel = new javax.swing.JLabel();
 
         ssoLabel1.setText("Active SSO Protocols");
 
@@ -610,6 +632,25 @@ public class UIOptions extends JPanel {
             }
         });
 
+        logginglvlComboBox.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        logginglvlComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Info", "Debug", "Verbose" }));
+        logginglvlComboBox.setSelectedIndex(2);
+        logginglvlComboBox.setToolTipText("");
+        logginglvlComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                logginglvlComboBoxActionPerformed(evt);
+            }
+        });
+
+        logginglvlLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        logginglvlLabel.setText("Logging");
+
+        hintLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        hintLabel.setText("Hint:");
+
+        hintTextLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        hintTextLabel.setText("Show INFO and ERROR");
+
         javax.swing.GroupLayout scrollPanelLayout = new javax.swing.GroupLayout(scrollPanel);
         scrollPanel.setLayout(scrollPanelLayout);
         scrollPanelLayout.setHorizontalGroup(
@@ -687,11 +728,6 @@ public class UIOptions extends JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(extLibSeparator1))
                     .addGroup(scrollPanelLayout.createSequentialGroup()
-                        .addComponent(configLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(configText1)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(scrollPanelLayout.createSequentialGroup()
                         .addComponent(libLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(libText1)
@@ -703,12 +739,24 @@ public class UIOptions extends JPanel {
                         .addComponent(saveConfSeparator1))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, scrollPanelLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, scrollPanelLayout.createSequentialGroup()
-                                .addComponent(configImport)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(configSave1))
-                            .addComponent(configApply, javax.swing.GroupLayout.Alignment.TRAILING))))
+                        .addComponent(configApply))
+                    .addGroup(scrollPanelLayout.createSequentialGroup()
+                        .addComponent(configLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(configText1)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, scrollPanelLayout.createSequentialGroup()
+                        .addComponent(logginglvlLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(logginglvlComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(hintLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(hintTextLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(configImport)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(configSave1)))
                 .addContainerGap())
         );
         scrollPanelLayout.setVerticalGroup(
@@ -795,8 +843,12 @@ public class UIOptions extends JPanel {
                 .addGap(18, 18, 18)
                 .addGroup(scrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(configImport)
-                    .addComponent(configSave1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(configSave1)
+                    .addComponent(logginglvlComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(hintLabel)
+                    .addComponent(hintTextLabel)
+                    .addComponent(logginglvlLabel))
+                .addGap(47, 47, 47)
                 .addComponent(configApply)
                 .addContainerGap(74, Short.MAX_VALUE))
         );
@@ -1027,6 +1079,24 @@ public class UIOptions extends JPanel {
         saveConfig(configText1.getText());
     }//GEN-LAST:event_configApplyActionPerformed
 
+    private void logginglvlComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logginglvlComboBoxActionPerformed
+        LoggingLevel = logginglvlComboBox.getSelectedIndex();
+        switch(LoggingLevel){
+            case 0:
+                hintTextLabel.setText("Show INFO and ERROR");
+                break;
+            case 1:
+                hintTextLabel.setText("Show DEBUG and ERROR");
+                break;
+            case 2:
+                hintTextLabel.setText("Show everything");
+                break;
+            default:
+                hintTextLabel.setText("Error while Choosing.");
+                Logging.getInstance().log(getClass(), "Variable LoggingLevel="+LoggingLevel, Logging.ERROR);
+        }
+    }//GEN-LAST:event_logginglvlComboBoxActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox activeSSOProtocols;
@@ -1045,10 +1115,14 @@ public class UIOptions extends JPanel {
     private javax.swing.JSeparator extLibSeparator1;
     private javax.swing.JCheckBox facebookConnect;
     private javax.swing.JCheckBox highlightSSO;
+    private javax.swing.JLabel hintLabel;
+    private javax.swing.JLabel hintTextLabel;
     private javax.swing.JScrollPane jScrollPane;
     private javax.swing.JLabel libLabel1;
     private javax.swing.JButton libOpen1;
     private javax.swing.JTextField libText1;
+    private javax.swing.JComboBox logginglvlComboBox;
+    private javax.swing.JLabel logginglvlLabel;
     private javax.swing.JCheckBox msAccount;
     private javax.swing.JCheckBox oAuth;
     private javax.swing.JCheckBox openID1;

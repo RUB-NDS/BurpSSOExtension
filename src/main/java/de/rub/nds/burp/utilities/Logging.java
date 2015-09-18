@@ -19,6 +19,7 @@
 package de.rub.nds.burp.utilities;
 
 import burp.BurpExtender;
+import de.rub.nds.burp.espresso.gui.UIOptions;
 import java.io.PrintWriter;
 import java.time.LocalTime;
 
@@ -30,6 +31,10 @@ public class Logging {
     
     private static PrintWriter stdout = null;
     private static PrintWriter stderr = null;
+    
+    public static final int ERROR = 1;
+    public static final int INFO = 2;
+    public static final int DEBUG = 3;
 
     private Logging(){
         stdout = BurpExtender.stdout;
@@ -44,18 +49,28 @@ public class Logging {
         return SingletonHolder.INSTANCE;
     }
     
-    public void log(String tag, String message, boolean error){
+    public void log(Class c, String message, int log_type){
         LocalTime t = LocalTime.now();
         String time = t.toString().substring(0, t.toString().length()-4);
-        if(error){
-            stdout.println(time+" - ["+tag+"]:\t"+"An Error happend, see Error tab.");
-            stderr.println(time+" - ["+tag+"]:\t"+message);
-        } else {
-            stdout.println(time+" - ["+tag+"]:\t"+message);
+        switch(log_type){
+            case ERROR:
+                stdout.println("[E] "+time+" - ["+c.getName()+"]:\t"+"Error, see Errors tab.");
+                stderr.println("[E] "+time+" - ["+c.getName()+"]:\t"+message);
+                break;
+            case INFO:
+                if(UIOptions.LoggingLevel == 0 || UIOptions.LoggingLevel == 2){
+                    stdout.println("[I] "+time+" - ["+c.getName()+"]:\t"+message);
+                }
+                break;
+            case DEBUG:
+                if(UIOptions.LoggingLevel == 1 || UIOptions.LoggingLevel == 2){
+                    stdout.println("[D] "+time+" - ["+c.getName()+"]:\t"+message);
+                }
+                break;
         }
     }
     
-    public void log(String tag, Exception e){
+    public void log(Class c, Exception e){
         LocalTime t = LocalTime.now();
         String time = t.toString().substring(0, t.toString().length()-4);
         StackTraceElement[] stacktrace = e.getStackTrace();
@@ -63,7 +78,7 @@ public class Logging {
         for(StackTraceElement ste : stacktrace){
             trace += "\t"+ste.toString()+"\n";
         }
-        stdout.println(time+" - ["+tag+"]:\t"+"An Error happend, see Error tab.");
-        stderr.println(time+" - ["+tag+"]:\t"+trace);
+        stdout.println("[E] "+time+" - ["+c.getName()+"]:\t"+"Error, see Errors tab.");
+        stderr.println("[E] "+time+" - ["+c.getName()+"]:\t"+trace);
     }    
 }

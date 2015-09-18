@@ -18,7 +18,6 @@
  */
 package de.rub.nds.burp.utilities.listeners;
 
-import de.rub.nds.burp.utilities.Logging;
 import java.util.EventObject;
 
 /**
@@ -35,7 +34,6 @@ public abstract class AbstractCodeEvent extends EventObject{
     }
     
     public String getCode(){
-        Logging.getInstance().log(getClass().getName(), "getCode "+this.toString(), false);
         return code;
     }
     

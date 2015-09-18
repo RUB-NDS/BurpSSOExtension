@@ -34,7 +34,6 @@ import wsattacker.library.signatureWrapping.util.signature.SignatureManager;
 import wsattacker.library.signatureWrapping.xpath.weakness.util.WeaknessLog;
 import wsattacker.library.signatureWrapping.xpath.wrapping.WrappingOracle;
 import wsattacker.library.xmlutilities.dom.DomUtilities;
-//import wsattacker.library.xmlutilities.dom.DomUtilities;
 
 
 /**
@@ -241,12 +240,12 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
                 attackDescriptionTextArea.setText(WeaknessLog.representation());
                 finalPayload.setText(attackString);
         } catch (InvalidWeaknessException ex) {
-                Logging.getInstance().log(getClass().getName(), ex);
+                Logging.getInstance().log(getClass(), ex);
         }
     }//GEN-LAST:event_attackSliderStateChanged
 
         private void modifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyButtonActionPerformed
-            Logging.getInstance().log(getClass().getName(), "Wrapping Signature...", false);
+            Logging.getInstance().log(getClass(), "Wrapping Signature...", Logging.INFO);
             notifyAllTabs(code);
         }//GEN-LAST:event_modifyButtonActionPerformed
 
@@ -267,7 +266,7 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
                     attackSlider.setValue(1);
             }
             attackSliderLabel.setText("(3.) Choose Attack Vector (Max: " + max + ")");
-            Logging.getInstance().log(getClass().getName(), "1", false);
+            Logging.getInstance().log(getClass(), "Updating the Wrapping Oracle.", Logging.DEBUG);
 
         }//GEN-LAST:event_updateOracleActionPerformed
 
@@ -303,7 +302,7 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
             signatureManager = new SignatureManager();
             signatureManager.setDocument(doc);
         } catch (SAXException ex) {
-            Logging.getInstance().log(getClass().getName(), ex);
+            Logging.getInstance().log(getClass(), ex);
         }
         
         //Initialize the Payload JCombobox

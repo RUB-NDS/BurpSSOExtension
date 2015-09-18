@@ -96,19 +96,19 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack{
 
     private void modifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyButtonActionPerformed
         if(code != null){
-            Logging.getInstance().log(getClass().getName(), "Start signature faking.", false);
+            Logging.getInstance().log(getClass(), "Start signature faking.", Logging.INFO);
             try {
                 SignatureFakingOracle sof = new SignatureFakingOracle(code);
                 sof.fakeSignatures();
                 
                 notifyAllTabs(code);
                 
-                Logging.getInstance().log(getClass().getName(), "Signature faking successfull.", false);
+                Logging.getInstance().log(getClass(), "Signature faking successfull.", Logging.INFO);
             } catch (SignatureFakingException ex) {
-                Logging.getInstance().log(getClass().getName(), ex);
+                Logging.getInstance().log(getClass(), ex);
             }
         } else {
-            Logging.getInstance().log(getClass().getName(), "No data to fake the signature, code is null.", true);
+            Logging.getInstance().log(getClass(), "No data to fake the signature, code is null.", Logging.ERROR);
         }
     }//GEN-LAST:event_modifyButtonActionPerformed
 

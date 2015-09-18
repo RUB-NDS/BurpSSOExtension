@@ -26,6 +26,7 @@ import burp.IParameter;
 import burp.IRequestInfo;
 import burp.IResponseInfo;
 import de.rub.nds.burp.espresso.gui.UIOptions;
+import de.rub.nds.burp.utilities.Logging;
 import static de.rub.nds.burp.utilities.ParameterUtilities.getFirstParameterByName;
 import static de.rub.nds.burp.utilities.ParameterUtilities.parameterListContainsParameterName;
 import de.rub.nds.burp.utilities.protocols.BrowserID;
@@ -641,5 +642,6 @@ public class ScanAndMarkSSO implements IHttpListener {
             } else {
                     httpRequestResponse.setComment(message);
             }
+            Logging.getInstance().log(getClass(), message, Logging.DEBUG);
 	}
 }

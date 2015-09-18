@@ -100,8 +100,6 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             samlAttacker = new UISAMLAttacker();
             samlAttacker.setListeners(listeners);
             guiContainer.addTab("Attacker", samlAttacker);
-            
-            Logging.getInstance().log(getClass().getName(), "SAMLEditor successfully created.", false);
         }
 
         //
@@ -119,7 +117,11 @@ public class SAMLEditor implements IMessageEditorTabFactory{
 
         @Override
         public boolean isEnabled(byte[] content, boolean isRequest) {
-            return isRequest && isSAML(content);
+            if(isSAML(content) && isRequest){
+                Logging.getInstance().log(getClass(), "Editor@"+System.identityHashCode(this)+" attached.", Logging.DEBUG);
+                return true;
+            }
+            return false;
         }
 
 
@@ -139,19 +141,19 @@ public class SAMLEditor implements IMessageEditorTabFactory{
 
         @Override
         public void setMessage(byte[] content, boolean isRequest) {
-            Logging.getInstance().log(getClass().getName(), "Start setMessage().", false);
+            Logging.getInstance().log(getClass(), "Start setMessage().", Logging.DEBUG);
             // Editor is not in the intercept tab.
             if(!editable){
                 //remove the attacker
                 try{
                     guiContainer.remove(2);
                 } catch(Exception e){
-                    Logging.getInstance().log(getClass().getName(), e);
+                    Logging.getInstance().log(getClass(), e);
                 }
             }
             
             if (content == null) {
-                Logging.getInstance().log(getClass().getName(), "Clear tabs.", false);
+                Logging.getInstance().log(getClass(), "Clear tabs.", Logging.DEBUG);
                 // clear our tabs
                 sourceViewer.setEnabled(false);
                 rawEditor.setEnabled(false);
@@ -159,7 +161,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 guiContainer.setEnabled(false);
             } else if(samlContent != null){
                 // reactivate our tabs
-                Logging.getInstance().log(getClass().getName(), "Activate tabs.", false);
+                Logging.getInstance().log(getClass(), "Activate tabs.", Logging.DEBUG);
                 sourceViewer.setEnabled(true);
                 rawEditor.setEnabled(true);
                 samlAttacker.setEnabled(true);
@@ -168,14 +170,14 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 //Change the name of the rawEditor to the Parametername
                 guiContainer.setTitleAt(1, samlParamtername);
                 
-                Logging.getInstance().log(getClass().getName(), "Begin XML deserialization.", false);
+                Logging.getInstance().log(getClass(), "Begin XML deserialization.", Logging.DEBUG);
                 String xml = null;
 
                 switch (samlParamtername) {
                     case samlResponse:
                         // deserialize the parameter value
                         xml = helpers.bytesToString(helpers.base64Decode(helpers.urlDecode(samlContent.getValue())));
-                        Logging.getInstance().log(getClass().getName(), "SAMLResponse deserialized.", false);
+                        Logging.getInstance().log(getClass(), "SAMLResponse deserialized.", Logging.DEBUG);
                         break;
                     case samlRequest:
                         try {
@@ -185,22 +187,22 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                         } catch (IOException | DataFormatException e) {
                             xml = samlContent.getValue();
                         }   
-                        Logging.getInstance().log(getClass().getName(), "SAMLRequest deserialized.", false);
+                        Logging.getInstance().log(getClass(), "SAMLRequest deserialized.", Logging.DEBUG);
                         break;
                 }
                 
                 //Notify all tabs with the new saml code.
                 if(xml != null){
                     listeners.notifyAll(new SamlCodeEvent(this, xml));
-                    Logging.getInstance().log(getClass().getName(), "Notify all tabs.", false);
+                    Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
                 }
             } else {
-                Logging.getInstance().log(getClass().getName(), samlContent.getValue(), false);
+                Logging.getInstance().log(getClass(), samlContent.getValue(), Logging.DEBUG);
             }
             
             // remember the displayed content
             currentMessage = content;
-            Logging.getInstance().log(getClass().getName(), "End setMessage().", false);
+            Logging.getInstance().log(getClass(), "End setMessage().", Logging.DEBUG);
         }
 
         @Override
@@ -262,7 +264,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             if(!evt.getSource().equals(this)){
                 attackerModified = true;
             }
-            Logging.getInstance().log(getClass().getName(), evt.getCode(), false);
+            Logging.getInstance().log(getClass(), evt.getCode(), Logging.DEBUG);
         }
 
         @Override

@@ -26,8 +26,9 @@ import burp.IMessageEditorTabFactory;
 import burp.IRequestInfo;
 import burp.IResponseInfo;
 import burp.ITextEditor;
-import de.rub.nds.burp.espresso.gui.UISourceViewer;
+import de.rub.nds.burp.espresso.editor.saml.UISourceViewer;
 import de.rub.nds.burp.utilities.Encoding;
+import de.rub.nds.burp.utilities.Logging;
 import java.awt.Component;
 import javax.swing.JTabbedPane;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -69,26 +70,26 @@ public class JSONEditor implements IMessageEditorTabFactory{
 	class InputTab implements IMessageEditorTab {
 
 		private boolean editable;
-		private ITextEditor txtInput;
-                private JTabbedPane editor;
+		private ITextEditor burpEditor;
+                private JTabbedPane guiContainer;
                 private UISourceViewer sourceViewer;
                 
 		private byte[] currentMessage;
 
-		final String parameterName = "JSON";
+		final String tabName = "JSON";
 		public InputTab(IMessageEditorController controller, boolean editable) {
 			this.editable = editable;
                         
-                        editor = new JTabbedPane();
+                        guiContainer = new JTabbedPane();
                         
 			// create an instance of Burp's text editor, to display our deserialized data
-			txtInput = callbacks.createTextEditor();
-			txtInput.setEditable(editable);
+			burpEditor = callbacks.createTextEditor();
+			burpEditor.setEditable(editable);
                         
                         // create a source code viewer
                         sourceViewer = new UISourceViewer();
-                        editor.addTab("JSON Viewer", sourceViewer);
-                        editor.addTab("Raw", txtInput.getComponent());
+                        guiContainer.addTab("JSON Viewer", sourceViewer);
+                        guiContainer.addTab("Raw", burpEditor.getComponent());
 		}
 
 		//
@@ -96,17 +97,21 @@ public class JSONEditor implements IMessageEditorTabFactory{
 		//
 		@Override
 		public String getTabCaption() {
-			return parameterName;
+			return tabName;
 		}
 
 		@Override
 		public Component getUiComponent() {
-			return editor;
+			return guiContainer;
 		}
 
 		@Override
 		public boolean isEnabled(byte[] content, boolean isRequest) {
-			return isJSON(content);
+                        if(isJSON(content)){
+                            Logging.getInstance().log(getClass(), "Editor@"+System.identityHashCode(this)+" attached.", Logging.DEBUG);
+                            return true;
+                        }
+			return false;
 		}
 
 		private boolean isJSON(byte[] content) {
@@ -131,22 +136,22 @@ public class JSONEditor implements IMessageEditorTabFactory{
 		public void setMessage(byte[] content, boolean isRequest) {
 			if (content == null) {
                             // clear our display
-                            txtInput.setText(null);
-                            txtInput.setEditable(false);
+                            burpEditor.setText(null);
+                            burpEditor.setEditable(false);
                             sourceViewer.setText(null, null);
-                            editor.setEnabled(false);
+                            guiContainer.setEnabled(false);
 			} else {
-                            editor.setEnabled(true);
+                            guiContainer.setEnabled(true);
                             
                             String input = getJSON(content, isRequest);
 
                             // deserialize the parameter value
                             String json = decode(input);
-                            txtInput.setText(json.getBytes());
+                            burpEditor.setText(json.getBytes());
                             sourceViewer.setText(new JSONObject(json).toString(2), SyntaxConstants.SYNTAX_STYLE_JSON);
-                            txtInput.setText(helpers.stringToBytes(input));
+                            burpEditor.setText(helpers.stringToBytes(input));
 
-                            txtInput.setEditable(editable);
+                            burpEditor.setEditable(editable);
 			}
 
 			// remember the displayed content
@@ -175,12 +180,12 @@ public class JSONEditor implements IMessageEditorTabFactory{
 
 		@Override
 		public boolean isModified() {
-			return txtInput.isTextModified();
+			return burpEditor.isTextModified();
 		}
 
 		@Override
 		public byte[] getSelectedData() {
-			return txtInput.getSelectedText();
+			return burpEditor.getSelectedText();
 		}
 
 		public String decode(String input){

@@ -175,7 +175,7 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
     public boolean addNewTable(String tableName, String id, SSOProtocol sso){
         //find tables with same name
         if(TableDB.getTable(id) != null){
-            Logging.getInstance().log(getClass().getName(), "Can't create new table. Table already exists.", true);
+            Logging.getInstance().log(getClass(), "Can't create new table. Table already exists.", Logging.ERROR);
             return false;
         }
         
@@ -232,7 +232,7 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
 
                             historyContainer.removeTabAt(index);
                             TableDB.removeTable(t);
-                            Logging.getInstance().log(getClass().getName(), "Closed Table {"+t.getName()+"}.", false);
+                            Logging.getInstance().log(getClass(), "Closed Table {"+t.getName()+"}.", Logging.DEBUG);
                             
                         }
                     }
@@ -283,7 +283,7 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
 //);
                 
                 TableDB.addTable(t);
-                Logging.getInstance().log(getClass().getName(), "Add the new Table {"+sso.getProtocol()+" "+tab_counter+"} as a tab.", false);
+                Logging.getInstance().log(getClass(), "Add the new Table {"+sso.getProtocol()+" "+tab_counter+"} as a tab.", Logging.DEBUG);
             }
         });
         
