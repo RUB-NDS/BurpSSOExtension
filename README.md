@@ -17,17 +17,23 @@ Supported Protocols:
 - [x] OpenID
 - [x] OAuth
 - [x] BrowserId
-- [x] OpenID Connect (40%)
+- [x] OpenID Connect
+- [x] Facebook Connect
+- [x] Microsoft Account
 
 ### Attacking
-- [ ] scripting API
-- [ ] external libraries
+- [x] WS-Attacker integration while interception SAML messages
 
 ### Beautifier
 - [x] View and edit SAML messages.
 - [x] Show SAML in a history tab
 - [x] Syntax Highlight
-- [x] Context menu for 'Follow SSO Protocol'
+- [x] Context menu for 'Analyze SSO Protocol'
+
+### Editors
+- [x] SAML
+- [x] JSON
+- [x] JSON Web Token (JWT)
 
 ### Basic functions
 - [x] Highlight SSO messages in proxy window, incl. the SSO type.
@@ -46,5 +52,10 @@ $ mvn clean package
 - SSO messages are highlighted automatically in Burp's HTTP history (Proxy tab).
 - A History, Options and Help can be found in a new tab called 'EsPReSSO'
 
-## Overview
-![GitHub Logo](/doc/EsPReSSOFull.png)
+## Dependencies and Licences
+
+ Dependencie     | Licence                         | Access Date | Link                                          | Copyright (c) Date, Name                                             |
+|-----------------|---------------------------------|-------------|-----------------------------------------------|----------------------------------------------------------------------|
+| RSyntaxTextArea | modified BSD license            | 20.09.2015  | https://github.com/bobbylight/RSyntaxTextArea | 2012, Robert Futrell                                                 |
+| json-simple     | Apache License 2.0              | 20.09.2015  | https://code.google.com/p/json-simple/        | Unkown, Yidong Fang                                                  |
+| WSAttacker      | GNU General Public License v2.0 | 20.09.2015  | https://github.com/RUB-NDS/WS-Attacker/       | 2012, Christain Mainka, Andreas Falkenberg, Jurai Somorovski, et al. |
