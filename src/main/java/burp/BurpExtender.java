@@ -25,6 +25,7 @@ import de.rub.nds.burp.espresso.editor.JWTEditor;
 import de.rub.nds.burp.espresso.editor.saml.SAMLEditor;
 import de.rub.nds.burp.utilities.Logging;
 import java.io.PrintWriter;
+import java.time.LocalTime;
 
 
 /**
@@ -60,21 +61,34 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener{
         stdout = new PrintWriter(callbacks.getStdout(), true);
         stderr = new PrintWriter(callbacks.getStderr(), true);
         
+        LocalTime t = LocalTime.now();
+        String time = t.toString().substring(0, t.toString().length()-4);
+        stdout.println("+-----------------------------------------------------------------------+");
+        stdout.println("| EsPReSSO - Extension for Processing and Recognition of Single Sign-on |");
+        stdout.println("|                      Started @ "+time+"                               |");
+        stdout.println("+-----------------------------------------------------------------------+");
+        
         //register a new Tab
         tab = new UITab(callbacks);
+        Logging.getInstance().log(getClass(), "Tab registered.", Logging.INFO);
         
         //integrate the extension of Christian Mainka
         final ScanAndMarkSSO scanAndMark = new ScanAndMarkSSO(callbacks);
 	callbacks.registerHttpListener(scanAndMark);
+        Logging.getInstance().log(getClass(), "Scanner registered.", Logging.INFO);
         callbacks.registerMessageEditorTabFactory(new SAMLEditor(callbacks));
+        Logging.getInstance().log(getClass(), "SAML editor registered.", Logging.INFO);
         
         //New Editors
         callbacks.registerMessageEditorTabFactory(new JSONEditor(callbacks));
+        Logging.getInstance().log(getClass(), "JSON editor registered.", Logging.INFO);
         callbacks.registerMessageEditorTabFactory(new JWTEditor(callbacks));
+        Logging.getInstance().log(getClass(), "JWT editor registered.", Logging.INFO);
         callbacks.registerExtensionStateListener(this);
+        Logging.getInstance().log(getClass(), "ExtensionStateListener registered", Logging.INFO);
         
         //Start logging
-        Logging.getInstance().log(getClass(), "All functions registered.", Logging.INFO);
+        Logging.getInstance().log(getClass(), "Init. complete.", Logging.INFO);
     }
     /**
      * Print a notification on the standard output when extension is unloaded.
