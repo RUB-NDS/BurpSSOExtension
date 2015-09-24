@@ -30,12 +30,11 @@ import de.rub.nds.burp.espresso.editor.saml.UISourceViewer;
 import de.rub.nds.burp.utilities.Encoding;
 import de.rub.nds.burp.utilities.Logging;
 import java.awt.Component;
-import java.io.PrintWriter;
 import java.util.Base64;
 import java.util.Base64.Decoder;
 import javax.swing.JTabbedPane;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 /**
@@ -140,10 +139,10 @@ public class JWTEditor implements IMessageEditorTabFactory{
                                 String body = (new String(content)).substring(iri.getBodyOffset());
                                 try {
                                     JSONObject json = (JSONObject)new JSONParser().parse(body);
-                                    body = json.getString("assertion");
+                                    body = (String) json.get("assertion");
                                 } catch (Exception e) {
                                     Logging.getInstance().log(getClass(), e);
-                                    return "";
+                                    return null;
                                 }
                                 return body;
                             }
@@ -177,8 +176,8 @@ public class JWTEditor implements IMessageEditorTabFactory{
                     txtInput.setText(helpers.stringToBytes(jwt));
                     txtInput.setEditable(editable);
                     try{
-                        sourceViewerHeader.setText(new JSONObject(jwt_list[0]).toString(1), SyntaxConstants.SYNTAX_STYLE_JSON);
-                        sourceViewerPayload.setText(new JSONObject(jwt_list[1]).toString(1), SyntaxConstants.SYNTAX_STYLE_JSON);
+                        sourceViewerHeader.setText(new org.json.JSONObject(jwt_list[0]).toString(2), SyntaxConstants.SYNTAX_STYLE_JSON);
+                        sourceViewerPayload.setText(new org.json.JSONObject(jwt_list[1]).toString(2), SyntaxConstants.SYNTAX_STYLE_JSON);
                         sourceViewerSignature.setText(jwt_list[2], SyntaxConstants.SYNTAX_STYLE_NONE);
                     } catch(Exception e){
                         Logging.getInstance().log(getClass(), e);
