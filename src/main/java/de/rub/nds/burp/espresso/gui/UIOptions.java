@@ -44,16 +44,16 @@ public class UIOptions extends JPanel {
     private File scriptOut, scriptIn;
     private File extLib, config;
     
-    public static boolean samlActive=true;
-    public static boolean openIDActive=true;
-    public static boolean openIDConnectActive=true;
-    public static boolean browserIDActive=true;
-    public static boolean oAuthActive=true;
-    public static boolean facebookConnectActive=true;
-    public static boolean msAccountActive=true;
-    public static boolean highlightBool=true;
+    private static boolean samlActive=true;
+    private static boolean openIDActive=true;
+    private static boolean openIDConnectActive=true;
+    private static boolean browserIDActive=true;
+    private static boolean oAuthActive=true;
+    private static boolean facebookConnectActive=true;
+    private static boolean msAccountActive=true;
+    private static boolean highlightBool=true;
     
-    public static int LoggingLevel = 2; //0 = Info, 1 = Debug, 2 = Verbose
+    private static int LoggingLevel = 2; //0 = Info, 1 = Debug, 2 = Verbose
     
     
 
@@ -1152,4 +1152,41 @@ public class UIOptions extends JPanel {
     private javax.swing.JLabel ssoLabel1;
     private javax.swing.JSeparator ssoSeparator1;
     // End of variables declaration//GEN-END:variables
+    
+    public static boolean isSamlActive(){
+        return samlActive;
+    }
+    
+    public static boolean isOpenIDActive(){
+        return openIDActive;
+    }
+    
+    public static boolean isOpenIDConnectActive(){
+        return openIDConnectActive;
+    }
+    
+    public static boolean isBrowserIDActive(){
+        return browserIDActive;
+    }
+    
+    public static boolean isOAuthActive(){
+        return oAuthActive;
+    }
+    
+    public static boolean isFBConnectActive(){
+        return facebookConnectActive;
+    }
+    
+    public static boolean isMSAccountActive(){
+        return msAccountActive;
+    }
+    
+    public static boolean isHighlighted(){
+        return highlightBool;
+    }
+    
+    public static int getLoggingLevel(){
+        return LoggingLevel;
+    }
+    
 }

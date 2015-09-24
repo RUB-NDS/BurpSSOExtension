@@ -150,7 +150,7 @@ public class ScanAndMarkSSO implements IHttpListener {
             IRequestInfo requestInfo = helpers.analyzeRequest(httpRequestResponse);
             String host = requestInfo.getUrl().getHost();
             //The order is very important!
-            if(UIOptions.facebookConnectActive){
+            if(UIOptions.isFBConnectActive()){
                 if(host.contains(FBC_HOST)){
                     SSOProtocol protocol = checkRequestForFacebookConnect(requestInfo, httpRequestResponse);
                     if(protocol != null){
@@ -159,7 +159,7 @@ public class ScanAndMarkSSO implements IHttpListener {
                     }
                 }
             }
-            if(UIOptions.msAccountActive){
+            if(UIOptions.isMSAccountActive()){
                 if(host.contains(MSA_HOST)){
                     SSOProtocol protocol = checkRequestForMicrosoftAccount(requestInfo, httpRequestResponse);
                     if(protocol != null){
@@ -168,7 +168,7 @@ public class ScanAndMarkSSO implements IHttpListener {
                     }
                 }
             }
-            if(UIOptions.openIDConnectActive){
+            if(UIOptions.isOpenIDConnectActive()){
                 //Exclude all monolithic protocols
                 if(!host.contains(FBC_HOST) || !host.contains(MSA_HOST) || !host.contains(BID_HOST)){
                     SSOProtocol protocol = checkRequestForOpenIdConnect(requestInfo, httpRequestResponse);
@@ -178,7 +178,7 @@ public class ScanAndMarkSSO implements IHttpListener {
                     }
                 }
             }
-            if(UIOptions.oAuthActive){
+            if(UIOptions.isOAuthActive()){
                 //Exclude all monolithic protocols
                 if(!host.contains(FBC_HOST) || !host.contains(MSA_HOST) || !host.contains(BID_HOST)){
                     SSOProtocol protocol = checkRequestForOAuth(requestInfo, httpRequestResponse);
@@ -188,21 +188,21 @@ public class ScanAndMarkSSO implements IHttpListener {
                     }
                 }
             }
-            if(UIOptions.openIDActive){
+            if(UIOptions.isOpenIDActive()){
                 SSOProtocol protocol = checkRequestForOpenId(requestInfo, httpRequestResponse);
                 if(protocol != null){
                     protocol.setCounter(counter++);
                     return protocol.toTableEntry();
                 }
             }
-            if(UIOptions.samlActive){
+            if(UIOptions.isSamlActive()){
                 SSOProtocol protocol = checkRequestForSaml(requestInfo, httpRequestResponse);
                 if(protocol != null){
                     protocol.setCounter(counter++);
                     return protocol.toTableEntry();
                 }
             }
-            if(UIOptions.browserIDActive){
+            if(UIOptions.isBrowserIDActive()){
                 SSOProtocol protocol = checkRequestForBrowserId(requestInfo, httpRequestResponse);
                 if(protocol != null){
                     protocol.setCounter(counter++);
@@ -633,7 +633,7 @@ public class ScanAndMarkSSO implements IHttpListener {
 	}
 
         private void markRequestResponse(IHttpRequestResponse httpRequestResponse, String message, String colour) {
-            if(UIOptions.highlightBool){
+            if(UIOptions.isHighlighted()){
                 httpRequestResponse.setHighlight(colour);
             }
             final String oldComment = httpRequestResponse.getComment();

@@ -58,12 +58,12 @@ public class Logging {
                 stderr.println("[E] "+time+" - ["+c.getName()+"]:\t"+message);
                 break;
             case INFO:
-                if(UIOptions.LoggingLevel == 0 || UIOptions.LoggingLevel == 2){
+                if(UIOptions.getLoggingLevel() == 0 || UIOptions.getLoggingLevel() == 2){
                     stdout.println("[I] "+time+" - ["+c.getName()+"]:\t"+message);
                 }
                 break;
             case DEBUG:
-                if(UIOptions.LoggingLevel == 1 || UIOptions.LoggingLevel == 2){
+                if(UIOptions.getLoggingLevel() == 1 || UIOptions.getLoggingLevel() == 2){
                     stdout.println("[D] "+time+" - ["+c.getName()+"]:\t"+message);
                 }
                 break;
