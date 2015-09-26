@@ -23,6 +23,7 @@ import burp.IHttpRequestResponse;
 import burp.IParameter;
 import burp.IRequestInfo;
 import de.rub.nds.burp.utilities.Encoding;
+import de.rub.nds.burp.utilities.Logging;
 import static de.rub.nds.burp.utilities.protocols.SSOProtocol.getIDOfLastList;
 import static de.rub.nds.burp.utilities.protocols.SSOProtocol.newProtocolflowID;
 import java.util.ArrayList;
@@ -37,6 +38,12 @@ public class OpenID extends SSOProtocol{
     
     private String return_to = "";
     
+    /**
+     *
+     * @param message
+     * @param protocol
+     * @param callbacks
+     */
     public OpenID(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
         super(message, protocol, callbacks);
         super.setToken(findID());
@@ -44,6 +51,11 @@ public class OpenID extends SSOProtocol{
         add(this, getProtocolflowID());
     }
 
+    /**
+     *
+     * @param input
+     * @return
+     */
     @Override
     public String decode(String input) {
         if(Encoding.isURLEncoded(input)){
@@ -52,6 +64,10 @@ public class OpenID extends SSOProtocol{
         return input;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String findID() {
           IRequestInfo iri = super.getCallbacks().getHelpers().analyzeRequest(super.getMessage());
@@ -82,9 +98,13 @@ public class OpenID extends SSOProtocol{
           return returnTo;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public int analyseProtocol() {
-        printOut("\nAnalyse: "+getProtocol()+" with ID: "+getToken());
+        logging.log(getClass(), "\nAnalyse: "+getProtocol()+" with ID: "+getToken(), Logging.DEBUG);
         ArrayList<SSOProtocol> last_protocolflow = SSOProtocol.getLastProtocolFlow();
         if(last_protocolflow != null){
             double listsize = (double) last_protocolflow.size();
@@ -93,17 +113,17 @@ public class OpenID extends SSOProtocol{
             double traffic = 0;
             for(SSOProtocol sso : last_protocolflow){
                 if(sso.getProtocol().substring(0, 5).equals(this.getProtocol().substring(0, 5))){
-                    printOut(sso.getProtocol());
+                    logging.log(getClass(), sso.getProtocol(), Logging.DEBUG);
                     protocol++;
                 }
                 if(sso.getToken().equals(this.getToken())){
-                    printOut(sso.getToken());
+                    logging.log(getClass(),sso.getToken(), Logging.DEBUG);
                     token++;
                 }
                 String returnTo = findReturnTo(sso.getMessage());
                 if(returnTo != null){
                     if(return_to.equals(returnTo)){
-                        printOut(returnTo);
+                        logging.log(getClass(),returnTo, Logging.DEBUG);
                         traffic++;
                     }
                 }
@@ -112,7 +132,7 @@ public class OpenID extends SSOProtocol{
             
             if(listsize >= 0){
                 double prob = ((protocol/listsize)+(token/listsize)+(traffic/listsize))/3;
-                printOut("Probability: "+prob);
+                logging.log(getClass(),"Probability: "+prob, Logging.DEBUG);
                 if(prob >= 0.7){
                     return getIDOfLastList();
                 }

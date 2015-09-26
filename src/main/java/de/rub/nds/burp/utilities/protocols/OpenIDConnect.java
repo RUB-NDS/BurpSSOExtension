@@ -23,6 +23,7 @@ import burp.IHttpRequestResponse;
 import burp.IParameter;
 import burp.IRequestInfo;
 import de.rub.nds.burp.utilities.Encoding;
+import de.rub.nds.burp.utilities.Logging;
 import static de.rub.nds.burp.utilities.protocols.SSOProtocol.OAUTH_ID;
 import static de.rub.nds.burp.utilities.protocols.SSOProtocol.OAUTH_ID_FACEBOOK;
 import static de.rub.nds.burp.utilities.protocols.SSOProtocol.getIDOfLastList;
@@ -38,6 +39,12 @@ import java.util.regex.Pattern;
  */
 public class OpenIDConnect extends SSOProtocol{
 
+    /**
+     *
+     * @param message
+     * @param protocol
+     * @param callbacks
+     */
     public OpenIDConnect(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
         super(message, protocol, callbacks);
         super.setToken(findID());
@@ -45,6 +52,11 @@ public class OpenIDConnect extends SSOProtocol{
         add(this, getProtocolflowID());
     }
     
+    /**
+     *
+     * @param input
+     * @return
+     */
     @Override
     public String decode(String input) {
         if(Encoding.isURLEncoded(input)){
@@ -53,6 +65,10 @@ public class OpenIDConnect extends SSOProtocol{
         return input;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String findID() {
         IRequestInfo iri = super.getCallbacks().getHelpers().analyzeRequest(super.getMessage());
@@ -90,9 +106,13 @@ public class OpenIDConnect extends SSOProtocol{
         return id;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public int analyseProtocol() {
-        printOut("\nAnalyse: "+getProtocol()+" with ID: "+getToken());
+        logging.log(getClass(),"\nAnalyse: "+getProtocol()+" with ID: "+getToken(), Logging.DEBUG);
         ArrayList<SSOProtocol> last_protocolflow = SSOProtocol.getLastProtocolFlow();
         if(last_protocolflow != null){
             double listsize = (double) last_protocolflow.size();
@@ -106,11 +126,11 @@ public class OpenIDConnect extends SSOProtocol{
             
             for(SSOProtocol sso : last_protocolflow){
                 if(sso.getProtocol().substring(0, 4).equals(this.getProtocol().substring(0, 4))){
-                    printOut(sso.getProtocol());
+                    logging.log(getClass(),sso.getProtocol(), Logging.DEBUG);
                     protocol++;
                 }
                 if(sso.getToken().equals(this.getToken())){
-                    printOut(sso.getToken());
+                    logging.log(getClass(),sso.getToken(), Logging.DEBUG);
                     token++;
                 }
                 if(wait){
@@ -118,7 +138,7 @@ public class OpenIDConnect extends SSOProtocol{
                 } else {
                     curr_time = sso.getTimestamp();
                     tmp += curr_time-last_time;
-                    printOut("Diff: "+(curr_time-last_time));
+                    logging.log(getClass(),"Diff: "+(curr_time-last_time), Logging.DEBUG);
                 }
                 last_time = sso.getTimestamp();
             }
@@ -127,12 +147,12 @@ public class OpenIDConnect extends SSOProtocol{
                 double diff_time = ((double)tmp/listsize);
                 double curr_diff_time = getTimestamp() - last_protocolflow.get(last_protocolflow.size()-1).getTimestamp();
                 double time_bonus = 0;
-                printOut("CurrDiff:"+curr_diff_time+" Diff:"+diff_time);
+                logging.log(getClass(),"CurrDiff:"+curr_diff_time+" Diff:"+diff_time, Logging.DEBUG);
                 if(curr_diff_time <= (diff_time+4000)){
                     time_bonus = 0.35;
                 }
                 double prob = ((protocol/listsize)+(token/listsize)*2)/3+(time_bonus);
-                printOut("Probability: "+prob);
+                logging.log(getClass(),"Probability: "+prob, Logging.DEBUG);
                 if(prob >= 0.7){
                     return getIDOfLastList();
                 }

@@ -37,13 +37,39 @@ import java.util.regex.Pattern;
  * @version 1.0
  */
 public class SAML extends SSOProtocol{
+
+    /**
+     *
+     */
     public static final String NAME = "SAML";
+
+    /**
+     *
+     */
     public static final String REQUEST = "SAMLRequest";
+
+    /**
+     *
+     */
     public static final String RESPONSE = "SAMLResponse";
+
+    /**
+     *
+     */
     public static final String RELAYSTATE = "RelayState";
+
+    /**
+     *
+     */
     public static final String ARTIFACT = "SAMLart";
     
-    
+    /**
+     *
+     * @param message
+     * @param protocol
+     * @param callbacks
+     * @param param
+     */
     public SAML(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks, IParameter param){
         super(message, protocol, callbacks);
         super.setParamName(param.getName());
@@ -132,11 +158,19 @@ public class SAML extends SSOProtocol{
         return null;
     }
     
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString(){
         return super.getToken()+" "+super.getParamName()+"="+super.getContent();
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public int analyseProtocol() {
         //printOut("\nAnalyse: "+getProtocol()+" with ID: "+getToken());
