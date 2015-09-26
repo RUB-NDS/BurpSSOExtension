@@ -42,13 +42,13 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener{
     public static final String EXTENSION_NAME = "EsPReSSO";
     
     private UITab tab;
-    public static PrintWriter stdout;
-    public static PrintWriter stderr;
+    private static PrintWriter stdout;
+    private static PrintWriter stderr;
     
     /**
      * Register all new functions like for the internals and GUI.
-     * Registered are Editors, a Tab and HttpListners
-     * @param callbacks Provided by the Burp Suite api.
+     * Registered are Editors, a Tab and a HttpListner
+     * @param callbacks {@link burp.IBurpExtenderCallbacks}
      */
     
     @Override
@@ -90,15 +90,31 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener{
         //Start logging
         Logging.getInstance().log(getClass(), "Init. complete.", Logging.INFO);
     }
+    
     /**
      * Print a notification on the standard output when extension is unloaded.
      */
-
     @Override
     public void extensionUnloaded() {
         Logging.getInstance().log(getClass(), "Extension is now unloaded.", Logging.INFO);
         stdout.println("");
         stderr.println("");
+    }
+    
+    /**
+     * Get a {@link java.io.PrintWriter} to the standard output of Burp.
+     * @return The standard output
+     */
+    public static PrintWriter getStdOut(){
+        return stdout;
+    }
+    
+    /**
+     * Get a {@link java.io.PrintWriter} to the standard error output of Burp.
+     * @return The standard error output
+     */    
+    public static PrintWriter getStdErr(){
+        return stderr;
     }
  
 }

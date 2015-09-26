@@ -37,8 +37,9 @@ import wsattacker.library.xmlutilities.dom.DomUtilities;
 
 
 /**
- *
- * @author Tim Guenther
+ * The Signature Wrapping Attack
+ * @author Tim Guenther, Christian Mainka
+ * @version 1.0
  */
 public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
 
@@ -49,7 +50,6 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
 
     /**
      * Creates new form UISigWrapAttack
-     * @throws org.xml.sax.SAXException
      */
     public UISigWrapAttack() {
             initComponents();
@@ -295,6 +295,9 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * Initialise the XML Signature Wrapping Attack.
+     */
     private void initXsw() {
         Document doc;
         try {
@@ -333,13 +336,21 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
         //Clear the final Payload
         finalPayload.setText("Press Update Oracle.");
     }
-        
+       
+    /**
+     * Is called every time new Code is available.
+     * @param evt {@link de.rub.nds.burp.utilities.listeners.AbstractCodeEvent} The new source code.
+     */
     @Override
     public void setCode(AbstractCodeEvent evt) {
         this.code = evt.getCode();
         initXsw();
     }
 
+    /**
+     * Notify all registered listeners with the new code.
+     * @param code The new source code.
+     */
     @Override
     public void notifyAllTabs(String code) {
         if(listeners != null){
@@ -347,6 +358,10 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
         }
     }
 
+    /**
+     * Set the listener for the editor.
+     * @param listeners {@link de.rub.nds.burp.utilities.listeners.CodeListenerController}
+     */
     @Override
     public void setListener(CodeListenerController listeners) {
         this.listeners = listeners;

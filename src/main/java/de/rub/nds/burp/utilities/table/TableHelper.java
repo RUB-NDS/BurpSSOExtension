@@ -18,6 +18,7 @@
  */
 package de.rub.nds.burp.utilities.table;
 
+import de.rub.nds.burp.utilities.Logging;
 import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
@@ -40,7 +41,7 @@ public class TableHelper extends AbstractTableModel{
     }
 
     /**
-     * 
+     * Get the table list.
      * @return The list saved during the construction.
      */
     public ArrayList<TableEntry> getTableList(){
@@ -63,6 +64,10 @@ public class TableHelper extends AbstractTableModel{
         return true;
     }
     
+    /**
+     * Remove all entries from the table list.
+     * @return True if all entries removed, false otherwise.
+     */
     public boolean clear(){
         try{
             list.clear();
@@ -74,7 +79,7 @@ public class TableHelper extends AbstractTableModel{
     }
     
     /**
-     * 
+     * Get the number of rows.
      * @return Number of rows.
      */
     @Override
@@ -85,7 +90,7 @@ public class TableHelper extends AbstractTableModel{
 
     /**
      * 
-     * @return Number of columns. (10)
+     * @return Number of columns. (9)
      */
     @Override
     public int getColumnCount()
@@ -94,7 +99,7 @@ public class TableHelper extends AbstractTableModel{
     }
 
     /**
-     * 
+     * Get the name of the column.
      * @param columnIndex Index of the column.
      * @return The name of the column.
      */
@@ -104,12 +109,13 @@ public class TableHelper extends AbstractTableModel{
         try {
             return colName[columnIndex];
         } catch (Exception e) {
+            Logging.getInstance().log(getClass(), e);
             return "";
         }
     }
 
     /**
-     * 
+     * Get the class of the column.
      * @param columnIndex Index of the column.
      * @return The class of the column.
      */
@@ -120,7 +126,7 @@ public class TableHelper extends AbstractTableModel{
     }
 
     /**
-     * 
+     * Get the value at a position.
      * @param rowIndex The row.
      * @param columnIndex The column.
      * @return Value for the specified entry. Null if not found.

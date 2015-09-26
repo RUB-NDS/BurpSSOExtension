@@ -52,7 +52,7 @@ import java.util.regex.Pattern;
  * Highlight request in the proxy history.
  * The protocols OpenID, OpenID Connect, OAuth, BrowserID and SAML are highlighted.
  * @author Christian Mainka, Tim Guenther
- * @version 1.1
+ * @version 1.0
  */
 
 public class ScanAndMarkSSO implements IHttpListener {

@@ -21,9 +21,14 @@ package de.rub.nds.burp.espresso.gui.attacker.saml;
 import de.rub.nds.burp.utilities.listeners.ICodeListener;
 
 /**
- *
+ * The IAttack interface.
+ * This interface must be implemented by every attack in the Attacker.
  * @author Tim Guenther
  */
 public interface IAttack extends ICodeListener{
+    /**
+     * Notify all registered listeners with the new code.
+     * @param code The new source code.
+     */
     public void notifyAllTabs(String code);
 }

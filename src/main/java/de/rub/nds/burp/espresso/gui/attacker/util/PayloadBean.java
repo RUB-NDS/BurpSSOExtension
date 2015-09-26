@@ -22,11 +22,20 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import wsattacker.library.signatureWrapping.option.Payload;
 
+/**
+ * PayloadBean
+ * @author Christian Mainka
+ * @version 1.0
+ */
+
 public class PayloadBean {
 
 	private Payload payload;
 
-	public static final String PROP_PAYLOAD = "payload";
+    /**
+     * Property of payload.
+     */
+    public static final String PROP_PAYLOAD = "payload";
 
 	private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -53,7 +62,7 @@ public class PayloadBean {
 	/**
 	 * Add PropertyChangeListener.
 	 *
-	 * @param listener
+	 * @param listener {@link java.beans.PropertyChangeListener}
 	 */
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		propertyChangeSupport.addPropertyChangeListener(listener);
@@ -62,7 +71,7 @@ public class PayloadBean {
 	/**
 	 * Remove PropertyChangeListener.
 	 *
-	 * @param listener
+	 * @param listener {@link java.beans.PropertyChangeListener}
 	 */
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
 		propertyChangeSupport.removePropertyChangeListener(listener);

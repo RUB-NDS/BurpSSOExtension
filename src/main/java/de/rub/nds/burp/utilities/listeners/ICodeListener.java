@@ -21,10 +21,19 @@ package de.rub.nds.burp.utilities.listeners;
 import java.util.EventListener;
 
 /**
- *
+ * The interface for all CodeListners.
  * @author Tim Guenther
+ * @version 1.0
  */
 public interface ICodeListener extends EventListener {
+    /**
+     * Is called every time new Code is available.
+     * @param evt {@link de.rub.nds.burp.utilities.listeners.AbstractCodeEvent} The new source code.
+     */
     void setCode(AbstractCodeEvent evt);
+    /**
+     * Set the listener for the editor.
+     * @param listeners {@link de.rub.nds.burp.utilities.listeners.CodeListenerController}
+     */
     void setListener(CodeListenerController listeners);
 }

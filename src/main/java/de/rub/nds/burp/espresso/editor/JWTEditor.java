@@ -38,9 +38,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 /**
- * TODO:
- * Create a new Template Class for the SSO protocol editors.
- * This is not used yet!
+ * JSON Web Token (JWT) Editor.
+ * Display decoded JWT syntax highlighted.
+ * @author Tim Guenther
+ * @version 1.0
  */ 
 
 /**
@@ -53,23 +54,32 @@ public class JWTEditor implements IMessageEditorTabFactory{
     private IBurpExtenderCallbacks callbacks;
     private IExtensionHelpers helpers;
 
+    /**
+     * JWT Editor.
+     * Create a new JWTEditor factory.
+     * @param callbacks {@link burp.IBurpExtenderCallbacks}
+     */
     public JWTEditor(IBurpExtenderCallbacks callbacks) {
         this.callbacks = callbacks;
         this.helpers = callbacks.getHelpers();
     }
 
-    //
-    // implement IMessageEditorTabFactory
-    //
+    /**
+     * Create a new Instance of Burps own Request/Response Viewer (IMessageEditorTab).
+     * @param controller {@link burp.IMessageEditorController}
+     * @param editable True if message is editable, false otherwise.
+     * @return {@link burp.IMessageEditorTab}
+     */
     @Override
     public IMessageEditorTab createNewInstance(IMessageEditorController controller, boolean editable) {
         // create a new instance of our custom editor tab
         return new InputTab(controller, editable);
     }
 
-    //
-    // class implementing IMessageEditorTab
-    //
+    /**
+     * Implementing the IMessageEditorTab.
+     * Class with the UI components and the businesses logic.
+     */
     class InputTab implements IMessageEditorTab {
 
         private boolean editable;
@@ -101,19 +111,30 @@ public class JWTEditor implements IMessageEditorTabFactory{
             editor.addTab("Raw", txtInput.getComponent());
         }
 
-        //
-        // implement IMessageEditorTab
-        //
+        /**
+         * 
+         * @return Name of the new tab.
+         */
         @Override
         public String getTabCaption() {
                 return parameterName;
         }
 
+        /**
+         * 
+         * @return The UI component to attach.
+         */
         @Override
         public Component getUiComponent() {
                 return editor;
         }
 
+        /**
+         * 
+         * @param content The http message as bytes. 
+         * @param isRequest True if request, false if response.
+         * @return True if the tab should be attached, false otherwise.
+         */
         @Override
         public boolean isEnabled(byte[] content, boolean isRequest) {
                 if(isJWT(content, isRequest)){
@@ -122,11 +143,26 @@ public class JWTEditor implements IMessageEditorTabFactory{
                 }
                 return false;
         }
-
+        
+        /**
+         * 
+         * @param content The http message as bytes. 
+         * @return True if JWT is found in the message.
+         */        /**
+                 * 
+                 * @param content The http message as bytes. 
+                 * @return True if JSON is found in the message.
+                 */
         private boolean isJWT(byte[] content, boolean isRequest) {
             return getJWT(content, isRequest) != null;
         }
-
+        
+        /**
+         * Get the body of the http message.
+         * @param content The http message as bytes. 
+         * @param isRequest True if request, false if response.
+         * @return JSON as a string.
+         */
         private String getJWT(byte[] content, boolean isRequest){
             if(content != null){
                 IParameter jwt = helpers.getRequestParameter(content, "assertion");
@@ -153,7 +189,11 @@ public class JWTEditor implements IMessageEditorTabFactory{
             }
             return null;
         }
-
+        /**
+         * Set the message to display in the tab.
+         * @param content The http message as bytes.
+         * @param isRequest True if request, false if response.
+         */
         @Override
         public void setMessage(byte[] content, boolean isRequest) {
             if (content == null) {
@@ -188,7 +228,11 @@ public class JWTEditor implements IMessageEditorTabFactory{
             // remember the displayed content
             currentMessage = content;
         }
-
+        
+        /**
+         * 
+         * @return Get the current message.
+         */
         @Override
         public byte[] getMessage() {
                 // determine whether the user modified the deserialized data
@@ -208,17 +252,30 @@ public class JWTEditor implements IMessageEditorTabFactory{
                         return currentMessage;
 //			}
         }
-
+        
+        /**
+         * Indicator for the proxy to show the original and edited tab.
+         * @return True if message is modified by the user.
+         */
         @Override
         public boolean isModified() {
                 return txtInput.isTextModified();
         }
 
+        /**
+         * 
+         * @return Data selected by the user.
+         */
         @Override
         public byte[] getSelectedData() {
                 return txtInput.getSelectedText();
         }
 
+        /**
+         * Decode the JWT String.
+         * @param input The data to decode.
+         * @return The decoded String.
+         */
         public String[] decode(String input){
             try{
                 if(Encoding.isURLEncoded(input)){

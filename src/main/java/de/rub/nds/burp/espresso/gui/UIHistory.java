@@ -37,7 +37,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -60,13 +59,28 @@ import javax.swing.table.TableRowSorter;
 public class UIHistory extends JSplitPane implements IMessageEditorController{
     
     private IBurpExtenderCallbacks callbacks;
-    private PrintWriter stdout;
     
     private JTabbedPane historyContainer;
     private Table ssoHistoryTable;
+
+    /**
+     * The request viewer of Burp.
+     */
     public static IMessageEditor requestViewer;
+
+    /**
+     * The response viewer of Burp.
+     */
     public static IMessageEditor responseViewer;
+
+    /**
+     * The currently displayed http message.
+     */
     public static IHttpRequestResponse currentlyDisplayedItem;
+
+    /**
+     * Number of open tabs.
+     */
     public static int tab_counter = 1;
 
     /**
@@ -76,7 +90,6 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
     public UIHistory(IBurpExtenderCallbacks callbacks) {
         super(JSplitPane.VERTICAL_SPLIT);
         this.callbacks = callbacks;
-        stdout = new PrintWriter(callbacks.getStdout(), true);
         
         initComponent();
     }
@@ -170,6 +183,7 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
      * Add a table to the history UI.
      * @param tableName Name of the table, is displayed in the new tab. 
      * @param id The id for the requests.
+     * @param sso The SSO Protocol that should be stored in the table.
      * @return False if table exists, otherwise true.
      */
     public boolean addNewTable(String tableName, String id, SSOProtocol sso){
@@ -184,7 +198,7 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
             @Override
             public void run()
             {   
-//                Table t = new Table(new TableHelper(new ArrayList<TableEntry>()),tableName,id);
+//                Table t = new Table(new TableModel(new ArrayList<TableEntry>()),tableName,id);
 //                ArrayList<TableEntry> list = ssoHistoryTable.getTableList();
 //                for(TableEntry e : list){
 //                    if(e.getToken().equals(id)){
@@ -290,16 +304,28 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
         return true;
     }
     
+    /**
+     * Get the {@link burp.IHttpService} of the displayed message
+     * @return The {@link burp.IHttpService} of the displayed message.
+     */
     @Override
     public IHttpService getHttpService() {
         return currentlyDisplayedItem.getHttpService();
     }
 
+    /**
+     * Get the request of the current message.
+     * @return The request.
+     */
     @Override
     public byte[] getRequest() {
         return currentlyDisplayedItem.getRequest();
     }
 
+    /**
+     * Get the response of the current message.
+     * @return The response.
+     */
     @Override
     public byte[] getResponse() {
         return currentlyDisplayedItem.getResponse();

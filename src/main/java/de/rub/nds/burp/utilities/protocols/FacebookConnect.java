@@ -23,35 +23,39 @@ import burp.IHttpRequestResponse;
 import burp.IParameter;
 import burp.IRequestInfo;
 import de.rub.nds.burp.utilities.Logging;
-import static de.rub.nds.burp.utilities.protocols.SSOProtocol.OAUTH_ID;
-import static de.rub.nds.burp.utilities.protocols.SSOProtocol.OAUTH_ID_FACEBOOK;
 import static de.rub.nds.burp.utilities.protocols.SSOProtocol.getIDOfLastList;
 import static de.rub.nds.burp.utilities.protocols.SSOProtocol.newProtocolflowID;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Facebook Connect
  * @author Tim Guenther
+ * @version 1.0
  */
 public class FacebookConnect extends SSOProtocol{
     
     /**
-     *
-     * @param message
-     * @param protocol
-     * @param callbacks
+     * {@value #ID}
+     */
+    public static final String ID = "app_id";
+    
+    /**
+     * Create a new Facebook Connect object.
+     * @param message The http message.
+     * @param protocol The protocol name.
+     * @param callbacks {@link burp.IBurpExtenderCallbacks}
      */
     public FacebookConnect(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
         super(message, protocol, callbacks);
-        super.setToken(findID());
+        super.setToken(findToken());
         super.setProtocolflowID(analyseProtocol());
         add(this, getProtocolflowID());
     }
 
     /**
-     *
-     * @return
+     * Analyse the protocol for the right table.
+     * @return The protocol flow id.
      */
     @Override
     public int analyseProtocol() {
@@ -106,9 +110,9 @@ public class FacebookConnect extends SSOProtocol{
     }
 
     /**
-     *
-     * @param input
-     * @return
+     * URL decode the input.
+     * @param input The plain data.
+     * @return The decoded data.
      */
     @Override
     public String decode(String input) {
@@ -116,18 +120,18 @@ public class FacebookConnect extends SSOProtocol{
     }
 
     /**
-     *
-     * @return
+     * Find the token associated to the request/response.
+     * @return The token.
      */
     @Override
-    public String findID() {
+    public String findToken() {
         IRequestInfo iri = super.getCallbacks().getHelpers().analyzeRequest(getMessage());
         List<IParameter> list = iri.getParameters();
         for(IParameter p : list){
-            if(p.getName().equals(OAUTH_ID)){
+            if(p.getName().equals(OAuth.ID)){
                 return decode(p.getValue());
             }
-            if(p.getName().equals(OAUTH_ID_FACEBOOK)){
+            if(p.getName().equals(ID)){
                 return decode(p.getValue());
             }
         }

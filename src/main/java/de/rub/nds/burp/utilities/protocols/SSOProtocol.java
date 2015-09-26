@@ -26,6 +26,7 @@ import de.rub.nds.burp.utilities.table.Table;
 import de.rub.nds.burp.utilities.table.TableEntry;
 import de.rub.nds.burp.utilities.table.TableHelper;
 import java.util.ArrayList;
+import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  * SSOProtocol.
@@ -34,116 +35,26 @@ import java.util.ArrayList;
  * @version 1.0
  */
 public abstract class SSOProtocol {
-    //constants
-
-    /**
-     *
-     */
-    public static final String SAML = "SAML";
-
-    /**
-     *
-     */
-    public static final String SAML_REQUEST = "SAMLRequest";
-
-    /**
-     *
-     */
-    public static final String SAML_RESPONSE = "SAMLResponse";
-
-    /**
-     *
-     */
-    public static final String SAML_RELAYSTATE = "RelayState";
-
-    /**
-     *
-     */
-    public static final String SAML_ARTIFACT = "SAMLart";
-    
-    /**
-     *
-     */
-    public static final String OPENID_V1 = "OpenID v1.0";
-
-    /**
-     *
-     */
-    public static final String OPENID_PARAM = "openid.mode";
-
-    /**
-     *
-     */
-    public static final String OPENID_REQUEST = "checkid_setup";
-
-    /**
-     *
-     */
-    public static final String OPENID_RESPONSE = "id_res";
-
-    /**
-     *
-     */
-    public static final String OPENID_ID = "openid.identity";
-
-    /**
-     *
-     */
-    public static final String OPENID_V2 = "OpenID v2.0";
-    
-    /**
-     *
-     */
-    public static final String OPENID_CONNECT = "OpenID Connect";
-    
-    /**
-     *
-     */
-    public static final String OAUTH_V1 = "OAuth v1.0";
-
-    /**
-     *
-     */
-    public static final String OAUTH_V2 = "OAuth v2.0";
-
-    /**
-     *
-     */
-    public static final String OAUTH_ID = "client_id";
-
-    /**
-     *
-     */
-    public static final String OAUTH_ID_FACEBOOK = "app_id";
-    
-    /**
-     *
-     */
-    public static final String BROWSERID = "BrowserID";
-
-    /**
-     *
-     */
-    public static final String BROWSERID_ID = "browserid_state";
     
     private static int max_protocol_id = -1;
     private static ArrayList<ArrayList<SSOProtocol>> protocolDB = new ArrayList<ArrayList<SSOProtocol>>();
     private ArrayList<SSOProtocol> protocolflow = new ArrayList<SSOProtocol>();
-    
-    private IHttpRequestResponse message;
+
     //Unique id for all messages of the same protocol flow.
     private int protocolflow_id = -1;
     private int counter = -1;
     private long timestamp = 0;
     
+    private IHttpRequestResponse message = null;
     private String protocol = null;
-    private String content = null;
+    private String parsedContent = null;
     private String paramName = null;
     private String token = "Not Found!";
     private String codeStyle = null;
     
     private IBurpExtenderCallbacks callbacks;
     private IExtensionHelpers helpers;
+    
     /**
      * Internal logger.
      */
@@ -151,7 +62,7 @@ public abstract class SSOProtocol {
 
     /**
      * Template to create a new SSOProtocol Instance.
-     * @param message The http messes from Burp-
+     * @param message The http message.
      * @param protocol The protocol name.
      * @param callbacks {@link burp.IBurpExtenderCallbacks}
      */
@@ -166,8 +77,8 @@ public abstract class SSOProtocol {
 /** Static. --------------------------------------------------------------- */  
 
     /**
-     *
-     * @return
+     * Get the last protocol flow.
+     * @return The last protocol flow.
      */
     public static ArrayList<SSOProtocol> getLastProtocolFlow(){
         if(protocolDB.size()-1 < 0){
@@ -177,16 +88,16 @@ public abstract class SSOProtocol {
     }
     
     /**
-     *
-     * @return
+     * Get the id of the last list stored in the protocol database.
+     * @return The id of the last list.
      */
     public static int getIDOfLastList(){
         return protocolDB.size()-1;
     }
     
-        /**
-     *
-     * @return
+    /**
+     * Generate a new protocol flow id.
+     * @return The protocol flow id.
      */
     public static int newProtocolflowID(){
         max_protocol_id++;
@@ -198,110 +109,127 @@ public abstract class SSOProtocol {
 /** Abstract. --------------------------------------------------------------- */   
     
     /**
-     *
-     * @return
+     * Analyse the protocol for the right table.
+     * @return The protocol flow id.
      */
     abstract public int analyseProtocol();
 
     /**
-     *
-     * @param input
-     * @return
+     * Decode the input as needed for the specific protocol.
+     * @param input The plain data.
+     * @return The decoded data.
      */
     abstract public String decode(String input);
 
     /**
-     *
-     * @return
+     * Find the token associated to the request/response.
+     * @return The token.
      */
-    abstract public String findID();
+    abstract public String findToken();
     
 /** ------------------------------------------------------------------------- */ 
 /** GETTER. ----------------------------------------------------------------- */
     
     /**
-     *
-     * @return
+     * Get the code style.
+     * Needed for the {@link org.fife.ui.rsyntaxtextarea.RSyntaxTextArea}.<br>
+     * Not set during construction.
+     * @return the code style.
      */
     public String getCodeStyle(){
         return codeStyle;
     }
     
     /**
-     *
-     * @return
+     * Get the index of the Protocol in the table.
+     * @return The index.
      */
-    public String getContent(){
-        return content;
+    public int getCounter(){
+        return counter;
     }
     
     /**
-     *
-     * @return
+     * Get the http message.
+     * @return The http message
      */
     public IHttpRequestResponse getMessage(){
         return message;
     }    
     
     /**
-     *
-     * @return
+     * Get the parsed content.
+     * This could be a earlier found i.e. parameter.
+     * @return The parsed content.
+     */
+    public String getParsedContent(){
+        return parsedContent;
+    }
+    
+    /**
+     * Get the parameter name.
+     * This is corresponding to {@link #setParsedContent(java.lang.String) }
+     * @return The parameter name.
      */
     public String getParamName(){
         return paramName;
     }
     
     /**
-     *
-     * @return
+     * Get the protocol name.
+     * @return The protocol name.
      */
     public String getProtocol(){
         return protocol;
     }
     
     /**
-     *
-     * @return
+     * Get the protocol flow.
+     * The protocol flow is generated by {@link #analyseProtocol() }.
+     * @return A list of SSO protocols.
      */
     public ArrayList<SSOProtocol> getProtocolFlow(){
         return protocolflow;
     }    
     
     /**
-     *
-     * @return
+     * Get the protocol flow id.
+     * @return The protocol flow id.
      */
     public int getProtocolflowID(){
         return protocolflow_id;
     }
     
     /**
-     *
-     * @return
+     * Get the timestamp.
+     * The timestamp is a value generated by {@link System#currentTimeMillis()}.
+     * @return The timestamp.
      */
     public long getTimestamp(){
         return timestamp;
     }
     
-        /**
-     *
-     * @return
+    /**
+     * Get the token.
+     * This is an identification characteristic for the protocol.
+     * @return The token.
      */
     public String getToken(){
         return token;
     }
+    
+    
 
     /**
-     *
-     * @return
+     * Get {@link burp.IBurpExtenderCallbacks}
+     * @return {@link burp.IBurpExtenderCallbacks}
      */
     protected IBurpExtenderCallbacks getCallbacks(){
         return callbacks;
     }
     
     /**
-     *
-     * @return
+     * Get {@link burp.IExtensionHelpers}
+     * @return {@link burp.IExtensionHelpers}
      */
     protected IExtensionHelpers getHelpers(){
         return helpers;
@@ -310,8 +238,10 @@ public abstract class SSOProtocol {
 /** SETTER. ----------------------------------------------------------------- */
    
     /**
-     *
-     * @param codeStyle
+     * Get the code style.
+     * Needed for the {@link org.fife.ui.rsyntaxtextarea.RSyntaxTextArea}.<br>
+     * Not set during construction.
+     * @param codeStyle The code style.
      */
     protected void setCodeStyle(String codeStyle)
     {
@@ -319,102 +249,95 @@ public abstract class SSOProtocol {
     }
     
     /**
-     *
-     * @param content
-     */
-    protected void setContent(String content){
-        this.content = content;
-    }
-    
-    /**
-     *
-     * @param i
+     * Set the counter.
+     * @param i The counter position.
      */
     public void setCounter(int i){
         this.counter = i;
     }
     
     /**
-     *
-     * @param message
+     * Set the http message.
+     * @param message The http message.
      */
     public void setMessage(IHttpRequestResponse message){
         this.message = message;
-    }    
-        
+    }
+    
     /**
-     *
-     * @param token
+     * Get the parsed content.
+     * This could be a earlier found i.e. parameter.
+     * @param content The parsed content.
+     */
+    protected void setParsedContent(String content){
+        this.parsedContent = content;
+    }
+    
+    /**
+     * Set the token.     
+     * This is an identification characteristic for the protocol.
+     * @param token The token.
      */
     protected void setToken(String token){
         this.token = token;
     }
     
     /**
-     *
-     * @param paramName
+     * Set the parameter name.
+     * This is corresponding to {@link #setParsedContent(java.lang.String) }.
+     * @param paramName The name of the parameter.
      */
     public void setParamName(String paramName){
         this.paramName = paramName;
     }
     
     /**
-     *
-     * @param protocol
+     * Set the protocol name.
+     * @param protocol The protocol name.
      */
     protected void setProtocol(String protocol){
         this.protocol = protocol;
     }
     
     /**
-     *
-     * @param protocolflow
+     * Set the protocol flow.
+     * @param protocolflow A list with SSO protocols.
      */
     public void setProtocolFlow(ArrayList<SSOProtocol> protocolflow){
         this.protocolflow = protocolflow;
     }    
     
     /**
-     *
-     * @param id
+     * Set the protocol flow id.
+     * @param id The protocol flow id.
      */
     public void setProtocolflowID(int id){
         protocolflow_id = id;
     }
-    
-    /**
-     *
-     * @return
-     */
-    public int getCounter(){
-        return counter;
-    }
-    
-
 /** ------------------------------------------------------------------------- */    
     
     /**
-     *
-     * @return
+     * Convert SSOProtocol to a String.
+     * @return Token + Protocol + md5(Request)
      */
     @Override
     public String toString(){
-        return token+" "+protocol+" "+paramName+"="+content;
+        return token+" "+protocol+" md5(Request)="+DigestUtils.md5(message.getRequest());
     }
     
     /**
-     *
-     * @return
+     * Covert SSOProtocol to {@link de.rub.nds.burp.utilities.table.TableEntry}.
+     * @return {@link de.rub.nds.burp.utilities.table.TableEntry}
      */
     public TableEntry toTableEntry(){
         return new TableEntry(this, callbacks);
     }
     
     /**
-     *
-     * @param tableName
-     * @param id
-     * @return
+     * Covert SSOProtocol to {@link de.rub.nds.burp.utilities.table.Table}.
+     * @param tableName The name of the table.
+     * @param id The table id.
+     * @return {@link de.rub.nds.burp.utilities.table.Table}
      */
     public Table toTable(String tableName, String id){
         Table t = new Table(new TableHelper(new ArrayList<TableEntry>()),tableName,id);
@@ -432,10 +355,10 @@ public abstract class SSOProtocol {
     }
 
     /**
-     *
-     * @param sso
-     * @param id
-     * @return
+     * Add a new Protocol to the protocol database.
+     * @param sso The SSOProtocol flow id.
+     * @param id The protocol flow id.
+     * @return True if successful, false otherwise.
      */
     public boolean add(SSOProtocol sso, int id){
         if(protocolDB.size()-1 < id){
@@ -452,18 +375,18 @@ public abstract class SSOProtocol {
     }
     
     /**
-     *
-     * @param i
-     * @return
+     * Get the protocol flow by its index.
+     * @param i The index.
+     * @return The protocol flow.
      */
     public ArrayList<SSOProtocol> get(int i){
         return protocolDB.get(i);
     }
     
     /**
-     *
-     * @param protocol
-     * @return
+     * Update all protocol names of the same protocol flow.
+     * @param protocol The new protocol name.
+     * @return True if protocol flow not null, false otherwise.
      */
     public boolean updateProtocols(String protocol){
         if(protocolflow != null){

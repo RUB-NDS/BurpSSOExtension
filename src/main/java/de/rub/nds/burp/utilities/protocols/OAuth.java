@@ -31,30 +31,46 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
+ * OAuth
  * @author Tim Guenther
+ * @version 1.0
  */
 public class OAuth extends SSOProtocol{
+    
+    /**
+     * {@value #NAME_V1}
+     */
+    public static final String NAME_V1 = "OAuth v1.0";
+
+    /**
+     * {@value #NAME_V2}
+     */
+    public static final String NAME_V2 = "OAuth v2.0";
+
+    /**
+     * {@value #ID}
+     */
+    public static final String ID = "client_id";
     
     private IHttpRequestResponse prev_message = null;
     
     /**
-     *
-     * @param message
-     * @param protocol
-     * @param callbacks
+     * Create a new OAuth object.
+     * @param message The http message.
+     * @param protocol The protocol name.
+     * @param callbacks {@link burp.IBurpExtenderCallbacks}
      */
     public OAuth(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
         super(message, protocol, callbacks);
-        super.setToken(findID());
+        super.setToken(findToken());
         super.setProtocolflowID(analyseProtocol());
         add(this, getProtocolflowID());
     }
 
     /**
-     *
-     * @param input
-     * @return
+     * No decoding.
+     * @param input The input.
+     * @return The input.
      */
     @Override
     public String decode(String input) {
@@ -62,15 +78,15 @@ public class OAuth extends SSOProtocol{
     }
 
     /**
-     *
-     * @return
+     * Find the token associated to the request/response.
+     * @return The token.
      */
     @Override
-    public String findID() {
+    public String findToken() {
         IRequestInfo iri = super.getCallbacks().getHelpers().analyzeRequest(getMessage());
         List<IParameter> list = iri.getParameters();
         for(IParameter p : list){
-            if(p.getName().equals(OAUTH_ID)){
+            if(p.getName().equals(ID)){
                 return decode(p.getValue());
             }
         }
@@ -84,8 +100,8 @@ public class OAuth extends SSOProtocol{
     }
 
     /**
-     *
-     * @return
+     * Analyse the protocol for the right table.
+     * @return The protocol flow id.
      */
     @Override
     public int analyseProtocol() {

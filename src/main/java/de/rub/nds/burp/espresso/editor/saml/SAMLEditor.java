@@ -37,8 +37,10 @@ import java.util.zip.DataFormatException;
 import javax.swing.JTabbedPane;
 
 /**
- *
- * @author Tim Guenther, Christian Mainka
+ * SAML Editor.
+ * Display decoded SAML syntax highlighted.
+ * @author Tim Guenther
+ * @version 1.0
  */
 public class SAMLEditor implements IMessageEditorTabFactory{
     private final IBurpExtenderCallbacks callbacks;
@@ -46,25 +48,31 @@ public class SAMLEditor implements IMessageEditorTabFactory{
     
     private final String samlRequest = "SAMLRequest";
     private final String samlResponse = "SAMLResponse";
-
+    
+    /**
+     * SAML Editor.
+     * Create a new SAMLEditor factory.
+     * @param callbacks {@link burp.IBurpExtenderCallbacks}
+     * 
+     */
     public SAMLEditor(IBurpExtenderCallbacks callbacks) {
             this.callbacks = callbacks;
             this.helpers = callbacks.getHelpers();
     }
 
-    //
-    // implement IMessageEditorTabFactory
-    //
+    /**
+     * Create a new Instance of Burps own Request/Response Viewer (IMessageEditorTab).
+     * @param controller {@link burp.IMessageEditorController}
+     * @param editable True if message is editable, false otherwise.
+     * @return {@link burp.IMessageEditorTab}
+     */
     @Override
     public IMessageEditorTab createNewInstance(IMessageEditorController controller, boolean editable) {
             // create a new instance of our custom editor tab
-            return new Base64InputTab(controller, editable);
+            return new InputTab(controller, editable);
     }
 
-    //
-    // class implementing IMessageEditorTab
-    //
-    class Base64InputTab implements IMessageEditorTab, ICodeListener {
+    class InputTab implements IMessageEditorTab, ICodeListener {
 
         private final boolean editable;
         private final JTabbedPane guiContainer;
@@ -81,7 +89,11 @@ public class SAMLEditor implements IMessageEditorTabFactory{
         
         private CodeListenerController listeners = new CodeListenerController();
 
-        public Base64InputTab(IMessageEditorController controller, boolean editable) {
+        /**
+         * Implementing the IMessageEditorTab.
+         * Class with the UI components and the businesses logic.
+         */
+        public InputTab(IMessageEditorController controller, boolean editable) {
             this.editable = editable;
 
             guiContainer = new JTabbedPane();
@@ -102,19 +114,30 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             guiContainer.addTab("Attacker", samlAttacker);
         }
 
-        //
-        // implement IMessageEditorTab
-        //
+        /**
+         * 
+         * @return Name of the new tab.
+         */
         @Override
         public String getTabCaption() {
             return "SAML";
         }
 
+        /**
+         * 
+         * @return The UI component to attach.
+         */
         @Override
         public Component getUiComponent() {
             return guiContainer;
         }
-
+        
+        /**
+         * 
+         * @param content The http message as bytes. 
+         * @param isRequest True if request, false if response.
+         * @return True if the tab should be attached, false otherwise.
+         */
         @Override
         public boolean isEnabled(byte[] content, boolean isRequest) {
             if(isSAML(content) && isRequest){
@@ -124,7 +147,11 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             return false;
         }
 
-
+        /**
+         * 
+         * @param content The http message as bytes. 
+         * @return True if SAML is found in the message.
+         */
         private boolean isSAML(byte[] content) {
             samlContent = helpers.getRequestParameter(content, samlRequest);
             if (null != samlContent){
@@ -138,7 +165,12 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             }
             return false;
         }
-
+        
+        /**
+         * Set the message to display in the tab.
+         * @param content The http message as bytes.
+         * @param isRequest True if request, false if response.
+         */
         @Override
         public void setMessage(byte[] content, boolean isRequest) {
             Logging.getInstance().log(getClass(), "Start setMessage().", Logging.DEBUG);
@@ -204,7 +236,11 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             currentMessage = content;
             Logging.getInstance().log(getClass(), "End setMessage().", Logging.DEBUG);
         }
-
+        
+        /**
+         * 
+         * @return Get the current message.
+         */
         @Override
         public byte[] getMessage() {
             // determine whether the user modified the deserialized data
@@ -230,23 +266,44 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             }
             return currentMessage;
         }
-
+        
+        /**
+         * Indicator for the proxy to show the original and edited tab.
+         * @return True if message is modified by the user.
+         */
         @Override
         public boolean isModified() {
                 return rawEditor.isTextModified() || attackerModified;
         }
-
+        
+        /**
+         * 
+         * @return Data selected by the user.
+         */
         @Override
         public byte[] getSelectedData() {
                 return rawEditor.getSelectedText();
         }
         
-        public String encodeRedirectFormat(byte[] samlXML) throws IOException {
-            byte[] compressed = Compression.compress(samlXML);
+        /**
+         * 
+         * @param input The plain string.
+         * @return Redirected format encoded string.
+         * @throws IOException {@link java.io.IOException}
+         */
+        public String encodeRedirectFormat(byte[] input) throws IOException {
+            byte[] compressed = Compression.compress(input);
             String base64encoded = helpers.base64Encode(compressed);
             return helpers.urlEncode(base64encoded);
         }
 
+        /**
+         * 
+         * @param input The redirect encoded string.
+         * @return Redirect format decode string.
+         * @throws IOException {@link java.io.IOException}
+         * @throws DataFormatException {@link java.util.zip.DataFormatException}
+         */
         public String decodeRedirectFormat(String input) throws IOException, DataFormatException {
             String urlDecoded = helpers.urlDecode(input);
             byte[] base64decoded = helpers.base64Decode(urlDecoded);
@@ -255,6 +312,10 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             return result;
         }
 
+        /**
+         * Is called every time new Code is available.
+         * @param evt {@link de.rub.nds.burp.utilities.listeners.AbstractCodeEvent} The new source code.
+         */
         @Override
         public void setCode(AbstractCodeEvent evt) { 
             //Update current Message with new data
@@ -267,6 +328,10 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             Logging.getInstance().log(getClass(), evt.getCode(), Logging.DEBUG);
         }
 
+        /**
+         * Set the listener for the editor.
+         * @param listeners {@link de.rub.nds.burp.utilities.listeners.CodeListenerController}
+         */
         @Override
         public void setListener(CodeListenerController listeners) {
             this.listeners = listeners;

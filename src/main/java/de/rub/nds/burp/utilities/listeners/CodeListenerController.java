@@ -18,27 +18,42 @@
  */
 package de.rub.nds.burp.utilities.listeners;
 
-import de.rub.nds.burp.utilities.Logging;
 import javax.swing.event.EventListenerList;
 
 /**
- *
+ * CodeListener Controller
  * @author Tim Guenther
+ * @version 1.0
  */
 public class CodeListenerController {
     private EventListenerList listeners = new EventListenerList();
     
+    /**
+     * Default Constructor.
+     */
     public CodeListenerController(){
     }
     
+    /**
+     * Add a new implementation of {@link de.rub.nds.burp.utilities.listeners.ICodeListener}
+     * @param listener The new listener.
+     */
     public void addCodeListener(ICodeListener listener){
       listeners.add(ICodeListener.class, listener);
     }
 
+    /**
+     * Remove the {@link de.rub.nds.burp.utilities.listeners.ICodeListener}
+     * @param listener The listener to remove.
+     */
     public void removeCodeListener(ICodeListener listener){
       listeners.remove(ICodeListener.class, listener);
     }
 
+    /**
+     * Notify all registered listeners with the new code.
+     * @param event The event.
+     */
     public synchronized void notifyAll(AbstractCodeEvent event)
     {
         for (ICodeListener l : listeners.getListeners(ICodeListener.class)){

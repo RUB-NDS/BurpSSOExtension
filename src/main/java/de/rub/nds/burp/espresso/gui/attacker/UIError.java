@@ -19,12 +19,14 @@
 package de.rub.nds.burp.espresso.gui.attacker;
 
 /**
- *
+ * The Error UI.
+ * Should be displayed for an when an error in a UI happens as a fallback.
  * @author Tim Guenther
+ * @version 1.0
  */
 public class UIError extends javax.swing.JPanel {
     
-    private String link = "<html><a href=\"https://github.com/RUB-NDS/BurpSSOExtension-Development/issues\" >GitHub</a></html>";
+    private String link = "<html><a href=\"https://github.com/RUB-NDS/BurpSSOExtension/issues\" >GitHub</a></html>";
 
     /**
      * Creates new form UIError

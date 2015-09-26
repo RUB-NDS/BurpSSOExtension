@@ -35,7 +35,7 @@ public class UITab implements ITab {
     
     /**
      * Create a new Tab.
-     * @param callbacks Provided by the Burp Suite api.
+     * @param callbacks {@link burp.IBurpExtenderCallbacks}
      */
     public UITab(IBurpExtenderCallbacks callbacks) {
         this.callbacks = callbacks;

@@ -39,51 +39,52 @@ import java.util.regex.Pattern;
 public class SAML extends SSOProtocol{
 
     /**
-     *
+     * {@value #NAME}
      */
     public static final String NAME = "SAML";
 
     /**
-     *
+     * {@value #REQUEST}
      */
     public static final String REQUEST = "SAMLRequest";
 
     /**
-     *
+     * {@value #RESPONSE}
      */
     public static final String RESPONSE = "SAMLResponse";
 
     /**
-     *
+     * {@value #RELAYSTATE}
      */
     public static final String RELAYSTATE = "RelayState";
 
     /**
-     *
+     * {@value #ARTIFACT}
      */
     public static final String ARTIFACT = "SAMLart";
     
     /**
-     *
-     * @param message
-     * @param protocol
-     * @param callbacks
-     * @param param
+     * Create a new SAML object.
+     * @param message The http message.
+     * @param protocol The protocol name.
+     * @param callbacks {@link burp.IBurpExtenderCallbacks}
+     * @param param The {@link burp.IParameter} with {@link #REQUEST} or
+     * {@link #RESPONSE}.
      */
     public SAML(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks, IParameter param){
         super(message, protocol, callbacks);
         super.setParamName(param.getName());
-        super.setContent(decode(param.getValue()));
-        super.setToken(findID());
+        super.setParsedContent(decode(param.getValue()));
+        super.setToken(findToken());
         super.setProtocolflowID(analyseProtocol());
         add(this, getProtocolflowID());
     }
     
     /**
-     * Find the ID associated to the request/response.
-     * @return ID
+     * Find the token associated to the request/response.
+     * @return The token.
      */
-    public String findID(){
+    public String findToken(){
         Matcher m;
         Pattern p;
         switch (super.getParamName()) {
@@ -99,8 +100,8 @@ public class SAML extends SSOProtocol{
             default:
                 return "Not Found!";
         }
-        if(super.getContent() != null){
-            m = p.matcher(super.getContent());
+        if(super.getParsedContent() != null){
+            m = p.matcher(super.getParsedContent());
             if(m.find()){
                 return m.group(1);
             }
@@ -159,17 +160,8 @@ public class SAML extends SSOProtocol{
     }
     
     /**
-     *
-     * @return
-     */
-    @Override
-    public String toString(){
-        return super.getToken()+" "+super.getParamName()+"="+super.getContent();
-    }
-
-    /**
-     *
-     * @return
+     * Analyse the protocol for the right table.
+     * @return The protocol flow id.
      */
     @Override
     public int analyseProtocol() {

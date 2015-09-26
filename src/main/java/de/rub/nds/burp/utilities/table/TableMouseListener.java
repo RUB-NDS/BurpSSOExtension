@@ -32,10 +32,18 @@ import javax.swing.JTable;
 public class TableMouseListener extends MouseAdapter{
     private JTable table;
 	
+    /**
+     * Create a new TableMouseListener for a table. 
+     * @param table The table to listen to.
+     */
     public TableMouseListener(JTable table) {
             this.table = table;
     }
 
+    /**
+     * Activate if mouse is pressed.
+     * @param event The event that is passed.
+     */
     @Override
     public void mousePressed(MouseEvent event) {
             // selects the row at which point the mouse is clicked

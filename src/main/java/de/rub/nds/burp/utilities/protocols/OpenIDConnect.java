@@ -24,8 +24,7 @@ import burp.IParameter;
 import burp.IRequestInfo;
 import de.rub.nds.burp.utilities.Encoding;
 import de.rub.nds.burp.utilities.Logging;
-import static de.rub.nds.burp.utilities.protocols.SSOProtocol.OAUTH_ID;
-import static de.rub.nds.burp.utilities.protocols.SSOProtocol.OAUTH_ID_FACEBOOK;
+import static de.rub.nds.burp.utilities.protocols.OAuth.ID;
 import static de.rub.nds.burp.utilities.protocols.SSOProtocol.getIDOfLastList;
 import static de.rub.nds.burp.utilities.protocols.SSOProtocol.newProtocolflowID;
 import java.util.ArrayList;
@@ -34,28 +33,33 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
+ * OpenID Connect
  * @author Tim Guenther
+ * @version 1.0
  */
 public class OpenIDConnect extends SSOProtocol{
+    /**
+     * {@value #NAME}
+     */
+    public static final String NAME = "OpenID Connect";
 
     /**
-     *
-     * @param message
-     * @param protocol
-     * @param callbacks
+     * Create a new OpenID Connect object.
+     * @param message The http message.
+     * @param protocol The protocol name.
+     * @param callbacks {@link burp.IBurpExtenderCallbacks}
      */
     public OpenIDConnect(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
         super(message, protocol, callbacks);
-        super.setToken(findID());
+        super.setToken(findToken());
         super.setProtocolflowID(analyseProtocol());
         add(this, getProtocolflowID());
     }
     
     /**
-     *
-     * @param input
-     * @return
+     * URL decode input.
+     * @param input The plain data.
+     * @return The decoded data.
      */
     @Override
     public String decode(String input) {
@@ -66,11 +70,11 @@ public class OpenIDConnect extends SSOProtocol{
     }
 
     /**
-     *
-     * @return
+     * Find the token associated to the request/response.
+     * @return The token.
      */
     @Override
-    public String findID() {
+    public String findToken() {
         IRequestInfo iri = super.getCallbacks().getHelpers().analyzeRequest(super.getMessage());
         List<IParameter> list = iri.getParameters();
         String id = "Not Found!";
@@ -83,7 +87,7 @@ public class OpenIDConnect extends SSOProtocol{
                 id = decode(p.getValue());
                 continue;
             }
-            if(p.getName().equals(OAUTH_ID)){
+            if(p.getName().equals(ID)){
                 id = p.getValue();
             }
         }
@@ -107,8 +111,8 @@ public class OpenIDConnect extends SSOProtocol{
     }
 
     /**
-     *
-     * @return
+     * Analyse the protocol for the right table.
+     * @return The protocol flow id.
      */
     @Override
     public int analyseProtocol() {

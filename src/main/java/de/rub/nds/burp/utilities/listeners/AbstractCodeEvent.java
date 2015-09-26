@@ -21,18 +21,28 @@ package de.rub.nds.burp.utilities.listeners;
 import java.util.EventObject;
 
 /**
- *
+ * Abstract Code Event
  * @author Tim Guenther
+ * @version 1.0
  */
 public abstract class AbstractCodeEvent extends EventObject{
     
     private String code;
 
+    /**
+     * Template to create a new CodeEvent.
+     * @param source The origin of the event.
+     * @param code The data (source code) to submit.
+     */
     public AbstractCodeEvent(Object source, String code) {
         super(source);
         this.code = code;
     }
     
+    /**
+     * Get the Source Code.
+     * @return The source code.
+     */
     public String getCode(){
         return code;
     }

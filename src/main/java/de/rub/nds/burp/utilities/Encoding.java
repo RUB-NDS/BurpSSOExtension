@@ -36,8 +36,20 @@ import org.json.simple.parser.ParseException;
  * @version 1.0
  */
 public abstract class Encoding {
+
+    /**
+     * {@value #URL_ENCODED}
+     */
     public static final int URL_ENCODED = 1;
+
+    /**
+     * {@value #BASE64_ENCODED}
+     */
     public static final int BASE64_ENCODED = 2;
+
+    /**
+     * {@value #DEFLATED}
+     */
     public static final int DEFLATED = 3;
     
     /**
@@ -111,6 +123,11 @@ public abstract class Encoding {
         return true; 
     }
     
+    /**
+     * Check if the the input is JSON.
+     * @param data The input to check.
+     * @return True if data is JSON, false otherwise. 
+     */
     public static boolean isJSON(String data){
         JSONParser parser = new JSONParser();
         try{
@@ -121,6 +138,11 @@ public abstract class Encoding {
         return true;
     }
     
+    /**
+     * Check if the input is a JSON Web Token (JWT) 
+     * @param data The input to check.
+     * @return True if data is JSON, false otherwise.
+     */
     public static boolean isJWT(String data){
         String[] base64 = data.split("\\.");
         boolean val = false;

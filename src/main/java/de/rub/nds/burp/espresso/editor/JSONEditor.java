@@ -35,9 +35,10 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.json.JSONObject;
 
 /**
- * TODO:
- * Create a new Template Class for the SSO protocol editors.
- * This is not used yet!
+ * JSON Editor.
+ * Display decoded JSON syntax highlighted.
+ * @author Tim Guenther
+ * @version 1.0
  */ 
 
 /**
@@ -48,119 +49,159 @@ import org.json.JSONObject;
 public class JSONEditor implements IMessageEditorTabFactory{
 
     private IBurpExtenderCallbacks callbacks;
-	private IExtensionHelpers helpers;
+    private IExtensionHelpers helpers;
 
-	public JSONEditor(IBurpExtenderCallbacks callbacks) {
-		this.callbacks = callbacks;
-		this.helpers = callbacks.getHelpers();
-	}
+    /**
+     * JSON Editor.
+     * Create a new JSONEditor factory.
+     * @param callbacks {@link burp.IBurpExtenderCallbacks}
+     */
+    public JSONEditor(IBurpExtenderCallbacks callbacks) {
+        this.callbacks = callbacks;
+        this.helpers = callbacks.getHelpers();
+    }
 
-	//
-	// implement IMessageEditorTabFactory
-	//
-	@Override
-	public IMessageEditorTab createNewInstance(IMessageEditorController controller, boolean editable) {
-		// create a new instance of our custom editor tab
-		return new InputTab(controller, editable);
-	}
+    /**
+     * Create a new Instance of Burps own Request/Response Viewer (IMessageEditorTab).
+     * @param controller {@link burp.IMessageEditorController}
+     * @param editable True if message is editable, false otherwise.
+     * @return {@link burp.IMessageEditorTab}
+     */
+    @Override
+    public IMessageEditorTab createNewInstance(IMessageEditorController controller, boolean editable) {
+        // create a new instance of our custom editor tab
+        return new InputTab(controller, editable);
+    }
 
-	//
-	// class implementing IMessageEditorTab
-	//
-	class InputTab implements IMessageEditorTab {
+    /**
+     * Implementing the IMessageEditorTab.
+     * Class with the UI components and the businesses logic.
+     */
+    class InputTab implements IMessageEditorTab {
 
-		private boolean editable;
-		private ITextEditor burpEditor;
-                private JTabbedPane guiContainer;
-                private UISourceViewer sourceViewer;
-                
-		private byte[] currentMessage;
+        private boolean editable;
+        private ITextEditor burpEditor;
+        private JTabbedPane guiContainer;
+        private UISourceViewer sourceViewer;
 
-		final String tabName = "JSON";
-		public InputTab(IMessageEditorController controller, boolean editable) {
-			this.editable = editable;
-                        
-                        guiContainer = new JTabbedPane();
-                        
-			// create an instance of Burp's text editor, to display our deserialized data
-			burpEditor = callbacks.createTextEditor();
-			burpEditor.setEditable(editable);
-                        
-                        // create a source code viewer
-                        sourceViewer = new UISourceViewer();
-                        guiContainer.addTab("JSON Viewer", sourceViewer);
-                        guiContainer.addTab("Raw", burpEditor.getComponent());
-		}
+        private byte[] currentMessage;
 
-		//
-		// implement IMessageEditorTab
-		//
-		@Override
-		public String getTabCaption() {
-			return tabName;
-		}
+        final String tabName = "JSON";
+        public InputTab(IMessageEditorController controller, boolean editable) {
+            this.editable = editable;
 
-		@Override
-		public Component getUiComponent() {
-			return guiContainer;
-		}
+            guiContainer = new JTabbedPane();
 
-		@Override
-		public boolean isEnabled(byte[] content, boolean isRequest) {
-                        if(isJSON(content)){
-                            Logging.getInstance().log(getClass(), "Editor@"+System.identityHashCode(this)+" attached.", Logging.DEBUG);
-                            return true;
-                        }
-			return false;
-		}
+            // create an instance of Burp's text editor, to display our deserialized data
+            burpEditor = callbacks.createTextEditor();
+            burpEditor.setEditable(editable);
 
-		private boolean isJSON(byte[] content) {
-			IRequestInfo iri = helpers.analyzeRequest(content);
-                        return iri.getContentType() == IRequestInfo.CONTENT_TYPE_JSON;
-		}
-                
-                private String getJSON(byte[] content, boolean isRequest){
-                    if(isRequest){
-                        IRequestInfo iri = helpers.analyzeRequest(content);
-			String body = (new String(content)).substring(iri.getBodyOffset());
-                        return body;
-                        
-                    } else {
-                        IResponseInfo iri = helpers.analyzeResponse(content);
-                        String body = (new String(content)).substring(iri.getBodyOffset());
-                        return body;
-                    }
-                }
+            // create a source code viewer
+            sourceViewer = new UISourceViewer();
+            guiContainer.addTab("JSON Viewer", sourceViewer);
+            guiContainer.addTab("Raw", burpEditor.getComponent());
+        }
 
-		@Override
-		public void setMessage(byte[] content, boolean isRequest) {
-			if (content == null) {
-                            // clear our display
-                            burpEditor.setText(null);
-                            burpEditor.setEditable(false);
-                            sourceViewer.setText(null, null);
-                            guiContainer.setEnabled(false);
-			} else {
-                            guiContainer.setEnabled(true);
-                            
-                            String input = getJSON(content, isRequest);
+        /**
+         * 
+         * @return Name of the new tab.
+         */
+        @Override
+        public String getTabCaption() {
+            return tabName;
+        }
 
-                            // deserialize the parameter value
-                            String json = decode(input);
-                            burpEditor.setText(json.getBytes());
-                            sourceViewer.setText(new JSONObject(json).toString(2), SyntaxConstants.SYNTAX_STYLE_JSON);
-                            burpEditor.setText(helpers.stringToBytes(input));
+        /**
+         * 
+         * @return The UI component to attach.
+         */
+        @Override
+        public Component getUiComponent() {
+            return guiContainer;
+        }
 
-                            burpEditor.setEditable(editable);
-			}
+        /**
+         * 
+         * @param content The http message as bytes. 
+         * @param isRequest True if request, false if response.
+         * @return True if the tab should be attached, false otherwise.
+         */
+        @Override
+        public boolean isEnabled(byte[] content, boolean isRequest) {
+            if(isJSON(content)){
+                Logging.getInstance().log(getClass(), "Editor@"+System.identityHashCode(this)+" attached.", Logging.DEBUG);
+                return true;
+            }
+            return false;
+        }
 
-			// remember the displayed content
-			currentMessage = content;
-		}
+        /**
+         * 
+         * @param content The http message as bytes. 
+         * @return True if JSON is found in the message.
+         */
+        private boolean isJSON(byte[] content) {
+            IRequestInfo iri = helpers.analyzeRequest(content);
+            return iri.getContentType() == IRequestInfo.CONTENT_TYPE_JSON;
+        }
 
-		@Override
-		public byte[] getMessage() {
-			// determine whether the user modified the deserialized data
+        /**
+         * Get the body of the http message.
+         * @param content The http message as bytes. 
+         * @param isRequest True if request, false if response.
+         * @return JSON as a string.
+         */
+        private String getJSON(byte[] content, boolean isRequest){
+            if(isRequest){
+                IRequestInfo iri = helpers.analyzeRequest(content);
+                String body = (new String(content)).substring(iri.getBodyOffset());
+                return body;
+
+            } else {
+                IResponseInfo iri = helpers.analyzeResponse(content);
+                String body = (new String(content)).substring(iri.getBodyOffset());
+                return body;
+            }
+        }
+
+        /**
+         * Set the message to display in the tab.
+         * @param content The http message as bytes.
+         * @param isRequest True if request, false if response.
+         */
+        @Override
+        public void setMessage(byte[] content, boolean isRequest) {
+            if (content == null) {
+                // clear our display
+                burpEditor.setText(null);
+                burpEditor.setEditable(false);
+                sourceViewer.setText(null, null);
+                guiContainer.setEnabled(false);
+            } else {
+                guiContainer.setEnabled(true);
+
+                String input = getJSON(content, isRequest);
+
+                // deserialize the parameter value
+                String json = decode(input);
+                burpEditor.setText(json.getBytes());
+                sourceViewer.setText(new JSONObject(json).toString(2), SyntaxConstants.SYNTAX_STYLE_JSON);
+                burpEditor.setText(helpers.stringToBytes(input));
+
+                burpEditor.setEditable(editable);
+            }
+
+            // remember the displayed content
+            currentMessage = content;
+        }
+
+        /**
+         * 
+         * @return Get the current message.
+         */
+        @Override
+        public byte[] getMessage() {
+                // determine whether the user modified the deserialized data
 //			if (txtInput.isTextModified()) {
 //				// reserialize the data
 //				byte[] textBytes = txtInput.getText();
@@ -174,33 +215,44 @@ public class JSONEditor implements IMessageEditorTabFactory{
 //				// update the request with the new parameter value
 //				return helpers.updateParameter(currentMessage, helpers.buildParameter(parameterName, input, IParameter.PARAM_URL));
 //			} else {
-				return currentMessage;
+                        return currentMessage;
 //			}
-		}
+        }
 
-		@Override
-		public boolean isModified() {
-			return burpEditor.isTextModified();
-		}
+        /**
+         * Indicator for the proxy to show the original and edited tab.
+         * @return True if message is modified by the user.
+         */
+        @Override
+        public boolean isModified() {
+            return burpEditor.isTextModified();
+        }
 
-		@Override
-		public byte[] getSelectedData() {
-			return burpEditor.getSelectedText();
-		}
+        /**
+         * 
+         * @return Data selected by the user.
+         */
+        @Override
+        public byte[] getSelectedData() {
+            return burpEditor.getSelectedText();
+        }
 
-		public String decode(String input){
-                    if(Encoding.isURLEncoded(input)){
-                        input = helpers.urlDecode(input);
-                    }
-                    if(Encoding.isBase64Encoded(input)){
-                        input = helpers.bytesToString(helpers.base64Decode(input));
-                    }
-                    if(Encoding.isJSON(input)){
-                        return input;
-                    }
-                    return null;
-		}
-
-	}
-    
+        /**
+         * Decode the JSON String.
+         * @param input The data to decode.
+         * @return The decoded String.
+         */
+        public String decode(String input){
+            if(Encoding.isURLEncoded(input)){
+                input = helpers.urlDecode(input);
+            }
+            if(Encoding.isBase64Encoded(input)){
+                input = helpers.bytesToString(helpers.base64Decode(input));
+            }
+            if(Encoding.isJSON(input)){
+                return input;
+            }
+            return null;
+        }
+    }
 }

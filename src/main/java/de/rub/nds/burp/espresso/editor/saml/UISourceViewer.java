@@ -93,11 +93,10 @@ public class UISourceViewer extends JPanel implements ICodeListener{
         setText(sourceCode, SyntaxConstants.SYNTAX_STYLE_XML);
     }
 
-    @Override
-    public void setCode(AbstractCodeEvent evt) {
-        setPrettyXML(evt.getCode(), 2);
-    }
-    
+    /**
+     * Set enable or disable this component.
+     * @param enabled True to enable, false to disable the component.
+     */
     @Override
     public void setEnabled(boolean enabled){
         textArea.setEnabled(enabled);
@@ -107,7 +106,20 @@ public class UISourceViewer extends JPanel implements ICodeListener{
            textArea.setText("");
         }
     }
+    
+    /**
+     * Is called every time new Code is available.
+     * @param evt {@link de.rub.nds.burp.utilities.listeners.AbstractCodeEvent} The new source code.
+     */
+    @Override
+    public void setCode(AbstractCodeEvent evt) {
+        setPrettyXML(evt.getCode(), 2);
+    }
 
+    /**
+     * Set the listener for the editor.
+     * @param listeners {@link de.rub.nds.burp.utilities.listeners.CodeListenerController}
+     */
     @Override
     public void setListener(CodeListenerController listeners) {
         this.listeners = listeners;

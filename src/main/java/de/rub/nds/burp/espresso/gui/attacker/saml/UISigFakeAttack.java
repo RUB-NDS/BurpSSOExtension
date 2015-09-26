@@ -18,7 +18,6 @@
  */
 package de.rub.nds.burp.espresso.gui.attacker.saml;
 
-import de.rub.nds.burp.espresso.gui.attacker.saml.IAttack;
 import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
@@ -27,8 +26,9 @@ import wsattacker.library.signatureFaking.SignatureFakingOracle;
 import wsattacker.library.signatureFaking.exceptions.SignatureFakingException;
 
 /**
- *
+ * The Signature Faking Attack
  * @author Tim Guenther
+ * @version 1.0
  */
 public class UISigFakeAttack extends javax.swing.JPanel implements IAttack{
     private String code = null;
@@ -112,11 +112,19 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack{
         }
     }//GEN-LAST:event_modifyButtonActionPerformed
 
+    /**
+     * Is called every time new Code is available.
+     * @param evt {@link de.rub.nds.burp.utilities.listeners.AbstractCodeEvent} The new source code.
+     */
     @Override
     public void setCode(AbstractCodeEvent evt) {
         this.code = evt.getCode();
     }
 
+    /**
+     * Notify all registered listeners with the new code.
+     * @param code The new source code.
+     */
     @Override
     public void notifyAllTabs(String code) {
         if(listeners != null){
@@ -124,6 +132,10 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack{
         }
     }
 
+    /**
+     * Set the listener for the editor.
+     * @param listeners {@link de.rub.nds.burp.utilities.listeners.CodeListenerController}
+     */
     @Override
     public void setListener(CodeListenerController listeners) {
         this.listeners = listeners;

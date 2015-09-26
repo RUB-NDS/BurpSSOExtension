@@ -99,6 +99,10 @@ public class UIOptions extends JPanel {
         }
     }
     
+    /**
+     * Load the configuration file and apply the configs to the UI. 
+     * @param path The absolute path to the configuration file.
+     */
     private void loadConfig(String path){
         File file = new File(path);
         if(!file.exists()){
@@ -198,6 +202,10 @@ public class UIOptions extends JPanel {
         Logging.getInstance().log(getClass(), "The config from "+path+" is now loaded.", Logging.INFO);
     }
     
+    /**
+     * Save all configurations in the UI to the system.
+     * @param path The path to the place where the configuration file should be stored.
+     */
     private void saveConfig(String path){
         File file = new File(path);
         if(!file.exists()){
@@ -1153,38 +1161,76 @@ public class UIOptions extends JPanel {
     private javax.swing.JSeparator ssoSeparator1;
     // End of variables declaration//GEN-END:variables
     
+    /**
+     * 
+     * @return True if SAML is active, false otherwise.
+     */
     public static boolean isSamlActive(){
         return samlActive;
     }
     
+    /**
+     * 
+     * @return True if OpenID is active, false otherwise.
+     */
     public static boolean isOpenIDActive(){
         return openIDActive;
     }
     
+    /**
+     * 
+     * @return True if OpenID Connect is active, false otherwise.
+     */
     public static boolean isOpenIDConnectActive(){
         return openIDConnectActive;
     }
     
+    /**
+     * 
+     * @return True if BrowserID is active, false otherwise.
+     */
     public static boolean isBrowserIDActive(){
         return browserIDActive;
     }
     
+    /**
+     * 
+     * @return True if OAuth is active, false otherwise.
+     */
     public static boolean isOAuthActive(){
         return oAuthActive;
     }
     
+    /**
+     * 
+     * @return True if Facebook Connect is active, false otherwise.
+     */
     public static boolean isFBConnectActive(){
         return facebookConnectActive;
     }
     
+    /**
+     * 
+     * @return True if Mircosoft Account is active, false otherwise.
+     */
     public static boolean isMSAccountActive(){
         return msAccountActive;
     }
     
+    /**
+     * 
+     * @return True if the proxy history messages should be highlighted
+     * is active, false otherwise.
+     */
     public static boolean isHighlighted(){
         return highlightBool;
     }
     
+    /**
+     * Get the logging level.
+     * 0 = Info, 1 = Debug, 2 = Verbose
+     * @return The Logging level.
+     */
     public static int getLoggingLevel(){
         return LoggingLevel;
     }

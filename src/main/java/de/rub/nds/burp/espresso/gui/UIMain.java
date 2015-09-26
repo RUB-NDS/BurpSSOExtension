@@ -36,7 +36,7 @@ public class UIMain extends JTabbedPane{
 
     /**
      * Construct the main UI.
-     * @param callbacks Provided by the Burp Suite api.
+     * @param callbacks {@link burp.IBurpExtenderCallbacks}.
      */
     public UIMain(IBurpExtenderCallbacks callbacks) {
         this.callbacks = callbacks;

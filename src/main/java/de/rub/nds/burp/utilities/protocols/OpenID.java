@@ -28,33 +28,63 @@ import static de.rub.nds.burp.utilities.protocols.SSOProtocol.getIDOfLastList;
 import static de.rub.nds.burp.utilities.protocols.SSOProtocol.newProtocolflowID;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
- *
+ * OpenID
  * @author Tim Guenther
+ * @version 1.0
  */
 public class OpenID extends SSOProtocol{
+    
+    /**
+     * {@value #OPENID_V1}
+     */
+    public static final String OPENID_V1 = "OpenID v1.0";
+
+    /**
+     * {@value #OPENID_PARAM}
+     */
+    public static final String OPENID_PARAM = "openid.mode";
+
+    /**
+     * {@value #OPENID_REQUEST}
+     */
+    public static final String OPENID_REQUEST = "checkid_setup";
+
+    /**
+     * {@value #OPENID_RESPONSE}
+     */
+    public static final String OPENID_RESPONSE = "id_res";
+
+    /**
+     * {@value #ID}
+     */
+    public static final String ID = "openid.identity";
+
+    /**
+     * {@value #OPENID_V2}
+     */
+    public static final String OPENID_V2 = "OpenID v2.0";
     
     private String return_to = "";
     
     /**
-     *
-     * @param message
-     * @param protocol
-     * @param callbacks
+     * Create a new OpenID object.
+     * @param message The http message.
+     * @param protocol The protocol name.
+     * @param callbacks {@link burp.IBurpExtenderCallbacks}
      */
     public OpenID(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
         super(message, protocol, callbacks);
-        super.setToken(findID());
+        super.setToken(findToken());
         super.setProtocolflowID(analyseProtocol());
         add(this, getProtocolflowID());
     }
 
     /**
-     *
-     * @param input
-     * @return
+     * URL decode input.
+     * @param input The plain data.
+     * @return The decoded data.
      */
     @Override
     public String decode(String input) {
@@ -65,11 +95,11 @@ public class OpenID extends SSOProtocol{
     }
 
     /**
-     *
-     * @return
+     * Find the token associated to the request/response.
+     * @return The token.
      */
     @Override
-    public String findID() {
+    public String findToken() {
           IRequestInfo iri = super.getCallbacks().getHelpers().analyzeRequest(super.getMessage());
           List<IParameter> list = iri.getParameters();
           String id = "Not Found!";
@@ -99,8 +129,8 @@ public class OpenID extends SSOProtocol{
     }
 
     /**
-     *
-     * @return
+     * Analyse the protocol for the right table.
+     * @return The protocol flow id.
      */
     @Override
     public int analyseProtocol() {

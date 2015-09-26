@@ -18,7 +18,6 @@
  */
 package de.rub.nds.burp.espresso.gui.attacker.saml;
 
-import burp.ITextEditor;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
 import java.awt.CardLayout;
 import java.awt.Font;
@@ -31,11 +30,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
- *
+ * The Attacker for SAML messages.
  * @author Tim Guenther
+ * @version 1.0
  */
 public class UISAMLAttacker extends JPanel implements ItemListener{
 
+    // The attack options.
     private final String NO_ATTACK = "No Attack";
     private final String SIGNATURE_WRAPPING = "Signature Wrapping";
     private final String SIGNATURE_FAKING = "Signature Faking";
@@ -47,11 +48,18 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
     private UISigWrapAttack uiSigWrapAttack = null;
     private UISigFakeAttack uiSigFakeAttack = null;
     
+    /**
+     * Create a new Attacker.
+     */
     public UISAMLAttacker(){
         initComponents();
     }
     
-
+    /**
+     * Show the UI for the specific attacks.
+     * Called if the selection JComboBox changes.
+     * @param ie The selected attack.
+     */
     @Override
     public void itemStateChanged(ItemEvent ie) {
         CardLayout cl = (CardLayout)(settingsContainer.getLayout());
@@ -100,6 +108,10 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
         );
     }
     
+    /**
+     * Set enable or disable this component.
+     * @param enabled True to enable, false to disable the component.
+     */
     @Override
     public void setEnabled(boolean enabled){
         super.setEnabled(enabled);
@@ -113,6 +125,10 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
         attackComboBox.setEnabled(enabled);
     }
     
+    /**
+     * Set the listener for the editor.
+     * @param listeners {@link de.rub.nds.burp.utilities.listeners.CodeListenerController}
+     */
     public void setListeners(CodeListenerController listeners){
         uiSigFakeAttack.setListener(listeners);
         uiSigWrapAttack.setListener(listeners);

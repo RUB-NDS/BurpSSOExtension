@@ -67,6 +67,11 @@ public abstract class TableDB {
         return true;
     }
     
+    /**
+     * Remove the a table.
+     * @param t The table.
+     * @return True if table is removed, false otherwise.
+     */
     public static boolean removeTable(Table t){
         try{
             tableList.remove(t);
@@ -76,6 +81,10 @@ public abstract class TableDB {
         return true;
     }
     
+    /**
+     * Remove all tables
+     * @return True if all tables are removed.
+     */
     public static boolean clear(){
         try{
             tableList.clear();
@@ -86,8 +95,8 @@ public abstract class TableDB {
     }
     
     /**
-     * 
-     * @return The count of the tables.
+     * Get the count of the tables
+     * @return The count.
      */
     public static int size(){
         return tableList.size();

@@ -72,6 +72,11 @@ public class TableEntry {
         this.fullMessage = requestResponse;
     }
     
+    /**
+     * Create a new table entry.
+     * @param ssoProtocol The {@link SSOProtocol}.
+     * @param callbacks {@link burp.IBurpExtenderCallbacks}
+     */
     public TableEntry(SSOProtocol ssoProtocol, IBurpExtenderCallbacks callbacks) {
         this.callbacks = callbacks;
         this.helpers = callbacks.getHelpers();
@@ -92,63 +97,129 @@ public class TableEntry {
     }
 
     //Getter
-    public String getCounter() {
+
+    /**
+     * Get the index of the message.
+     * @return The count.
+     */
+        public String getCounter() {
         return counter;
     }
 
+    /**
+     * Get the protocol name.
+     * @return The protocol name.
+     */
     public String getProtocol() {
         return protocol;
     }
 
+    /**
+     * Get the http host.
+     * @return The http host.
+     */
     public String getHost() {
         return host;
     }
 
+    /**
+     * Get the http method.
+     * GET / POST / PUT/ DELETE ...
+     * @return The http method.
+     */
     public String getMethod() {
         return method;
     }
     
+    /**
+     * Get the URL.
+     * Its the path of the host.
+     * @return Get the path.
+     */
     public String getUrl() {
         return url;
     }
 
+    /**
+     * Get the length of the request.
+     * @return The length.
+     */
     public String getLength() {
         return length;
     }
 
+    /**
+     * Get the token.
+     * @return The token.
+     */
     public String getToken() {
         return token;
     }
 
+    /**
+     * Get the Time.
+     * The time is computed from the timestamp.
+     * @return The time (XX:XX:XX).
+     */
     public String getTime() {
         return time;
     }
     
+    /**
+     * Get the comment.
+     * Stores additional data for the protocol
+     * @return The comment.
+     */
     public String getComment() {
         return comment;
     }
 
-    public IHttpRequestResponsePersisted getFullMessage() {
+    /**
+     * Get the http message.
+     * @return The http message.
+     */
+    public IHttpRequestResponsePersisted getMessage() {
         return fullMessage;
     }
     
+    /**
+     * Get the protocol flow.
+     * @return The protocol flow.
+     */
     public ArrayList<SSOProtocol> getProtocolFlow(){
         return ssoProtocol.getProtocolFlow();
     }
     
+    /**
+     * Get the {@link SSOProtocol}.
+     * @return The {@link SSOProtocol}
+     */
     public SSOProtocol getSSOProtocol(){
         return ssoProtocol;
     }
     
+    /**
+     * Get the timestamp.
+     * @return {@link java.time.LocalTime}
+     */
     public LocalTime getTimestamp(){
         return timestamp;
     }
 
     //Setter
-    public void setComment(String comment) {
+
+    /**
+     * Set the comment.
+     * @param comment The comment.
+     */
+        public void setComment(String comment) {
         this.comment = comment;
     }
     
+    /**
+     * Set the index of the entry.
+     * @param i The index.
+     */
     public void setCounter(int i){
         this.counter = (new Integer(i)).toString();
     }

@@ -36,27 +36,32 @@ import java.util.List;
 public class BrowserID extends SSOProtocol{
     
     /**
-     *
+     * {@value #NAME}
+     */
+    public static final String NAME = "BrowserID";
+    
+    /**
+     *  {@value #ID}
      */
     public static final String ID = "browserid_state";
     
     /**
-     *
-     * @param message
-     * @param protocol
-     * @param callbacks
+     * Create a new BrowserID object.
+     * @param message The http message.
+     * @param protocol The protocol name.
+     * @param callbacks {@link burp.IBurpExtenderCallbacks}
      */
     public BrowserID(IHttpRequestResponse message, String protocol, IBurpExtenderCallbacks callbacks){
         super(message, protocol, callbacks);
-        super.setToken(findID());
+        super.setToken(findToken());
         super.setProtocolflowID(analyseProtocol());
         add(this, getProtocolflowID());
     }
     
     /**
-     *
-     * @param input
-     * @return
+     * No decoding.
+     * @param input The input.
+     * @return The input.
      */
     @Override
     public String decode(String input) {
@@ -64,11 +69,11 @@ public class BrowserID extends SSOProtocol{
     }
 
     /**
-     *
-     * @return
+     * Find the token associated to the request/response.
+     * @return The token.
      */
     @Override
-    public String findID() {
+    public String findToken() {
         IRequestInfo iri = super.getCallbacks().getHelpers().analyzeRequest(getMessage());
         List<IParameter> list = iri.getParameters();
         for(IParameter p : list){
@@ -80,8 +85,8 @@ public class BrowserID extends SSOProtocol{
     }
 
     /**
-     *
-     * @return
+     * Analyse the protocol for the right table.
+     * @return The protocol flow id.
      */
     @Override
     public int analyseProtocol() {

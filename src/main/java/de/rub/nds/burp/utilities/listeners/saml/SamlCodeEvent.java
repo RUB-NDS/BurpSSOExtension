@@ -18,15 +18,19 @@
  */
 package de.rub.nds.burp.utilities.listeners.saml;
 
-import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 
 /**
- *
+ * The specific CodeEvent for SAML Messages.
  * @author Tim Guenther
  */
 public class SamlCodeEvent extends AbstractCodeEvent{
 
+    /**
+     * Create a new SamlCodeEvent
+     * @param source The origin of the event.
+     * @param code The data (source code) to submit.
+     */
     public SamlCodeEvent(Object source, String code) {
         super(source, code);
     }

@@ -51,7 +51,7 @@ public class Table extends JTable{
     }
 
     /**
-     * 
+     * Get the name.
      * @return The name of the table. 
      */
     public String getName(){
@@ -59,7 +59,7 @@ public class Table extends JTable{
     }
     
     /**
-     * 
+     * Get the id of the table.
      * @return The request id of the table.
      */
     public String getID(){
@@ -67,21 +67,26 @@ public class Table extends JTable{
     }
     
     /**
-     * 
-     * @return The TableHelper related to the table. 
+     * Get the {@link TableHelper}.
+     * @return The {@link TableHelper} related to the table. 
      */
     public TableHelper getTableHelper(){
         return th;
     }
 
     /**
-     * 
+     * Get all {@link TableEntry}s
      * @return Get a list of table entries.
      */
     public ArrayList<TableEntry> getTableList(){
         return list;
     }
     
+    /**
+     * Get the {@link TableEntry} at index i.
+     * @param i The index.
+     * @return {@link TableEntry}
+     */
     public TableEntry getTableEntry(int i){
         return list.get(i);
     }
@@ -99,13 +104,16 @@ public class Table extends JTable{
     {
         // show the entry for the selected row
         TableEntry entry = list.get(row);
-        UIHistory.requestViewer.setMessage(entry.getFullMessage().getRequest(), true);
-        UIHistory.responseViewer.setMessage(entry.getFullMessage().getResponse(), false);
-        UIHistory.currentlyDisplayedItem = entry.getFullMessage();
+        UIHistory.requestViewer.setMessage(entry.getMessage().getRequest(), true);
+        UIHistory.responseViewer.setMessage(entry.getMessage().getResponse(), false);
+        UIHistory.currentlyDisplayedItem = entry.getMessage();
 
         super.changeSelection(row, col, toggle, extend);
     }
     
+    /**
+     * Update the table the full history.
+     */
     public void update(){
         SSOProtocol sso = list.get(0).getSSOProtocol();
         ArrayList<SSOProtocol> ssoList = sso.getProtocolFlow();
