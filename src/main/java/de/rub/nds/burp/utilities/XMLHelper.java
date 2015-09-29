@@ -57,6 +57,7 @@ public abstract class XMLHelper {
             transformer.transform(xmlInput, xmlOutput);
             return xmlOutput.getWriter().toString();
         } catch (IllegalArgumentException | TransformerException e) {
+            Logging.getInstance().log(XMLHelper.class, e);
             return input;
         }
     }
