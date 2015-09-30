@@ -18,6 +18,7 @@
  */
 package de.rub.nds.burp.espresso.gui.attacker.saml;
 
+import de.rub.nds.burp.espresso.gui.attacker.IAttack;
 import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
