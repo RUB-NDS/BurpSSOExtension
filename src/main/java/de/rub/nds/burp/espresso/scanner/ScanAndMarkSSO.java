@@ -40,7 +40,6 @@ import de.rub.nds.burp.utilities.protocols.SSOProtocol;
 import de.rub.nds.burp.utilities.table.Table;
 import de.rub.nds.burp.utilities.table.TableDB;
 import de.rub.nds.burp.utilities.table.TableEntry;
-import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -105,8 +104,6 @@ public class ScanAndMarkSSO implements IHttpListener {
 
 	private IBurpExtenderCallbacks callbacks;
 	private IExtensionHelpers helpers;
-        private PrintWriter stdout;
-        private PrintWriter stderr;
         
         /**
          * Create a new HttpMarker.
@@ -115,8 +112,6 @@ public class ScanAndMarkSSO implements IHttpListener {
 	public ScanAndMarkSSO(IBurpExtenderCallbacks callbacks) {
             this.callbacks = callbacks;
             this.helpers = callbacks.getHelpers();
-            this.stderr = new PrintWriter(callbacks.getStderr(), true);
-            this.stdout = new PrintWriter(callbacks.getStdout(), true);
 	}
         
         /**
