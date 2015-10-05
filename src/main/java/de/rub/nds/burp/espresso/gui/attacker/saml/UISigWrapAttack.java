@@ -87,7 +87,7 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
         org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, payloadComboBox, org.jdesktop.beansbinding.ELProperty.create("${selectedItem}"), payloadBean, org.jdesktop.beansbinding.BeanProperty.create("payload"));
         bindingGroup.addBinding(binding);
 
-        attackSlider.setMaximum(200);
+        attackSlider.setMaximum(0);
         attackSlider.setToolTipText("Choose an attack.");
         attackSlider.setValue(0);
         attackSlider.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -234,30 +234,34 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
     }// </editor-fold>//GEN-END:initComponents
 
     private void attackSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_attackSliderStateChanged
-        int attack = attackSlider.getValue();
-        try {
-                Document attackDoc = wrappingOracle.getPossibility(attack);
-                String attackString = DomUtilities.domToString(attackDoc);
-                attackDescriptionTextArea.setText(WeaknessLog.representation());
-                finalPayload.setText(attackString);
-        } catch (InvalidWeaknessException ex) {
-                Logging.getInstance().log(getClass(), ex);
+        if(attackSlider.getMaximum() > 0){
+            int attack = attackSlider.getValue();
+            try {
+                    Document attackDoc = wrappingOracle.getPossibility(attack);
+                    String attackString = DomUtilities.domToString(attackDoc);
+                    attackDescriptionTextArea.setText(WeaknessLog.representation());
+                    finalPayload.setText(attackString);
+            } catch (Exception ex) {
+                    Logging.getInstance().log(getClass(), ex);
+            }
         }
     }//GEN-LAST:event_attackSliderStateChanged
 
         private void modifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyButtonActionPerformed
             Logging.getInstance().log(getClass(), "Wrapping Signature...", Logging.INFO);
-            notifyAllTabs(code);
+            notifyAllTabs(finalPayload.getText());
         }//GEN-LAST:event_modifyButtonActionPerformed
 
         private void payloadComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_payloadComboBoxItemStateChanged
             final int selected = payloadComboBox.getSelectedIndex();
             final Payload p = signatureManager.getPayloads().get(selected);
             payloadBean.setPayload(p);
-
         }//GEN-LAST:event_payloadComboBoxItemStateChanged
 
         private void updateOracleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateOracleActionPerformed
+            //A workaround for issue #19
+            payloadValueKeyReleased(null);
+            
             Document samlDoc = signatureManager.getDocument();
             List<Payload> payloadList = signatureManager.getPayloads();
             wrappingOracle = new WrappingOracle(samlDoc, payloadList, samlSchemaAnalyser);
@@ -272,7 +276,13 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
         }//GEN-LAST:event_updateOracleActionPerformed
 
         private void payloadValueKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_payloadValueKeyReleased
-            payloadBean.getPayload().setValue(payloadValue.getText());
+            try {
+                if(!payloadValue.getText().isEmpty()){
+                    payloadBean.getPayload().setValue(payloadValue.getText());
+                }
+            } catch(NullPointerException e){
+                 Logging.getInstance().log(getClass(), e);
+            }
         }//GEN-LAST:event_payloadValueKeyReleased
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -300,6 +310,8 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
      * Initialise the XML Signature Wrapping Attack.
      */
     private void initXsw() {
+        payloadValue.setText(code);
+        
         Document doc;
         try {
             doc = DomUtilities.stringToDom(code);
@@ -319,7 +331,20 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
             
             updateOracle.setEnabled(true);
             modifyButton.setEnabled(true);
+            
+            // init. first payload
+            try{
+                payloadBean.setPayload(payloadList.get(0));
+            } catch(IndexOutOfBoundsException e){
+                Logging.getInstance().log(getClass(), e);
+            }
+            
+            finalPayload.setText("Modify the Payload (1.) and press Update Oracle (2.).");
         } else {
+            attackSlider.setMaximum(0);
+            attackDescriptionTextArea.setText("No Attack.");
+            finalPayload.setText("No Payload.");
+            
             String[] payloadError = {"No Payload found!"};
             payloadComboBox.setModel(new DefaultComboBoxModel(payloadError));
             payloadValue.setText(payloadError[0]);
@@ -334,8 +359,6 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
         //Update the Attack Number
         attackNumber.setText("0");
         
-        //Clear the final Payload
-        finalPayload.setText("Press Update Oracle.");
     }
        
     /**
@@ -346,6 +369,22 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
     public void setCode(AbstractCodeEvent evt) {
         this.code = evt.getCode();
         initXsw();
+        
+        // Disable the ui for further editing after modification.
+        if(evt.getSource().equals(this)){
+            
+            String[] payloadError = {""};
+            payloadComboBox.setModel(new DefaultComboBoxModel(payloadError));
+            payloadValue.setText("");
+            attackSliderLabel.setText("(3.) Choose Attack Vector");
+            attackSlider.setMaximum(0);
+            attackDescriptionTextArea.setText("");
+            finalPayload.setText("Modifications successfully transmitted.\nSee the Source code or SAMLResponse/Request tab.");
+            
+            updateOracle.setEnabled(false);
+            modifyButton.setEnabled(false);
+            
+        }
     }
 
     /**
@@ -356,6 +395,7 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
     public void notifyAllTabs(String code) {
         if(listeners != null){
             listeners.notifyAll(new SamlCodeEvent(this, code));
+             Logging.getInstance().log(getClass(), "Notify all Listeners.", Logging.DEBUG);
         }
     }
 

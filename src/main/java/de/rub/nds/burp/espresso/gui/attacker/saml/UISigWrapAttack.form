@@ -112,7 +112,7 @@
   <SubComponents>
     <Component class="javax.swing.JSlider" name="attackSlider">
       <Properties>
-        <Property name="maximum" type="int" value="200"/>
+        <Property name="maximum" type="int" value="0"/>
         <Property name="toolTipText" type="java.lang.String" value="Choose an attack."/>
         <Property name="value" type="int" value="0"/>
       </Properties>
