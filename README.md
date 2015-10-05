@@ -1,7 +1,7 @@
 # EsPReSSO
 ![build](https://img.shields.io/badge/Build-success-brightgreen.svg)
 ![licence](https://img.shields.io/badge/License-GPLv2-brightgreen.svg)
-[![release](https://img.shields.io/badge/Release-v1.5.0-blue.svg)](https://github.com/RUB-NDS/BurpSSOExtension-Development/releases)
+[![release](https://img.shields.io/badge/Release-v1.0-blue.svg)](https://github.com/RUB-NDS/BurpSSOExtension-Development/releases)
 
 ## Extension for Processing and Recognition of Single Sign-On Protocols
 
@@ -59,3 +59,12 @@ $ mvn clean package
 | RSyntaxTextArea | modified BSD license            | 20.09.2015  | https://github.com/bobbylight/RSyntaxTextArea | 2012, Robert Futrell                                                 |
 | json-simple     | Apache License 2.0              | 20.09.2015  | https://code.google.com/p/json-simple/        | Unkown, Yidong Fang                                                  |
 | WSAttacker      | GNU General Public License v2.0 | 20.09.2015  | https://github.com/RUB-NDS/WS-Attacker/       | 2012, Christain Mainka, Andreas Falkenberg, Jurai Somorovski, et al. |
+
+## Tested with:
+- Java 1.8.0._60
+- Burp Suite 1.6.01
+- Arch Linux 4.1.6-1-arch, amd64
+- Netbeans 8.0.2
+- Maven 3.3.3
+
+
