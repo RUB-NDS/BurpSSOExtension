@@ -83,10 +83,10 @@ public class OpenIDConnect extends SSOProtocol{
                 id = p.getValue();
                 continue;
             }
-            if(p.getName().equals("openid.identity")){
-                id = decode(p.getValue());
-                continue;
-            }
+//            if(p.getName().equals("openid.identity")){
+//                id = decode(p.getValue());
+//                continue;
+//            }
             if(p.getName().equals(ID)){
                 id = p.getValue();
             }
