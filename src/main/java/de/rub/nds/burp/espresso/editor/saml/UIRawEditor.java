@@ -20,10 +20,13 @@ package de.rub.nds.burp.espresso.editor.saml;
 
 import burp.IBurpExtenderCallbacks;
 import burp.ITextEditor;
+import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.ICodeListener;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
+import de.rub.nds.burp.utilities.listeners.saml.SamlCodeEvent;
 import java.awt.Component;
+import javax.swing.JPanel;
 
 /**
  * Show the text without syntax highlight.
@@ -31,10 +34,12 @@ import java.awt.Component;
  * @author Tim Guenther
  * @version 1.0
  */
-public class UIRawEditor implements ITextEditor, ICodeListener{
+public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
     
     private ITextEditor burpEditor = null;
     private CodeListenerController listeners = null;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton sendButton;
     
     /**
      * Create a new {@link burp.ITextEditor} to implement a new Burp like text area.
@@ -45,6 +50,47 @@ public class UIRawEditor implements ITextEditor, ICodeListener{
     public UIRawEditor(IBurpExtenderCallbacks callbacks, boolean editable){
         this.burpEditor = callbacks.createTextEditor();
         burpEditor.setEditable(editable);
+        initComponents();
+    }
+    
+    private void initComponents() {
+
+        sendButton = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        
+        jScrollPane1.setViewportView(burpEditor.getComponent());
+
+        sendButton.setText("Send to Attacker");
+        sendButton.setToolTipText("Send the Payload to the Attacker and the Source Code tab.");
+        sendButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sendButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(sendButton)
+                .addGap(0, 247, Short.MAX_VALUE))
+            .addComponent(jScrollPane1)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(sendButton))
+        );
+    }
+    
+    private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {                                           
+        if(listeners != null){
+            listeners.notifyAll(new SamlCodeEvent(this, new String(getText())));
+             Logging.getInstance().log(getClass(), "Notify all Listeners.", Logging.DEBUG);
+        }
     }
 
     /**
@@ -53,7 +99,7 @@ public class UIRawEditor implements ITextEditor, ICodeListener{
      */
     @Override
     public Component getComponent() {
-        return burpEditor.getComponent();
+        return this;
     }
 
     /**
