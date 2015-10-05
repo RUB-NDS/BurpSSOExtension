@@ -96,6 +96,8 @@ public class ScanAndMarkSSO implements IHttpListener {
         //Monolitic protocol hosts
         private final String FBC_HOST = "facebook.com";
         private final String MSA_HOST = "live.com";
+        private final String MSA_HOST2 = "live.net";
+        private final String MSA_HOST3 = "contoso.com";
         private final String BID_HOST = "persona.org";
 
 	private static final String HIGHLIGHT_COLOR = "yellow";
@@ -155,7 +157,7 @@ public class ScanAndMarkSSO implements IHttpListener {
                 }
             }
             if(UIOptions.isMSAccountActive()){
-                if(host.contains(MSA_HOST)){
+                if(host.contains(MSA_HOST) || host.contains(MSA_HOST2) || host.contains(MSA_HOST3)){
                     SSOProtocol protocol = checkRequestForMicrosoftAccount(requestInfo, httpRequestResponse);
                     if(protocol != null){
                         protocol.setCounter(counter++);
@@ -165,7 +167,7 @@ public class ScanAndMarkSSO implements IHttpListener {
             }
             if(UIOptions.isOpenIDConnectActive()){
                 //Exclude all monolithic protocols
-                if(!host.contains(FBC_HOST) || !host.contains(MSA_HOST) || !host.contains(BID_HOST)){
+                if(!host.contains(FBC_HOST) || !host.contains(MSA_HOST) || !host.contains(MSA_HOST2) || !host.contains(MSA_HOST3) || !host.contains(BID_HOST)){
                     SSOProtocol protocol = checkRequestForOpenIdConnect(requestInfo, httpRequestResponse);
                     if(protocol != null){
                         protocol.setCounter(counter++);
