@@ -135,8 +135,6 @@ public class UIHistory extends JSplitPane implements IMessageEditorController{
         });
         menu.add(item);
         menu.add(separator);
-        separator = new JPopupMenu.Separator();
-        menu.add(separator);
         item = new JMenuItem("Add Selected to Table");
         item.addActionListener(new ActionListener() {
 
