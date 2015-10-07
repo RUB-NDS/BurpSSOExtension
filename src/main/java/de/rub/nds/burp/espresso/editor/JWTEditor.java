@@ -34,6 +34,7 @@ import java.util.Base64;
 import java.util.Base64.Decoder;
 import javax.swing.JTabbedPane;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -173,14 +174,16 @@ public class JWTEditor implements IMessageEditorTabFactory{
                             IRequestInfo iri = helpers.analyzeRequest(content);
                             if(iri.getContentType() == IRequestInfo.CONTENT_TYPE_JSON){
                                 String body = (new String(content)).substring(iri.getBodyOffset());
+                                String tmp_body = null;
                                 try {
                                     JSONObject json = (JSONObject)new JSONParser().parse(body);
-                                    body = (String) json.get("assertion");
+                                    tmp_body = (String) json.get("assertion");
+                                } catch (ClassCastException e){
+                                    return null;
                                 } catch (Exception e) {
                                     Logging.getInstance().log(getClass(), e);
-                                    return null;
                                 }
-                                return body;
+                                return tmp_body;
                             }
                         }
                 } else {
@@ -211,16 +214,17 @@ public class JWTEditor implements IMessageEditorTabFactory{
                 if(jwt != null){
                     // deserialize the parameter value
                     String[] jwt_list = decode(jwt);
-
-                    txtInput.setText(jwt.getBytes());
-                    txtInput.setText(helpers.stringToBytes(jwt));
-                    txtInput.setEditable(editable);
-                    try{
-                        sourceViewerHeader.setText(new org.json.JSONObject(jwt_list[0]).toString(2), SyntaxConstants.SYNTAX_STYLE_JSON);
-                        sourceViewerPayload.setText(new org.json.JSONObject(jwt_list[1]).toString(2), SyntaxConstants.SYNTAX_STYLE_JSON);
-                        sourceViewerSignature.setText(jwt_list[2], SyntaxConstants.SYNTAX_STYLE_NONE);
-                    } catch(Exception e){
-                        Logging.getInstance().log(getClass(), e);
+                    if(jwt_list.length > 0){
+                        txtInput.setText(jwt.getBytes());
+                        txtInput.setText(helpers.stringToBytes(jwt));
+                        txtInput.setEditable(editable);
+                        try{
+                            sourceViewerHeader.setText(new org.json.JSONObject(jwt_list[0]).toString(2), SyntaxConstants.SYNTAX_STYLE_JSON);
+                            sourceViewerPayload.setText(new org.json.JSONObject(jwt_list[1]).toString(2), SyntaxConstants.SYNTAX_STYLE_JSON);
+                            sourceViewerSignature.setText(jwt_list[2], SyntaxConstants.SYNTAX_STYLE_NONE);
+                        } catch(Exception e){
+                            Logging.getInstance().log(getClass(), e);
+                        }
                     }
                 }
             }
@@ -285,14 +289,15 @@ public class JWTEditor implements IMessageEditorTabFactory{
                     input = helpers.bytesToString(helpers.base64Decode(input));
                 }
                 String[] jwt_list = input.split("\\.");
-                String[] tmp = {"","",""};
-                Decoder b64 = Base64.getDecoder();
-                for(int i = 0; i<2; i++){
-                    tmp[i] = helpers.bytesToString(b64.decode(jwt_list[i]));
+                if(jwt_list.length > 0){
+                    String[] tmp = {"","",""};
+                    Decoder b64 = Base64.getDecoder();
+                    for(int i = 0; i<2; i++){
+                        tmp[i] = helpers.bytesToString(b64.decode(jwt_list[i]));
+                    }
+                    tmp[2] = jwt_list[2];
+                    return tmp;
                 }
-                tmp[2] = jwt_list[2];
-
-                return tmp;
             } catch(Exception e){
                 Logging.getInstance().log(getClass(), e);
             }

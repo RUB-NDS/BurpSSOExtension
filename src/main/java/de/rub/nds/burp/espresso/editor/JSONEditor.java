@@ -33,6 +33,8 @@ import java.awt.Component;
 import javax.swing.JTabbedPane;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
 
 /**
  * JSON Editor.
@@ -142,7 +144,7 @@ public class JSONEditor implements IMessageEditorTabFactory{
          */
         private boolean isJSON(byte[] content) {
             IRequestInfo iri = helpers.analyzeRequest(content);
-            return iri.getContentType() == IRequestInfo.CONTENT_TYPE_JSON;
+            return (iri.getContentType() == IRequestInfo.CONTENT_TYPE_JSON);
         }
 
         /**
@@ -181,14 +183,27 @@ public class JSONEditor implements IMessageEditorTabFactory{
                 guiContainer.setEnabled(true);
 
                 String input = getJSON(content, isRequest);
+                if(input != null){
+                    // deserialize the parameter value
+                    String json = decode(input);
+                    if(json != null){
+                        burpEditor.setText(json.getBytes());
+                        try{
+                            sourceViewer.setText(new JSONObject(json).toString(2), SyntaxConstants.SYNTAX_STYLE_JSON);
+                        } catch(Exception e){
+                            Logging.getInstance().log(getClass(), e);
+                            try{
+                                JSONArray jsonarray = (JSONArray)new JSONParser().parse(json);
+                                sourceViewer.setText(jsonarray.toJSONString(), SyntaxConstants.SYNTAX_STYLE_JSON);
+                            } catch (Exception ex){
+                                Logging.getInstance().log(getClass(), ex);
+                            }
+                        }
+                        burpEditor.setText(helpers.stringToBytes(input));
 
-                // deserialize the parameter value
-                String json = decode(input);
-                burpEditor.setText(json.getBytes());
-                sourceViewer.setText(new JSONObject(json).toString(2), SyntaxConstants.SYNTAX_STYLE_JSON);
-                burpEditor.setText(helpers.stringToBytes(input));
-
-                burpEditor.setEditable(editable);
+                        burpEditor.setEditable(editable);
+                    }
+                }
             }
 
             // remember the displayed content
