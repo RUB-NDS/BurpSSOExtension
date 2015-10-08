@@ -60,13 +60,7 @@ public class ScanAndMarkSSO implements IHttpListener {
         private boolean oauth_code_requested = false;
     
         private static int counter = 1;
-
-	private String[] OPENID_TOKEN_PARAMETER = {"openid.return_to"};
-
-	private static final Set<String> IN_REQUEST_OPENID2_TOKEN_PARAMETER = new HashSet<String>(Arrays.asList(
-            new String[]{"openid.claimed_id", "openid.op_endpoint"}
-	));
-
+        
 	private static final Set<String> IN_REQUEST_OAUTH_PARAMETER = new HashSet<String>(Arrays.asList(
             new String[]{"redirect_uri", "scope", "client_id", "client_secret",  "response_type"}
 	));
@@ -226,122 +220,128 @@ public class ScanAndMarkSSO implements IHttpListener {
             OpenIDConnect oidc = null;
             String comment = "";
             if(null != prev_message){
-                //Mark the redirect message;
-                IResponseInfo prev_responseInfo = helpers.analyzeResponse(prev_message.getResponse());
-                //Check for OpenID Connect Authorization Code Flow Request
-                if(helpers.analyzeResponse(httpRequestResponse.getResponse()).getStatusCode() == 302){
-                    Pattern p1 = Pattern.compile("&response_type=code", Pattern.CASE_INSENSITIVE);
-                    Pattern p2 = Pattern.compile("^Location:.*?&scope=[a-zA-Z+]*?openid[a-zA-Z+]*?&", Pattern.CASE_INSENSITIVE);
-                    Matcher m1 = p1.matcher(response);
-                    Matcher m2 = p2.matcher(response);
-                    if(m1.find() && m2.find()){
-                        p1 = Pattern.compile("");
-                        comment = "OpenID Connect ACF Request";
-                        markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
-                        oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
-                    }
+                 //Check for Hybird Flow
+                if(oidc == null){
                     IParameter response_type = helpers.getRequestParameter(httpRequestResponse.getRequest(), "response_type");
                     if(response_type != null){
                         String response_type_value = response_type.getValue();
-                        if(null == oidc && response_type_value.contains("id_token")){
-                            p1 = Pattern.compile("^token|\\stoken");
-                            m1 = p1.matcher(response_type_value);
-                            if(m1.find()){
-                                comment = "OpenID Connect Implicit Flow Request";
-                            } else {
-                                comment = "OpenID Connect Implicit Flow Response";
-                            }
-                            markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
-                            oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
-                        }
-                    }
-                }
-                //Mark the actual message
-                if(prev_responseInfo.getStatusCode() == 302 && oidc == null){
-                    String pre_response = helpers.bytesToString(prev_message.getResponse());
-                    
-                    Pattern p = Pattern.compile("&?response_type=code&?", Pattern.CASE_INSENSITIVE);
-                    Matcher pre_m = p.matcher(pre_response);
-                    Matcher m = p.matcher(request);
-                    if(m.find() && pre_m.find()){
-                        IParameter scope = helpers.getRequestParameter(httpRequestResponse.getRequest(), "scope");
-                        if(scope != null){
-                            p = Pattern.compile("openid", Pattern.CASE_INSENSITIVE);
-                            m = p.matcher(request);
-                            p = Pattern.compile("scope.{0,20}openid", Pattern.CASE_INSENSITIVE);
-                            pre_m = p.matcher(pre_response);
-                            if(m.find() && pre_m.find()){
-                                comment = "OpenID Connect ACF Request";
+                        if(response_type_value.contains("code")){
+                            if(response_type_value.contains("id_token")){
+                                Logging.getInstance().log(getClass(), "9", Logging.DEBUG);
+                                comment = "OpenID Connect Hybrid Flow";
                                 markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
                                 oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
-                            }
-                        } else {
-                            p = Pattern.compile("scope=.*?openid", Pattern.CASE_INSENSITIVE);
-                            m = p.matcher(request);
-                            if(m.find()){
-                                comment = "OpenID Connect";
-                                markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
-                                oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
-                            }
-                        }
-                    }
-                } 
-            }
-            if(oidc == null){
-                Pattern p = Pattern.compile("code=[a-zA-Z0-9]*|&scope=[a-zA-Z0-9+]*?openid[a-zA-Z0-9+]*?&", Pattern.CASE_INSENSITIVE);
-                Matcher m = p.matcher(request);
-                if(m.find()){
-                    comment = "OpenID Connect / OAuth";
-                    markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
-                    oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect / OAuth", callbacks);
-                } else if(null != helpers.getRequestParameter(httpRequestResponse.getRequest(), "id_token")){
-                    comment = "OpenID Connect Implicit Flow Response";
-                    markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
-                    oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
-                } else if(null != helpers.getRequestParameter(httpRequestResponse.getRequest(), "access_token")){
-                    comment = "OpenID Connect Implicit Flow Access Token";
-                    markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
-                    oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
-                }
-            }
-            //Check for Hybird Flow
-            if(oidc == null){
-                IParameter response_type = helpers.getRequestParameter(httpRequestResponse.getRequest(), "response_type");
-                if(response_type != null){
-                    String response_type_value = response_type.getValue();
-                    if(response_type_value.contains("code")){
-                        if(response_type_value.contains("id_token token")){
-                            comment = "OpenID Connect Hybrid Flow";
-                            markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
-                            oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
-                        } else if(response_type_value.contains("token id_token")){
-                            comment = "OpenID Connect Hybrid Flow";
-                            markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
-                            oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
-                        } else if(response_type_value.contains("id_token")){
-                            comment = "OpenID Connect Hybrid Flow";
-                            markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
-                            oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
-                        } else {
-                            Pattern p = Pattern.compile("^token|\\stoken");
-                            Matcher m = p.matcher(response_type_value);
-                            if(m.find()){
+                            } else if(response_type_value.contains("token")){
+                                Logging.getInstance().log(getClass(), "10", Logging.DEBUG);
                                 comment = "OpenID Connect Hybrid Flow";
                                 markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
                                 oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
                             }
+                            //Classification for code, id_token, token is also covered with the code above.
+                        }
+                    }
+                }
+                
+                //Mark the redirect message;
+                IResponseInfo prev_responseInfo = helpers.analyzeResponse(prev_message.getResponse());
+                //Check for OpenID Connect Authorization Code Flow Request
+                if(helpers.analyzeResponse(httpRequestResponse.getResponse()).getStatusCode() == 302 && oidc == null){
+                    //302 Authorisation Code FLow
+                    Pattern p1 = Pattern.compile("^Location:.*?response_type=code.*?$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+                    Pattern p2 = Pattern.compile("^Location:.*?&?scope=[a-zA-Z+]*?openid[a-zA-Z+]*?&?.*?$", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+                    Matcher m1 = p1.matcher(response);
+                    Matcher m2 = p2.matcher(response);
+                    if(m1.find() && m2.find()){
+                        Logging.getInstance().log(getClass(), "1", Logging.DEBUG);
+                        comment = "OpenID Connect ACF Request";
+                        markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
+                        oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
+                    }
+                    
+                    //302 Implicit Flow
+                    IParameter response_type = helpers.getRequestParameter(httpRequestResponse.getRequest(), "response_type");
+                    if(response_type != null){
+                        String response_type_value = response_type.getValue();
+                        if(null == oidc && response_type_value.contains("id_token")){
+                            comment = "OpenID Connect Implicit Flow Request";
+                            markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
+                            oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
+                        }
+                    }
+                }
+                
+                //Mark the actual message
+                if(prev_responseInfo.getStatusCode() == 302 && oidc == null){
+                    IParameter response_type = helpers.getRequestParameter(httpRequestResponse.getRequest(), "response_type");
+                    IParameter pre_response_type = helpers.getRequestParameter(prev_message.getRequest(), "response_type");
+                    if(response_type != null && pre_response_type != null){
+                        if(response_type.getValue().contains("code") && pre_response_type.getValue().contains("code")){
+                            IParameter scope = helpers.getRequestParameter(httpRequestResponse.getRequest(), "scope");
+                            IParameter pre_scope = helpers.getRequestParameter(prev_message.getRequest(), "scope");
+
+                            if(scope != null && pre_scope != null){
+                                if(scope.getValue().contains("openid") && pre_scope.getValue().contains("openid")){
+                                    Logging.getInstance().log(getClass(), "4", Logging.DEBUG);
+                                    comment = "OpenID Connect ACF Request";
+                                    markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
+                                    oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
+                                }
+
+                            } else if(scope != null){
+                                if(scope.getValue().contains("openid")){
+                                    Logging.getInstance().log(getClass(), "5", Logging.DEBUG);
+                                    comment = "OpenID Connect";
+                                    markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
+                                    oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
+                                }
+                            }
+                        }
+                    }
+
+                    if(oidc == null){
+                        
+                        if(null != helpers.getRequestParameter(httpRequestResponse.getRequest(), "id_token")){
+                            Logging.getInstance().log(getClass(), "7", Logging.DEBUG);
+                            comment = "OpenID Connect Implicit Flow Response";
+                            markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
+                            oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
+                            
+                        } else if(null != helpers.getRequestParameter(httpRequestResponse.getRequest(), "access_token")){
+                            Logging.getInstance().log(getClass(), "8", Logging.DEBUG);
+                            comment = "OpenID Connect Implicit Flow Access Token";
+                            markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
+                            oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
                         }
                     }
                 }
             }
             //Check for Discovery Flow
             if(oidc == null){
-                Pattern p1 = Pattern.compile("\\/\\.well-known\\/openid-configuration|\\/\\.well−known\\/webfinger");
+                Pattern p1 = Pattern.compile("\\/\\.well-known\\/openid-configuration|\\/\\.well−known\\/webfinger", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
                 Matcher m1 = p1.matcher(request);
                 if(m1.find()){
+                    Logging.getInstance().log(getClass(), "13", Logging.DEBUG);
                     comment = "OpenID Connect Discovery Flow";
                     markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
                     oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
+                }
+            }
+            
+            //Generic detection
+            IParameter code = helpers.getRequestParameter(httpRequestResponse.getRequest(), "code");
+            IParameter scope = helpers.getRequestParameter(httpRequestResponse.getRequest(), "scope");
+            IParameter state = helpers.getRequestParameter(httpRequestResponse.getRequest(), "state");
+            if((code != null | state != null) && oidc == null && scope != null){
+                if(scope.getValue().contains("openid")){
+                    Logging.getInstance().log(getClass(), "6", Logging.DEBUG);
+                    comment = "OpenID Connect";
+                    markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
+                    oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect", callbacks);
+                } else {
+                    Logging.getInstance().log(getClass(), "6", Logging.DEBUG);
+                    comment = "OpenID Connect / OAuth";
+                    markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
+                    oidc = new OpenIDConnect(httpRequestResponse, "OpenID Connect / OAuth", callbacks);
                 }
             }
             return oidc;
@@ -354,18 +354,26 @@ public class ScanAndMarkSSO implements IHttpListener {
                 comment = "Facebook Connect Ping Request";
                 fbc = new FacebookConnect(httpRequestResponse, "Facebook Connect", callbacks);
             }
-            if(null != helpers.getRequestParameter(httpRequestResponse.getRequest(), "signed_request") && fbc == null){
-                comment = "Facebook Connect Authentication Request";
-                fbc = new FacebookConnect(httpRequestResponse, "Facebook Connect", callbacks);
-            }
-            if(null != helpers.getRequestParameter(httpRequestResponse.getRequest(), "response_type") && fbc == null){
-                IParameter respose_type = helpers.getRequestParameter(httpRequestResponse.getRequest(), "response_type");
-                if(respose_type.getValue().contains("signed_request") && fbc == null){
+            if(null != helpers.getRequestParameter(httpRequestResponse.getRequest(), "signed_request")){
+                if(comment.equals("")){
                     comment = "Facebook Connect Authentication Response";
                     fbc = new FacebookConnect(httpRequestResponse, "Facebook Connect", callbacks);
+                } else {
+                    comment += ", FBC Authentication Response";
                 }
             }
-            if(parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_FACEBOOKCONNECT_PARAMETER) && fbc == null){
+            if(null != helpers.getRequestParameter(httpRequestResponse.getRequest(), "response_type")){
+                IParameter respose_type = helpers.getRequestParameter(httpRequestResponse.getRequest(), "response_type");
+                if(respose_type.getValue().contains("signed_request")){
+                    if(comment.equals("")){
+                        comment = "Facebook Connect Authentication Request";
+                        fbc = new FacebookConnect(httpRequestResponse, "Facebook Connect", callbacks);
+                    } else {
+                        comment += ", FBC Authentication Request";
+                    }
+                }
+            }
+            if(parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_FACEBOOKCONNECT_PARAMETER) && comment.equals("")){
                 comment = "Facebook Connect";
                 fbc = new FacebookConnect(httpRequestResponse, "Facebook Connect", callbacks);
             } else {
@@ -376,7 +384,7 @@ public class ScanAndMarkSSO implements IHttpListener {
                 }
             }
 
-            if(fbc != null){
+            if(fbc != null && !comment.equals("")){
                 markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
             }
             return fbc;
@@ -430,19 +438,20 @@ public class ScanAndMarkSSO implements IHttpListener {
             IParameter openidMode = getFirstParameterByName(parameterList, "openid.mode");
             String protocol = "OpenID";
             if (openidMode != null) {
-                if (openidMode.getValue().equals("checkid_setup")) {
+                if(openidMode.getValue().contains("checkid_setup")) {
                     markRequestResponse(httpRequestResponse, "OpenID Request", HIGHLIGHT_COLOR);
-                } else if (openidMode.getValue().equals("id_res")) {
-
-                    if (parameterListContainsParameterName(parameterList, IN_REQUEST_OPENID2_TOKEN_PARAMETER)) {
+                }  else if(openidMode.getValue().equals("associate")){
+                    markRequestResponse(httpRequestResponse, "OpenID Association", HIGHLIGHT_COLOR);
+                    
+                } else if(null != helpers.getRequestParameter(httpRequestResponse.getRequest(), "openid.sig")){
+                    
+                    if (null != helpers.getRequestParameter(httpRequestResponse.getRequest(), "openid.claimed_id")) {
                             markRequestResponse(httpRequestResponse, "OpenID 2.0 Token", HIGHLIGHT_COLOR);
                             protocol += " v2.0";
                     } else {
                             markRequestResponse(httpRequestResponse, "OpenID 1.0 Token", HIGHLIGHT_COLOR);
                             protocol += " v1.0";
                     }
-                } else if(openidMode.getValue().equals("associate")){
-                    markRequestResponse(httpRequestResponse, "OpenID Association", HIGHLIGHT_COLOR);
                 }
                 
                 return new OpenID(httpRequestResponse, protocol, callbacks);
@@ -452,43 +461,43 @@ public class ScanAndMarkSSO implements IHttpListener {
 
 	private SSOProtocol checkRequestForOAuth(IRequestInfo requestInfo, IHttpRequestResponse httpRequestResponse) {
             OAuth oauth = null;
-            String comment = "OAuth";
+            String comment = null;
             if (parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_OAUTH_PARAMETER)) {
                 oauth =  new OAuth(httpRequestResponse, "OAuth", callbacks);
                 
+                //Code Flow
                 if(parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_OAUTH_AUTH_CODE_GRANT_PARAMETER)){
+                    
                     if(null != prev_message){
                         IResponseInfo prev_responseInfo = helpers.analyzeResponse(prev_message.getResponse());
                         //Check for OAuth Authorization Code Grant Request
                         if(prev_responseInfo.getStatusCode() == 302){
-                            String pre_response = helpers.bytesToString(prev_message.getResponse());
-                            String request = helpers.bytesToString(httpRequestResponse.getRequest());
-                            if(!oauth_code_requested){
-                                Pattern p = Pattern.compile("&?response_type=code&?", Pattern.CASE_INSENSITIVE);
-                                Matcher pre_m = p.matcher(pre_response);
-                                Matcher m = p.matcher(request);
-                                if(m.find() && pre_m.find()){
+                            IParameter response_type = helpers.getRequestParameter(httpRequestResponse.getRequest(), "response_type");
+                            IParameter pre_response_type = helpers.getRequestParameter(prev_message.getRequest(), "response_type");
+                            if(response_type != null && pre_response_type != null){
+                                if(response_type.getValue().contains("code") && pre_response_type.getValue().contains("code")){
                                     comment = "OAuth ACG Request";
                                     oauth_code_requested = true;
-                                }
-                            } else {
-                                // Check for OAuth Authorization Code Grant Code
-                                Pattern p = Pattern.compile("code=[a-zA-Z0-9]*", Pattern.CASE_INSENSITIVE);
-                                Matcher pre_m = p.matcher(pre_response);
-                                Matcher m = p.matcher(request);
-                                if(m.find() && pre_m.find()){
-                                    comment = "OAuth ACG Code";
-                                    oauth_code_requested = false;
-                                }
-                                //Check for OAuth Authorization Code Grant Token Request
-                                p = Pattern.compile("grant_type=auth_code", Pattern.CASE_INSENSITIVE);
-                                m = p.matcher(request);
-                                if(m.find()){
-                                    comment = "OAuth ACG Token Request";
+                                } else {
+
+                                    // Check for OAuth Authorization Code Grant Code
+                                    IParameter code = helpers.getRequestParameter(httpRequestResponse.getRequest(), "code");
+                                    if(code != null && oauth_code_requested && comment == null){
+                                        comment = "OAuth ACG Code";
+                                        oauth_code_requested = false;
+                                    }
+
+                                    //Check for OAuth Authorization Code Grant Token Request
+                                    IParameter grant_type = helpers.getRequestParameter(httpRequestResponse.getRequest(), "grant_type");
+                                    if(grant_type != null && comment == null){
+                                        if(grant_type.getValue().contains("auth_code")){
+                                            comment = "OAuth ACG Token Request";
+                                        }
+                                    }
                                 }
                             }
                         }
-                    } else {
+                    } else if(comment == null){
                         //Check for other OAuth flows
                         IParameter grant_type = helpers.getRequestParameter(httpRequestResponse.getRequest(), "grant_type");
                         if(grant_type != null){
@@ -516,35 +525,40 @@ public class ScanAndMarkSSO implements IHttpListener {
                             }
                         }
                     }
-                } else if(parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_OAUTH_IMPLICIT_PARAMETER)){
+                    
+                //Implicit Flow     
+                } else if(parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_OAUTH_IMPLICIT_PARAMETER) && comment == null){
                     if(null != prev_message){
                         IResponseInfo prev_responseInfo = helpers.analyzeResponse(prev_message.getResponse());
                         //Check for OAuth Implicit Grant Request
                         if(prev_responseInfo.getStatusCode() == 302){
-                            String pre_response = helpers.bytesToString(prev_message.getResponse());
-                            String request = helpers.bytesToString(httpRequestResponse.getRequest());
-                            Pattern p = Pattern.compile("&?response_type=token&?", Pattern.CASE_INSENSITIVE);
-                            Matcher pre_m = p.matcher(pre_response);
-                            Matcher m = p.matcher(request);
-                            if(m.find() && pre_m.find()){
+                            IParameter response_type = helpers.getRequestParameter(httpRequestResponse.getRequest(), "response_type");
+                            IParameter pre_response_type = helpers.getRequestParameter(prev_message.getRequest(), "response_type");
+                            
+                            if(response_type.getValue().contains("token") && pre_response_type.getValue().contains("token")){
                                 comment = "OAuth Implicit Grant Request";
                                 oauth_code_requested = true;
                             }
                         }
                     }
+                    
                     // Check for OAuth Implicit Token
-                    if(helpers.analyzeResponse(httpRequestResponse.getResponse()).getStatusCode() == 302){
+                    if(helpers.analyzeResponse(httpRequestResponse.getResponse()).getStatusCode() == 302 && comment == null){
                         String response = helpers.bytesToString(httpRequestResponse.getResponse());
                         // Check for OAuth Implicit Token
-                        Pattern p = Pattern.compile("Location:.*?#.*?access_token=.*?&?", Pattern.CASE_INSENSITIVE);
+                        Pattern p = Pattern.compile("Location:.*?#.*?access_token=.*?&?", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
                         Matcher m = p.matcher(response);
                         if(m.find()){
                             comment = "OAuth Implicit Token";
                             oauth_code_requested = false;
                         }
-                    } else {
+                    } else if(comment == null){
                         comment = "OAuth (IF)";
                     }
+                }
+                
+                if(comment == null){
+                    comment = "OAuth";
                 }
                 markRequestResponse(httpRequestResponse, comment, HIGHLIGHT_COLOR);
             }
@@ -559,7 +573,7 @@ public class ScanAndMarkSSO implements IHttpListener {
             }
 
             if (parameterListContainsParameterName(parameterList, IN_REQUEST_SAML_TOKEN_PARAMETER)) {
-                markRequestResponse(httpRequestResponse, "SAML Token", HIGHLIGHT_COLOR);
+                markRequestResponse(httpRequestResponse, "SAML Response Token", HIGHLIGHT_COLOR);
                 return new SAML(httpRequestResponse, "SAML", callbacks, getFirstParameterByName(parameterList, "SAMLResponse"));
             }
             return null;
