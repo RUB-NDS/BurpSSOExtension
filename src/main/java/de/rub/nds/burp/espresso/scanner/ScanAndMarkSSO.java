@@ -272,6 +272,7 @@ public class ScanAndMarkSSO implements IHttpListener {
                 
                 //Mark the actual message
                 if(prev_responseInfo.getStatusCode() == 302 && oidc == null){
+                    //Authorisation Code Flow
                     IParameter response_type = helpers.getRequestParameter(httpRequestResponse.getRequest(), "response_type");
                     IParameter pre_response_type = helpers.getRequestParameter(prev_message.getRequest(), "response_type");
                     if(response_type != null && pre_response_type != null){
@@ -297,7 +298,8 @@ public class ScanAndMarkSSO implements IHttpListener {
                             }
                         }
                     }
-
+                    
+                    //Implicit Flow
                     if(oidc == null){
                         
                         if(null != helpers.getRequestParameter(httpRequestResponse.getRequest(), "id_token")){
@@ -317,7 +319,7 @@ public class ScanAndMarkSSO implements IHttpListener {
             }
             //Check for Discovery Flow
             if(oidc == null){
-                Pattern p1 = Pattern.compile("\\/\\.well-known\\/openid-configuration|\\/\\.well−known\\/webfinger", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+                Pattern p1 = Pattern.compile("\\/\\.well-known\\/openid-configuration|\\/\\.well-known\\/webfinger", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
                 Matcher m1 = p1.matcher(request);
                 if(m1.find()){
                     Logging.getInstance().log(getClass(), "13", Logging.DEBUG);
@@ -354,6 +356,18 @@ public class ScanAndMarkSSO implements IHttpListener {
                 comment = "Facebook Connect Ping Request";
                 fbc = new FacebookConnect(httpRequestResponse, "Facebook Connect", callbacks);
             }
+            
+            if(parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_FACEBOOKCONNECT_PARAMETER) && comment.equals("")){
+                comment = "Facebook Connect";
+                fbc = new FacebookConnect(httpRequestResponse, "Facebook Connect", callbacks);
+            } else {
+                SSOProtocol possible_oauth = checkRequestForOAuth(requestInfo,httpRequestResponse);
+                if(null != possible_oauth && fbc == null){
+                    comment = "Facebook Connect OAuth";
+                    fbc = new FacebookConnect(httpRequestResponse, "Facebook Connect", callbacks);
+                }
+            }
+            
             if(null != helpers.getRequestParameter(httpRequestResponse.getRequest(), "signed_request")){
                 if(comment.equals("")){
                     comment = "Facebook Connect Authentication Response";
@@ -371,16 +385,6 @@ public class ScanAndMarkSSO implements IHttpListener {
                     } else {
                         comment += ", FBC Authentication Request";
                     }
-                }
-            }
-            if(parameterListContainsParameterName(requestInfo.getParameters(), IN_REQUEST_FACEBOOKCONNECT_PARAMETER) && comment.equals("")){
-                comment = "Facebook Connect";
-                fbc = new FacebookConnect(httpRequestResponse, "Facebook Connect", callbacks);
-            } else {
-                SSOProtocol possible_oauth = checkRequestForOAuth(requestInfo,httpRequestResponse);
-                if(null != possible_oauth && fbc == null){
-                    comment = "Facebook Connect";
-                    fbc = new FacebookConnect(httpRequestResponse, "Facebook Connect", callbacks);
                 }
             }
 
@@ -497,33 +501,6 @@ public class ScanAndMarkSSO implements IHttpListener {
                                 }
                             }
                         }
-                    } else if(comment == null){
-                        //Check for other OAuth flows
-                        IParameter grant_type = helpers.getRequestParameter(httpRequestResponse.getRequest(), "grant_type");
-                        if(grant_type != null){
-                            switch(grant_type.getValue()){
-                                case "authorization_code":
-                                    comment = "OAuth Access Token Request";
-                                    break;
-                                case "refresh_token":
-                                    comment = "OAuth Refresh Token Request";
-                                    break;
-                                case "password":
-                                    comment = "OAuth Resource Owner Password Credentials Grant";
-                                    break;
-                                case "client_credentials":
-                                    comment = "OAuth Client Credentials Grant";
-                                    break;
-                                case "urn:ietf:params:oauth:grant-type:jwt-bearer":
-                                    comment = "OAuth Extension JWT Grant";
-                                    break;
-                                case "urn:oasis:names:tc:SAML:2.0:cm:bearer":
-                                    comment = "OAuth Extension SAML Grant";
-                                    break;
-                                default:
-                                    comment = "OAuth ACGF";
-                            }
-                        }
                     }
                     
                 //Implicit Flow     
@@ -554,6 +531,35 @@ public class ScanAndMarkSSO implements IHttpListener {
                         }
                     } else if(comment == null){
                         comment = "OAuth (IF)";
+                    }
+                }
+                
+                 if(comment == null){
+                    //Check for other OAuth flows
+                    IParameter grant_type = helpers.getRequestParameter(httpRequestResponse.getRequest(), "grant_type");
+                    if(grant_type != null){
+                        switch(grant_type.getValue()){
+                            case "authorization_code":
+                                comment = "OAuth Access Token Request";
+                                break;
+                            case "refresh_token":
+                                comment = "OAuth Refresh Token Request";
+                                break;
+                            case "password":
+                                comment = "OAuth Resource Owner Password Credentials Grant";
+                                break;
+                            case "client_credentials":
+                                comment = "OAuth Client Credentials Grant";
+                                break;
+                            case "urn:ietf:params:oauth:grant-type:jwt-bearer":
+                                comment = "OAuth Extension JWT Grant";
+                                break;
+                            case "urn:oasis:names:tc:SAML:2.0:cm:bearer":
+                                comment = "OAuth Extension SAML Grant";
+                                break;
+                            default:
+                                comment = "OAuth ACGF";
+                        }
                     }
                 }
                 
