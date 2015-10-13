@@ -24,6 +24,7 @@ import burp.IParameter;
 import de.rub.nds.burp.utilities.Compression;
 import de.rub.nds.burp.utilities.Encoding;
 import de.rub.nds.burp.utilities.Logging;
+import de.rub.nds.burp.utilities.table.Table;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -196,5 +197,9 @@ public class SAML extends SSOProtocol{
             
         }
         return newProtocolflowID();
+    }
+    
+    public static Table analyseProtocol(SSOProtocol startEntry, ArrayList<SSOProtocol> list){
+        return null;
     }
 }

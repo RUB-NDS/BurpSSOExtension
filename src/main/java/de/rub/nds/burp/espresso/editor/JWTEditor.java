@@ -289,7 +289,7 @@ public class JWTEditor implements IMessageEditorTabFactory{
                     input = helpers.bytesToString(helpers.base64Decode(input));
                 }
                 String[] jwt_list = input.split("\\.");
-                if(jwt_list.length > 0){
+                if(jwt_list.length == 3){
                     String[] tmp = {"","",""};
                     Decoder b64 = Base64.getDecoder();
                     for(int i = 0; i<2; i++){
