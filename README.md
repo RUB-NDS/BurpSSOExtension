@@ -2,6 +2,7 @@
 ![build](https://img.shields.io/badge/Build-success-brightgreen.svg)
 ![licence](https://img.shields.io/badge/License-GPLv2-brightgreen.svg)
 [![release](https://img.shields.io/badge/Release-v1.0-blue.svg)](https://github.com/RUB-NDS/BurpSSOExtension-Development/releases)
+![status](https://img.shields.io/badge/Status-beta-yellow.svg)
 
 ## Extension for Processing and Recognition of Single Sign-On Protocols
 
