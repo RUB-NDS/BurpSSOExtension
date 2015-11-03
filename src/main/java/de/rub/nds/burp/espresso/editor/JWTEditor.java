@@ -1,6 +1,6 @@
 /**
  * EsPReSSO - Extension for Processing and Recognition of Single Sign-On Protocols.
- * Copyright (C) 2015/ Tim Guenther and Christian Mainka
+ * Copyright (C) 2015 Tim Guenther and Christian Mainka
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
