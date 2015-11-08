@@ -89,7 +89,6 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
 
         attackSlider.setMaximum(0);
         attackSlider.setToolTipText("Choose an attack.");
-        attackSlider.setValue(0);
         attackSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 attackSliderStateChanged(evt);
@@ -100,6 +99,12 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, attackSlider, org.jdesktop.beansbinding.ELProperty.create("${value}"), attackNumber, org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
+
+        attackNumber.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                attackNumberActionPerformed(evt);
+            }
+        });
 
         attackSliderLabel.setText("(3.) Choose Attack Vector");
 
@@ -244,6 +249,7 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
             } catch (Exception ex) {
                     Logging.getInstance().log(getClass(), ex);
             }
+            attackNumber.setText((new Integer(attack)).toString());
         }
     }//GEN-LAST:event_attackSliderStateChanged
 
@@ -284,6 +290,15 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
                  Logging.getInstance().log(getClass(), e);
             }
         }//GEN-LAST:event_payloadValueKeyReleased
+
+    private void attackNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_attackNumberActionPerformed
+        if(attackSlider.getMaximum() > 0){
+            int attack = new Integer(attackNumber.getText());
+            if(attack >= 0 && attack <= attackSlider.getMaximum()){
+                attackSlider.setValue(attack);
+            }
+        }
+    }//GEN-LAST:event_attackNumberActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.fife.ui.rsyntaxtextarea.RSyntaxTextArea attackDescriptionTextArea;
