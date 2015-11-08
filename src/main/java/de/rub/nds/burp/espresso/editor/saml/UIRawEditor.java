@@ -60,7 +60,7 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
         
         jScrollPane1.setViewportView(burpEditor.getComponent());
 
-        sendButton.setText("Send to Attacker");
+        sendButton.setText("Update");
         sendButton.setToolTipText("Send the Payload to the Attacker and the Source Code tab.");
         sendButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -171,6 +171,7 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
      * @param enabled True to enable, false to disable the component.
      */
     public void setEnabled(boolean enabled){
+        sendButton.setEnabled(enabled);
         if(enabled){
            burpEditor.setText(getText());
         } else {
