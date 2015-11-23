@@ -48,7 +48,7 @@ $ mvn clean package
 
 ## Installation and Usage
 
-- Build the JAR file as described above, or download it from [releases](https://github.com/RUB-NDS/BurpSSOExtension-Development/releases).
+- Build the JAR file as described above, or download it from [releases](https://github.com/RUB-NDS/BurpSSOExtension/releases).
 - Load the JAR file from the target folder into Burp's Extender. (Start Burp with Java 1.8)
 - SSO messages are highlighted automatically in Burp's HTTP history (Proxy tab).
 - A History, Options and Help can be found in a new tab called 'EsPReSSO'
