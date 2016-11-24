@@ -19,15 +19,25 @@
 package de.rub.nds.burp.utilities;
 
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.*;
+import javax.xml.XMLConstants;
+
+import org.xml.sax.SAXException;
+import org.xml.sax.InputSource;
+
+import org.w3c.dom.Document;
 /**
  * Help pretty print XML content
  * @author Tim Guenther
@@ -49,7 +59,8 @@ public abstract class XMLHelper {
             StringWriter stringWriter = new StringWriter();
             StreamResult xmlOutput = new StreamResult(stringWriter);
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer(); 
+            transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -59,6 +70,21 @@ public abstract class XMLHelper {
         } catch (IllegalArgumentException | TransformerException e) {
             Logging.getInstance().log(XMLHelper.class, e);
             return input;
+        }
+    }
+
+    public static Document stringToDom (String xmlString) {
+        try {
+            InputSource input = new InputSource(new StringReader(xmlString));
+            DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+            documentFactory.setNamespaceAware(true);
+            documentFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            DocumentBuilder builder = documentFactory.newDocumentBuilder();
+            Document dom = builder.parse(input);
+            return dom;
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            Logging.getInstance().log(XMLHelper.class, e);
+            return null;
         }
     }
 }
