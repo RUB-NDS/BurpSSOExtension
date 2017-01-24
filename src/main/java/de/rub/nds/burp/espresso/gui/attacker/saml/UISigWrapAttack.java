@@ -23,6 +23,7 @@ import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
 import de.rub.nds.burp.utilities.listeners.saml.SamlCodeEvent;
+import de.rub.nds.burp.utilities.XMLHelper;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import org.w3c.dom.Document;
@@ -328,13 +329,9 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
         payloadValue.setText(code);
         
         Document doc;
-        try {
-            doc = DomUtilities.stringToDom(code);
-            signatureManager = new SignatureManager();
-            signatureManager.setDocument(doc);
-        } catch (SAXException ex) {
-            Logging.getInstance().log(getClass(), ex);
-        }
+        doc = XMLHelper.stringToDom(code);
+        signatureManager = new SignatureManager();
+        signatureManager.setDocument(doc);
         
         //Initialize the Payload JCombobox
         List<Payload> payloadList = signatureManager.getPayloads();
