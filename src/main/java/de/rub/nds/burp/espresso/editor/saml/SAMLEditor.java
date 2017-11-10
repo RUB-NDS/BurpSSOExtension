@@ -24,6 +24,7 @@ import burp.IMessageEditorController;
 import burp.IMessageEditorTab;
 import burp.IMessageEditorTabFactory;
 import burp.IParameter;
+import burp.IRequestInfo;
 import de.rub.nds.burp.espresso.gui.attacker.saml.UISAMLAttacker;
 import de.rub.nds.burp.utilities.Compression;
 import de.rub.nds.burp.utilities.Logging;
@@ -86,6 +87,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
         private byte[] currentMessage;
         private String samlParamtername = "SAML???"; // A placeholder at the beginning.
         private IParameter samlContent = null;
+        private IRequestInfo requestInfo = null;
         
         private CodeListenerController listeners = new CodeListenerController();
 
@@ -156,11 +158,13 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             samlContent = helpers.getRequestParameter(content, samlRequest);
             if (null != samlContent){
                 samlParamtername = samlRequest;
+                requestInfo = helpers.analyzeRequest(content);
                 return true;
             }
             samlContent = helpers.getRequestParameter(content, samlResponse);
             if (null != samlContent){
                 samlParamtername = samlResponse;
+                requestInfo = helpers.analyzeRequest(content);
                 return true;
             }
             return false;
@@ -216,8 +220,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                     case samlRequest:
                         try {
                             // deserialize the parameter value
-                            xml = decodeRedirectFormat(samlContent.getValue());
-                            
+                            xml = decodeSamlRequest(samlContent.getValue(), requestInfo.getMethod().equals("GET"));
                         } catch (IOException | DataFormatException e) {
                             xml = samlContent.getValue();
                         }   
@@ -258,7 +261,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                     return helpers.updateParameter(currentMessage, helpers.buildParameter(samlResponse, input, IParameter.PARAM_BODY));
                 case samlRequest:
                     try {
-                        input = encodeRedirectFormat(text);
+                        input = encodeSamlRequest(text, requestInfo.getMethod().equals("GET"));
                     } catch (IOException ex) {
                         input = new String(text);
                     }
@@ -290,28 +293,34 @@ public class SAMLEditor implements IMessageEditorTabFactory{
         /**
          * 
          * @param input The plain string.
-         * @return Redirected format encoded string.
+         * @param useCompression Deflate compression for HTTP-Redirect binding is applied if true.
+         * @return Encoded SAMLRequest.
          * @throws IOException {@link java.io.IOException}
          */
-        public String encodeRedirectFormat(byte[] input) throws IOException {
-            byte[] compressed = Compression.compress(input);
-            String base64encoded = helpers.base64Encode(compressed);
+        public String encodeSamlRequest(byte[] input, boolean useCompression) throws IOException {
+            if (useCompression) {
+                input = Compression.compress(input);
+            }
+            String base64encoded = helpers.base64Encode(input);
             return helpers.urlEncode(base64encoded);
         }
 
         /**
          * 
-         * @param input The redirect encoded string.
-         * @return Redirect format decode string.
+         * @param input The encoded SAMLRequest parameter value.
+         * @param isCompressed Whether or not the SAMLRequest is deflate-compressed (e.g., in HTTP-Redirect binding).
+         * @return Decoded SAMLRequest as XML string.
          * @throws IOException {@link java.io.IOException}
          * @throws DataFormatException {@link java.util.zip.DataFormatException}
          */
-        public String decodeRedirectFormat(String input) throws IOException, DataFormatException {
+        public String decodeSamlRequest(String input, boolean isCompressed) throws IOException, DataFormatException {
+            byte [] tmp;
             String urlDecoded = helpers.urlDecode(input);
-            byte[] base64decoded = helpers.base64Decode(urlDecoded);
-            byte[] decompressed = Compression.decompress(base64decoded);
-            String result = new String(decompressed);
-            return result;
+            tmp = helpers.base64Decode(urlDecoded);
+            if (isCompressed) {
+                tmp = Compression.decompress(tmp);
+            }
+            return new String(tmp);
         }
 
         /**
