@@ -140,7 +140,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
          */
         @Override
         public boolean isEnabled(byte[] content, boolean isRequest) {
-            if(isSAML(content) && isRequest){
+            if(isRequest && isSAML(content)){
                 Logging.getInstance().log(getClass(), "Editor@"+System.identityHashCode(this)+" attached.", Logging.DEBUG);
                 return true;
             }
