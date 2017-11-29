@@ -222,7 +222,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                     Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
                 }
             } else {
-                Logging.getInstance().log(getClass(), "samlContent is null", Logging.DEBUG);
+                Logging.getInstance().log(getClass(), "content != null, samlContent == null", Logging.ERROR);
             }
 
             // remember the displayed content
