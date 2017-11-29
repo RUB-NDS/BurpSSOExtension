@@ -24,7 +24,6 @@ import burp.IMessageEditorController;
 import burp.IMessageEditorTab;
 import burp.IMessageEditorTabFactory;
 import burp.IParameter;
-import burp.IRequestInfo;
 import de.rub.nds.burp.espresso.gui.attacker.saml.UISAMLAttacker;
 import de.rub.nds.burp.utilities.Compression;
 import de.rub.nds.burp.utilities.Logging;
@@ -87,7 +86,6 @@ public class SAMLEditor implements IMessageEditorTabFactory{
         private byte[] currentMessage;
         private String samlParamtername = "SAML???"; // A placeholder at the beginning.
         private IParameter samlContent = null;
-        private IRequestInfo requestInfo = null;
         
         private CodeListenerController listeners = new CodeListenerController();
 
@@ -158,13 +156,11 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             samlContent = helpers.getRequestParameter(content, samlRequest);
             if (null != samlContent){
                 samlParamtername = samlRequest;
-                requestInfo = helpers.analyzeRequest(content);
                 return true;
             }
             samlContent = helpers.getRequestParameter(content, samlResponse);
             if (null != samlContent){
                 samlParamtername = samlResponse;
-                requestInfo = helpers.analyzeRequest(content);
                 return true;
             }
             return false;
@@ -204,39 +200,31 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 rawEditor.setEnabled(true);
                 samlAttacker.setEnabled(true);
                 guiContainer.setEnabled(true);
-                
+
                 //Change the name of the rawEditor to the Parametername
                 guiContainer.setTitleAt(1, samlParamtername);
-                
-                Logging.getInstance().log(getClass(), "Begin XML deserialization.", Logging.DEBUG);
-                String xml = null;
 
-                switch (samlParamtername) {
-                    case samlResponse:
-                        // deserialize the parameter value
-                        xml = helpers.bytesToString(helpers.base64Decode(helpers.urlDecode(samlContent.getValue())));
-                        Logging.getInstance().log(getClass(), "SAMLResponse deserialized.", Logging.DEBUG);
-                        break;
-                    case samlRequest:
-                        try {
-                            // deserialize the parameter value
-                            xml = decodeSamlRequest(samlContent.getValue(), requestInfo.getMethod().equals("GET"));
-                        } catch (IOException | DataFormatException e) {
-                            xml = samlContent.getValue();
-                        }   
-                        Logging.getInstance().log(getClass(), "SAMLRequest deserialized.", Logging.DEBUG);
-                        break;
+                Logging.getInstance().log(getClass(), "Begin XML deserialization.", Logging.DEBUG);
+
+                // deserialize the parameter value
+                String xml = null;
+                try {
+                    xml = decodeSamlParam(samlContent.getValue(), samlContent.getType());
+                } catch (IOException | DataFormatException e) {
+                    xml = samlContent.getValue();
+                    Logging.getInstance().log(getClass(), "Failed to decode" + samlParamtername , Logging.ERROR);
                 }
-                
+                Logging.getInstance().log(getClass(), samlParamtername + "deserialized.", Logging.DEBUG);
+
                 //Notify all tabs with the new saml code.
                 if(xml != null){
                     listeners.notifyAll(new SamlCodeEvent(this, xml));
                     Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
                 }
             } else {
-                Logging.getInstance().log(getClass(), samlContent.getValue(), Logging.DEBUG);
+                Logging.getInstance().log(getClass(), "samlContent is null", Logging.DEBUG);
             }
-            
+
             // remember the displayed content
             currentMessage = content;
             Logging.getInstance().log(getClass(), "End setMessage().", Logging.DEBUG);
@@ -261,13 +249,13 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                     return helpers.updateParameter(currentMessage, helpers.buildParameter(samlResponse, input, IParameter.PARAM_BODY));
                 case samlRequest:
                     try {
-                        input = encodeSamlRequest(text, requestInfo.getMethod().equals("GET"));
+                        input = encodeSamlParam(text, samlContent.getType());
                     } catch (IOException ex) {
                         input = new String(text);
                     }
                     
                     // update the request with the new parameter value
-                    return helpers.updateParameter(currentMessage, helpers.buildParameter(samlRequest, input, IParameter.PARAM_URL));
+                    return helpers.updateParameter(currentMessage, helpers.buildParameter(samlRequest, input, samlContent.getType()));
             }
             return currentMessage;
         }
@@ -293,12 +281,12 @@ public class SAMLEditor implements IMessageEditorTabFactory{
         /**
          * 
          * @param input The plain string.
-         * @param useCompression Deflate compression for HTTP-Redirect binding is applied if true.
-         * @return Encoded SAMLRequest.
+         * @param parameterType Deflate compression for HTTP-Redirect binding is applied if set to IParameter.PARAM_URL
+         * @return Encoded SAML message.
          * @throws IOException {@link java.io.IOException}
          */
-        public String encodeSamlRequest(byte[] input, boolean useCompression) throws IOException {
-            if (useCompression) {
+        public String encodeSamlParam(byte[] input, byte parameterType) throws IOException {
+            if (parameterType == IParameter.PARAM_URL) {
                 input = Compression.compress(input);
             }
             String base64encoded = helpers.base64Encode(input);
@@ -307,17 +295,17 @@ public class SAMLEditor implements IMessageEditorTabFactory{
 
         /**
          * 
-         * @param input The encoded SAMLRequest parameter value.
-         * @param isCompressed Whether or not the SAMLRequest is deflate-compressed (e.g., in HTTP-Redirect binding).
-         * @return Decoded SAMLRequest as XML string.
+         * @param samlParam The encoded SAML parameter.
+         * @param parameterType If set to IParameter.PARAM_URL, Deflate (de-)compression is used
+         * @return Decoded SAML message as XML string.
          * @throws IOException {@link java.io.IOException}
          * @throws DataFormatException {@link java.util.zip.DataFormatException}
          */
-        public String decodeSamlRequest(String input, boolean isCompressed) throws IOException, DataFormatException {
+        public String decodeSamlParam(String samlParam, byte parameterType) throws IOException, DataFormatException {
             byte [] tmp;
-            String urlDecoded = helpers.urlDecode(input);
+            String urlDecoded = helpers.urlDecode(samlParam);
             tmp = helpers.base64Decode(urlDecoded);
-            if (isCompressed) {
+            if (parameterType == IParameter.PARAM_URL) {
                 tmp = Compression.decompress(tmp);
             }
             return new String(tmp);
