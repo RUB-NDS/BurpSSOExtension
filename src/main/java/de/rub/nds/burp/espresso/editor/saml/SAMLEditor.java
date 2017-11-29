@@ -237,25 +237,20 @@ public class SAMLEditor implements IMessageEditorTabFactory{
         @Override
         public byte[] getMessage() {
             // determine whether the user modified the deserialized data
-            String input;
-            byte[] text = rawEditor.getText();
-            
-            // reserialize the data
-            switch (samlParamtername) {
-                case samlResponse:
-                    input = helpers.urlEncode(helpers.base64Encode(text));
-                    
-                    // update the request with the new parameter value
-                    return helpers.updateParameter(currentMessage, helpers.buildParameter(samlResponse, input, IParameter.PARAM_BODY));
-                case samlRequest:
-                    try {
-                        input = encodeSamlParam(text, samlContent.getType());
-                    } catch (IOException ex) {
-                        input = new String(text);
-                    }
-                    
-                    // update the request with the new parameter value
-                    return helpers.updateParameter(currentMessage, helpers.buildParameter(samlRequest, input, samlContent.getType()));
+            if (isModified()) {
+                String input;
+                byte[] text = rawEditor.getText();
+
+                // reserialize the data
+                try {
+                    input = encodeSamlParam(text, samlContent.getType());
+                } catch (IOException ex) {
+                    input = new String(text);
+                    Logging.getInstance().log(getClass(), "failed to re-encode SAML param", Logging.ERROR);
+                }
+
+                // update the request with the new parameter value
+                return helpers.updateParameter(currentMessage, helpers.buildParameter(samlRequest, input, samlContent.getType()));
             }
             return currentMessage;
         }
