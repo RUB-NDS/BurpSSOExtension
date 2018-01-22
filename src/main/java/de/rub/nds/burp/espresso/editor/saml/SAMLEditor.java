@@ -250,7 +250,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 }
 
                 // update the request with the new parameter value
-                return helpers.updateParameter(currentMessage, helpers.buildParameter(samlRequest, input, samlContent.getType()));
+                return helpers.updateParameter(currentMessage, helpers.buildParameter(samlParamtername, input, samlContent.getType()));
             }
             return currentMessage;
         }
@@ -278,7 +278,6 @@ public class SAMLEditor implements IMessageEditorTabFactory{
          * @param input The plain string.
          * @param parameterType Deflate compression for HTTP-Redirect binding is applied if set to IParameter.PARAM_URL
          * @return Encoded SAML message.
-         * @throws IOException {@link java.io.IOException}
          */
         public String encodeSamlParam(byte[] input, byte parameterType) throws IOException {
             if (parameterType == IParameter.PARAM_URL) {
