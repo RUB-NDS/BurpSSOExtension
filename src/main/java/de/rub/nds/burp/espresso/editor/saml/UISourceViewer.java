@@ -24,6 +24,10 @@ import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.ICodeListener;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.GroupLayout;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -39,6 +43,8 @@ public class UISourceViewer extends JPanel implements ICodeListener{
     private String codeStyle = SyntaxConstants.SYNTAX_STYLE_XML;
     private RSyntaxTextArea textArea;
     private CodeListenerController listeners = null;
+    private JCheckBox checkBox;
+    private RTextScrollPane sp;
 
     /**
      * Create a new Source Code Viewer.
@@ -56,17 +62,51 @@ public class UISourceViewer extends JPanel implements ICodeListener{
      * Create a new Source Code Viewer.
      */
     public UISourceViewer(){
-        super(new BorderLayout());
         initComponent();
     }
     
-    private void initComponent(){
+    private void initComponent(){        
         textArea = new RSyntaxTextArea(20, 60);
         textArea.setSyntaxEditingStyle(codeStyle);
         textArea.setText(sourceCode);
         textArea.setCodeFoldingEnabled(true);
-        RTextScrollPane sp = new RTextScrollPane(textArea);
-        this.add(sp);
+        textArea.setLineWrap(false);
+        sp = new RTextScrollPane(textArea);
+        sp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);        
+        checkBox = new JCheckBox("Softwraps for long lines");
+        checkBox.setSelected(false);
+        checkBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                checkBoxActionPerformed(ae);
+            }
+        });
+        
+        GroupLayout layout = new GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(checkBox)
+                .addGap(0, 247, Short.MAX_VALUE))
+            .addComponent(sp)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(sp, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(checkBox))
+        );
+    }
+    
+    private void checkBoxActionPerformed(ActionEvent evt) {
+        if(checkBox.isSelected()) {
+            textArea.setLineWrap(true);
+            sp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        } else {
+            textArea.setLineWrap(false);
+            sp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED); 
+        }
     }
     
     /**
