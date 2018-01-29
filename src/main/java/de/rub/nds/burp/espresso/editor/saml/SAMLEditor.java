@@ -95,7 +95,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
          */
         public InputTab(IMessageEditorController controller, boolean editable) {
             this.editable = editable;
-
+            this.listeners.addCodeListener(this);
             guiContainer = new JTabbedPane();
             
             // create a source code viewer
@@ -178,6 +178,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             if(!editable){
                 //remove the attacker
                 try{
+                    rawEditor.disableModifyFeatures();
                     guiContainer.remove(2);
                 } catch(IndexOutOfBoundsException e){
                     //Do nothing!
@@ -250,7 +251,18 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 }
 
                 // update the request with the new parameter value
-                return helpers.updateParameter(currentMessage, helpers.buildParameter(samlParamtername, input, samlContent.getType()));
+                if (!rawEditor.getChangeHttpMethodCheckBox().isSelected()) {
+                    return helpers.updateParameter(currentMessage, helpers.buildParameter(samlParamtername, input, samlContent.getType()));
+                } else {
+                    switch (samlContent.getType()) {
+                        case IParameter.PARAM_URL:
+                            currentMessage = helpers.removeParameter(currentMessage, helpers.buildParameter(samlParamtername, samlContent.getValue(), IParameter.PARAM_URL));
+                            return helpers.updateParameter(currentMessage, helpers.buildParameter(samlParamtername, input, IParameter.PARAM_BODY));
+                        case IParameter.PARAM_BODY:
+                            currentMessage = helpers.removeParameter(currentMessage, helpers.buildParameter(samlParamtername, samlContent.getValue(), IParameter.PARAM_BODY));
+                            return helpers.updateParameter(currentMessage, helpers.buildParameter(samlParamtername, input, IParameter.PARAM_URL));
+                    }
+                }
             }
             return currentMessage;
         }
@@ -261,6 +273,12 @@ public class SAMLEditor implements IMessageEditorTabFactory{
          */
         @Override
         public boolean isModified() {
+                if (attackerModified) {
+                    Logging.getInstance().log(getClass(), "BUTTTTTOooooN", Logging.DEBUG); 
+                }
+                if (rawEditor.isTextModified()) {
+                    Logging.getInstance().log(getClass(), "isMODIFIIIIIIIIED", Logging.DEBUG); 
+                }
                 return rawEditor.isTextModified() || attackerModified;
         }
         
@@ -280,11 +298,16 @@ public class SAMLEditor implements IMessageEditorTabFactory{
          * @return Encoded SAML message.
          */
         public String encodeSamlParam(byte[] input, byte parameterType) throws IOException {
-            if (parameterType == IParameter.PARAM_URL) {
+            if (rawEditor.getDeflateCheckBox().isSelected()) {
                 input = Compression.compress(input);
             }
-            String base64encoded = helpers.base64Encode(input);
-            return helpers.urlEncode(base64encoded);
+            if (rawEditor.getBase64CheckBox().isSelected()) {
+                input = helpers.base64Encode(input).getBytes();
+            }
+            if (rawEditor.getUrlCheckBox().isSelected()) {
+                input = helpers.urlEncode(input);
+            }
+            return new String(input);    
         }
 
         /**
@@ -297,9 +320,13 @@ public class SAMLEditor implements IMessageEditorTabFactory{
          */
         public String decodeSamlParam(String samlParam, byte parameterType) throws IOException, DataFormatException {
             byte [] tmp;
+            rawEditor.clearCheckBoxes();
+            rawEditor.getBase64CheckBox().setSelected(true);
+            rawEditor.getUrlCheckBox().setSelected(true);
             String urlDecoded = helpers.urlDecode(samlParam);
             tmp = helpers.base64Decode(urlDecoded);
             if (parameterType == IParameter.PARAM_URL) {
+                rawEditor.getDeflateCheckBox().setSelected(true);
                 tmp = Compression.decompress(tmp);
             }
             return new String(tmp);
@@ -313,10 +340,12 @@ public class SAMLEditor implements IMessageEditorTabFactory{
         public void setCode(AbstractCodeEvent evt) { 
             //Update current Message with new data
             currentMessage = getMessage();
-            
+            Logging.getInstance().log(getClass(), "DRINNNEEEEEEEEEEEe", Logging.DEBUG);
+            Logging.getInstance().log(getClass(), evt.getSource().toString(), Logging.DEBUG);
             //Show data is modified by the attacker.
             if(!evt.getSource().equals(this)){
                 attackerModified = true;
+                Logging.getInstance().log(getClass(), "TRUE SEEEETZEN", Logging.DEBUG); 
             }
             Logging.getInstance().log(getClass(), evt.getCode(), Logging.DEBUG);
         }
