@@ -114,7 +114,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             samlAttacker = new UISAMLAttacker();
             samlAttacker.setListeners(listeners);
             guiContainer.addTab("Attacker", samlAttacker);
-            guiContainer.getSelectedIndex();
+            
             guiContainer.addChangeListener(new ChangeListener() {
                @Override
                 public void stateChanged(ChangeEvent ce) {
@@ -127,7 +127,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 }
             });
         }
-
+        
         /**
          * 
          * @return Name of the new tab.
@@ -198,9 +198,10 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                     Logging.getInstance().log(getClass(), e);
                 }
             }
-            // remember the displayed content
+            // save message
             currentMessage = content;
             unmodifiedMessage = content;
+            // remember the displayed content
             if (content == null) {
                 Logging.getInstance().log(getClass(), "Clear tabs.", Logging.DEBUG);
                 // clear our tabs
@@ -213,11 +214,15 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 Logging.getInstance().log(getClass(), "Activate tabs.", Logging.DEBUG);
                 sourceViewer.setEnabled(true);
                 rawEditor.setEnabled(true);
+                rawEditor.getChangeHttpMethodCheckBox().setEnabled(true);
                 samlAttacker.setEnabled(true);
                 guiContainer.setEnabled(true);
-
-                //Change the name of the rawEditor to the Parametername
-                guiContainer.setTitleAt(1, samlContent.getName());
+                
+                // change the name of the rawEditor to the Parametername
+                guiContainer.setTitleAt(1, samlContent.getName());   
+                
+                // disable checkbox to change HTTP-method
+                // only enable if message is GET oder POST
                 if(!helpers.analyzeRequest(content).getMethod().equalsIgnoreCase("GET") 
                         && !helpers.analyzeRequest(content).getMethod().equalsIgnoreCase("POST")) {
                     rawEditor.getChangeHttpMethodCheckBox().setEnabled(false);
@@ -263,25 +268,32 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 input = new String(samlContent.getValue().getBytes());
                 Logging.getInstance().log(getClass(), "failed to re-encode SAML param", Logging.ERROR);
             }          
-            // update the request with the new parameter value
+            // update the message
+            // only update the saml parameter with new value
             if (!rawEditor.getChangeHttpMethodCheckBox().isSelected()) {   
-                Logging.getInstance().log(getClass(), "no checked", Logging.DEBUG);
                 currentMessage = helpers.updateParameter(currentMessage, helpers.buildParameter(samlContent.getName(), input, samlContent.getType()));
-            } else {
+            // update the saml parameter with new value and switch all parameters from url to body or body from url
+            } else if (rawEditor.getChangeAllParameters().isSelected()) {
+                currentMessage = helpers.updateParameter(currentMessage, helpers.buildParameter(samlContent.getName(), input, samlContent.getType()));
+                currentMessage = helpers.toggleRequestMethod(currentMessage);
+            // update the saml parameter with new value and switch only saml parameter from url to body or body to url
+            } else {                  
                 switch (samlContent.getType()) {
+                    // switch to body
                     case IParameter.PARAM_URL:
-                        Logging.getInstance().log(getClass(), "URL", Logging.DEBUG);
                         currentMessage = helpers.removeParameter(currentMessage, samlContent);
                         currentMessage = helpers.addParameter(currentMessage, helpers.buildParameter(samlContent.getName(), input, IParameter.PARAM_BODY));
-                        currentMessage = helpers.toggleRequestMethod(currentMessage);
-                        Logging.getInstance().log(getClass(), new String(currentMessage), Logging.DEBUG);
+                        currentMessage =  ("POST" + new String(Arrays.copyOfRange(currentMessage, 3, currentMessage.length))).getBytes();
                         break;
+                    // switch to url
                     case IParameter.PARAM_BODY:
-                        Logging.getInstance().log(getClass(), "BODY", Logging.DEBUG);
                         currentMessage = helpers.removeParameter(currentMessage, samlContent);
                         currentMessage = helpers.addParameter(currentMessage, helpers.buildParameter(samlContent.getName(), input, IParameter.PARAM_URL));
-                        currentMessage = helpers.toggleRequestMethod(currentMessage);
-                        Logging.getInstance().log(getClass(), new String(currentMessage), Logging.DEBUG);
+                        if (helpers.analyzeRequest(currentMessage).getHeaders().contains("Content-Length: 0")) {
+                            currentMessage = helpers.toggleRequestMethod(currentMessage);   
+                        } else {
+                            currentMessage =  ("GET" + new String(Arrays.copyOfRange(currentMessage, 4, currentMessage.length))).getBytes();
+                        }
                         break;
                 }
             }
@@ -294,17 +306,12 @@ public class SAMLEditor implements IMessageEditorTabFactory{
          */
         @Override
         public boolean isModified() {
-            if(encodedSAML.compareTo(new String(rawEditor.getText())) != 0
-                    || rawEditor.getChangeHttpMethodCheckBox().isSelected() 
+            return encodedSAML.compareTo(new String(rawEditor.getText())) != 0
+                    || rawEditor.getChangeHttpMethodCheckBox().isSelected()
+                    || rawEditor.getChangeAllParameters().isSelected() 
                     || true != rawEditor.getBase64CheckBox().isSelected()
                     || true != rawEditor.getUrlCheckBox().isSelected()
-                    || decDeflateActive != rawEditor.getDeflateCheckBox().isSelected()) {
-                Logging.getInstance().log(getClass(), "TRUE", Logging.DEBUG);
-                return true;
-            } else {
-                Logging.getInstance().log(getClass(), "FALSE", Logging.DEBUG);
-                return false;     
-            }
+                    || decDeflateActive != rawEditor.getDeflateCheckBox().isSelected();
         }
         
         /**
@@ -322,20 +329,15 @@ public class SAMLEditor implements IMessageEditorTabFactory{
          * @return Encoded SAML message.
          */
         public String encodeSamlParam(byte[] input) throws IOException {
-            Logging.getInstance().log(getClass(), new String(input), Logging.DEBUG);
             if (rawEditor.getDeflateCheckBox().isSelected()) {
-                Logging.getInstance().log(getClass(), "COMPRESS", Logging.DEBUG);
                 input = Compression.compress(input);
             }
             if (rawEditor.getBase64CheckBox().isSelected()) {
-                Logging.getInstance().log(getClass(), "BASE", Logging.DEBUG);
                 input = helpers.base64Encode(input).getBytes();
             }
             if (rawEditor.getUrlCheckBox().isSelected()) {
-                Logging.getInstance().log(getClass(), "URL", Logging.DEBUG);
                 input = helpers.urlEncode(input);
             }
-            Logging.getInstance().log(getClass(), new String(input), Logging.DEBUG);
             return new String(input);    
         }
 
@@ -351,10 +353,10 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             byte [] tmp;
             decDeflateActive = false;
             rawEditor.clearCheckBoxes();
-            rawEditor.getBase64CheckBox().setSelected(true);
-            rawEditor.getUrlCheckBox().setSelected(true);
             String urlDecoded = helpers.urlDecode(samlParam);
+            rawEditor.getUrlCheckBox().setSelected(true);
             tmp = helpers.base64Decode(urlDecoded);
+            rawEditor.getBase64CheckBox().setSelected(true);
             if (parameterType == IParameter.PARAM_URL) {
                 rawEditor.getDeflateCheckBox().setSelected(true);
                 decDeflateActive = true;
