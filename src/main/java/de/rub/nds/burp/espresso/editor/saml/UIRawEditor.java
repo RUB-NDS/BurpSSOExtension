@@ -20,20 +20,17 @@ package de.rub.nds.burp.espresso.editor.saml;
 
 import burp.IBurpExtenderCallbacks;
 import burp.ITextEditor;
-import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.ICodeListener;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
-import de.rub.nds.burp.utilities.listeners.saml.SamlCodeEvent;
 import java.awt.Component;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.GroupLayout;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
         
 /**
  * Show the text without syntax highlight.
@@ -46,11 +43,11 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
     private ITextEditor burpEditor = null;
     private CodeListenerController listeners = null;
     private JScrollPane rawEditor;
-    private JButton updateEditorsButton;
     private JCheckBox base64CheckBox;
     private JCheckBox urlCheckBox;
     private JCheckBox deflateCheckBox;
     private JCheckBox changeHttpMethodCheckbox;
+    private JCheckBox changeAllParameters;
     
     /**
      * Create a new {@link burp.ITextEditor} to implement a new Burp like text area.
@@ -69,59 +66,52 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
         rawEditor = new JScrollPane();
         rawEditor.setViewportView(burpEditor.getComponent());
         
-        updateEditorsButton = new JButton();
-        updateEditorsButton.setText("Update");
-        updateEditorsButton.setToolTipText("Update the Source Code and Attacker tab.");
-        updateEditorsButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                updateEditorsButtonActionPerformed(evt);
-            }
-        });
-        
         base64CheckBox = new JCheckBox("Base64");
         urlCheckBox = new JCheckBox("URL Enc");
         deflateCheckBox = new JCheckBox("Deflate");
         changeHttpMethodCheckbox = new JCheckBox("Change HTTP method");
-
-        JPanel panelOptions = new JPanel(new GridLayout(5,1));
-        panelOptions.add(updateEditorsButton);
-        panelOptions.add(deflateCheckBox);
-        panelOptions.add(base64CheckBox);
-        panelOptions.add(urlCheckBox);
-        panelOptions.add(changeHttpMethodCheckbox);
-        this.add(panelOptions);
+        changeHttpMethodCheckbox.setEnabled(true);
+        changeHttpMethodCheckbox.addChangeListener(new ChangeListener() {
+               @Override
+                public void stateChanged(ChangeEvent ce) {
+                        clickedChangeHttpMethodCheckbox();
+                }
+            });
+        changeAllParameters = new JCheckBox("Change all parameters");
+        changeAllParameters.setEnabled(false);
                 
         GroupLayout layout = new GroupLayout(this);
         layout.setVerticalGroup(layout.createParallelGroup()
             .addComponent(rawEditor)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(updateEditorsButton)
                 .addComponent(deflateCheckBox)
                 .addComponent(base64CheckBox)
                 .addComponent(urlCheckBox)
                 .addComponent(changeHttpMethodCheckbox)));
+                //.addComponent(changeAllParameters)));
         layout.setHorizontalGroup(layout.createSequentialGroup()
             .addComponent(rawEditor)
             .addGroup(layout.createParallelGroup()
-                .addComponent(updateEditorsButton)
                 .addComponent(deflateCheckBox)
                 .addComponent(base64CheckBox)
                 .addComponent(urlCheckBox)
                 .addComponent(changeHttpMethodCheckbox)));
+                //.addComponent(changeAllParameters)));
         this.setLayout(layout);
+    }
+    
+    private void clickedChangeHttpMethodCheckbox() {
+        if(changeHttpMethodCheckbox.isSelected()) {
+            changeAllParameters.setEnabled(true);
+        } else {
+            changeAllParameters.setEnabled(false);
+        }
     }
     
     public void disableModifyFeatures() {
         this.removeAll();
         this.setLayout(new GridLayout(1,1));
         this.add(rawEditor);
-    }
-    
-    private void updateEditorsButtonActionPerformed(ActionEvent evt) {                                           
-        if(listeners != null){
-            listeners.notifyAll(new SamlCodeEvent(this, new String(getText())));
-             Logging.getInstance().log(getClass(), "Notify all Listeners.", Logging.DEBUG);
-        }
     }
 
     /**
