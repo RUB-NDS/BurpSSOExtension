@@ -70,6 +70,7 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
         urlCheckBox = new JCheckBox("URL Enc");
         deflateCheckBox = new JCheckBox("Deflate");
         changeHttpMethodCheckbox = new JCheckBox("Change HTTP method");
+        changeHttpMethodCheckbox.setToolTipText("Change GET <-> POST with SAML parameter.");
         changeHttpMethodCheckbox.setEnabled(true);
         changeHttpMethodCheckbox.addChangeListener(new ChangeListener() {
                @Override
@@ -77,7 +78,8 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
                         clickedChangeHttpMethodCheckbox();
                 }
             });
-        changeAllParameters = new JCheckBox("Change all parameters");
+        changeAllParameters = new JCheckBox("Switch all parameters");
+        changeAllParameters.setToolTipText("Change GET <-> POST with all paramater.");
         changeAllParameters.setEnabled(false);
                 
         GroupLayout layout = new GroupLayout(this);
@@ -87,19 +89,22 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
                 .addComponent(deflateCheckBox)
                 .addComponent(base64CheckBox)
                 .addComponent(urlCheckBox)
-                .addComponent(changeHttpMethodCheckbox)));
-                //.addComponent(changeAllParameters)));
+                .addComponent(changeHttpMethodCheckbox)
+                .addComponent(changeAllParameters)));
         layout.setHorizontalGroup(layout.createSequentialGroup()
             .addComponent(rawEditor)
             .addGroup(layout.createParallelGroup()
                 .addComponent(deflateCheckBox)
                 .addComponent(base64CheckBox)
                 .addComponent(urlCheckBox)
-                .addComponent(changeHttpMethodCheckbox)));
-                //.addComponent(changeAllParameters)));
+                .addComponent(changeHttpMethodCheckbox)
+                .addComponent(changeAllParameters)));
         this.setLayout(layout);
     }
-    
+
+    /**
+     * Enable/Disable "changeAllParameters" checkbox
+     */   
     private void clickedChangeHttpMethodCheckbox() {
         if(changeHttpMethodCheckbox.isSelected()) {
             changeAllParameters.setEnabled(true);
@@ -107,7 +112,10 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
             changeAllParameters.setEnabled(false);
         }
     }
-    
+
+    /**
+     * Disable checkboxes in the history.
+     */   
     public void disableModifyFeatures() {
         this.removeAll();
         this.setLayout(new GridLayout(1,1));
@@ -234,11 +242,19 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
     public JCheckBox getChangeHttpMethodCheckBox() {
         return changeHttpMethodCheckbox;
     }
-    
+
+    public JCheckBox getChangeAllParameters() {
+        return changeAllParameters;
+    }
+
+    /**
+     * Set all checkboxes false
+     */
     public void clearCheckBoxes() {
         deflateCheckBox.setSelected(false);
         base64CheckBox.setSelected(false);
         urlCheckBox.setSelected(false);
         changeHttpMethodCheckbox.setSelected(false);
+        changeAllParameters.setSelected(false);
     }
 }
