@@ -32,6 +32,7 @@ import de.rub.nds.burp.utilities.listeners.saml.SamlCodeEvent;
 import java.awt.Component;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.zip.DataFormatException;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
@@ -277,25 +278,28 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 currentMessage = helpers.updateParameter(currentMessage, helpers.buildParameter(samlContent.getName(), input, samlContent.getType()));
                 currentMessage = helpers.toggleRequestMethod(currentMessage);
             // update the saml parameter with new value and switch only saml parameter from url to body or body to url
-            } else {                  
-                switch (samlContent.getType()) {
-                    // switch to body
-                    case IParameter.PARAM_URL:
-                        currentMessage = helpers.removeParameter(currentMessage, samlContent);
-                        currentMessage = helpers.addParameter(currentMessage, helpers.buildParameter(samlContent.getName(), input, IParameter.PARAM_BODY));
-                        currentMessage =  ("POST" + new String(Arrays.copyOfRange(currentMessage, 3, currentMessage.length))).getBytes();
-                        break;
-                    // switch to url
-                    case IParameter.PARAM_BODY:
-                        currentMessage = helpers.removeParameter(currentMessage, samlContent);
-                        currentMessage = helpers.addParameter(currentMessage, helpers.buildParameter(samlContent.getName(), input, IParameter.PARAM_URL));
-                        if (helpers.analyzeRequest(currentMessage).getHeaders().contains("Content-Length: 0")) {
-                            currentMessage = helpers.toggleRequestMethod(currentMessage);   
-                        } else {
-                            currentMessage =  ("GET" + new String(Arrays.copyOfRange(currentMessage, 4, currentMessage.length))).getBytes();
-                        }
-                        break;
-                }
+            } else {
+                List<IParameter> parameters = helpers.analyzeRequest(currentMessage).getParameters();
+                for (IParameter param : parameters) {
+                    currentMessage = helpers.removeParameter(currentMessage, param);
+		}
+                currentMessage = helpers.toggleRequestMethod(currentMessage);
+                for (IParameter param : parameters) {
+                    if (!samlContent.getValue().equals(param.getValue())
+                            && !samlContent.getName().equals(param.getName())
+                            && samlContent.getType() != param.getType()) {
+                        currentMessage = helpers.addParameter(currentMessage,param);
+                    } else {
+                        switch (samlContent.getType()) {
+                        case IParameter.PARAM_URL:
+                            currentMessage = helpers.addParameter(currentMessage, helpers.buildParameter(samlContent.getName(), input, IParameter.PARAM_BODY));
+                            break;
+                        case IParameter.PARAM_BODY:
+                            currentMessage = helpers.addParameter(currentMessage, helpers.buildParameter(samlContent.getName(), input, IParameter.PARAM_URL));
+                            break;                        
+                        }        
+                    }
+                }  
             }
             return currentMessage;
         }
