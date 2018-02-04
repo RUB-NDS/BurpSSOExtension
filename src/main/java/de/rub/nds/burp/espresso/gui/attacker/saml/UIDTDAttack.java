@@ -19,9 +19,19 @@
 package de.rub.nds.burp.espresso.gui.attacker.saml;
 
 import de.rub.nds.burp.espresso.gui.attacker.IAttack;
+import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
 import de.rub.nds.burp.utilities.listeners.saml.SamlCodeEvent;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import org.apache.commons.io.FileUtils;
 
 /**
  * The DTD Attack
@@ -32,12 +42,12 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     
     private String code = null;
     private CodeListenerController listeners = null;
+    private JFileChooser fc; 
     /**
      * Creates new form UIDTDAttack
      */
     public UIDTDAttack() {
         initComponents();
-        readDTDs();
     }
 
     /**
@@ -49,26 +59,15 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        selectedDTDComboBox = new javax.swing.JComboBox<>();
-        jLabel2 = new javax.swing.JLabel();
-        urlTextField = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
         modifyButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-
-        jLabel1.setText("Select DTD:");
-
-        selectedDTDComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                selectedDTDComboBoxActionPerformed(evt);
-            }
-        });
-
-        jLabel2.setText("Nedeed URL:");
-
-        jLabel3.setText("SAML:");
+        samlTextArea = new javax.swing.JTextArea();
+        selectedDTDButton = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        dtdTextArea = new javax.swing.JTextArea();
+        jLabel2 = new javax.swing.JLabel();
+        addButton = new javax.swing.JButton();
 
         modifyButton.setText("Modify");
         modifyButton.addActionListener(new java.awt.event.ActionListener() {
@@ -77,9 +76,32 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             }
         });
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        samlTextArea.setEditable(false);
+        samlTextArea.setColumns(20);
+        samlTextArea.setRows(5);
+        jScrollPane1.setViewportView(samlTextArea);
+
+        selectedDTDButton.setText("Select DTD");
+        selectedDTDButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectedDTDButtonActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("Selected DTD:");
+
+        dtdTextArea.setColumns(20);
+        dtdTextArea.setRows(5);
+        jScrollPane2.setViewportView(dtdTextArea);
+
+        jLabel2.setText("SAML:");
+
+        addButton.setText("Add");
+        addButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -88,52 +110,68 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 867, Short.MAX_VALUE)
-                    .addComponent(selectedDTDComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(urlTextField)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(modifyButton))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 900, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(selectedDTDButton)
                             .addComponent(jLabel1)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                            .addComponent(jLabel2))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(modifyButton, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(addButton, javax.swing.GroupLayout.Alignment.TRAILING))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(selectedDTDButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(selectedDTDComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(addButton)
+                .addGap(10, 10, 10)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(urlTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(modifyButton)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void selectedDTDComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectedDTDComboBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_selectedDTDComboBoxActionPerformed
-
     private void modifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyButtonActionPerformed
-        // TODO add your handling code here:
+        listeners.notifyAll(new SamlCodeEvent(this, samlTextArea.getText()));
+        Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
     }//GEN-LAST:event_modifyButtonActionPerformed
 
-    private void readDTDs() {
+    private void selectedDTDButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectedDTDButtonActionPerformed
+        fc = new JFileChooser(new File(System.getProperty("user.home")+"/NDS/nds_git/BurpSSOExtension-Development/src/main/resources/dtd"));
+        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter("xml files (*.xml)", "xml");
+        fc.setDialogTitle("Open");
+        fc.setFileFilter(xmlfilter);
+        int status = fc.showOpenDialog(this);
+        if (status == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fc.getSelectedFile();
+            try {
+                String input = FileUtils.readFileToString(selectedFile, "UTF-8");
+                dtdTextArea.setText(input);
+            } catch (IOException ex) {
+                Logging.getInstance().log(getClass(), "Selected file is null", Logging.DEBUG);
+            }
+        }
+    }//GEN-LAST:event_selectedDTDButtonActionPerformed
 
-    }
+    private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
+        samlTextArea.setText(dtdTextArea.getText());
+    }//GEN-LAST:event_addButtonActionPerformed
     
     /**
      * Is called every time new Code is available.
@@ -166,13 +204,14 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addButton;
+    private javax.swing.JTextArea dtdTextArea;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JButton modifyButton;
-    private javax.swing.JComboBox<String> selectedDTDComboBox;
-    private javax.swing.JTextField urlTextField;
+    private javax.swing.JTextArea samlTextArea;
+    private javax.swing.JButton selectedDTDButton;
     // End of variables declaration//GEN-END:variables
 }

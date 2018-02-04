@@ -41,26 +41,32 @@
             <groupId>wsattacker.library</groupId>
             <artifactId>Signature_Wrapping_Library</artifactId>
             <version>1.7</version>
-          </dependency>
+        </dependency>
         <dependency>
             <groupId>org.jdesktop</groupId>
             <artifactId>beansbinding</artifactId>
             <version>1.2.1</version>
         </dependency>
+        <!--CommonIO-->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.5</version>
+        </dependency>      
     </dependencies>
     
     <repositories>
         <!-- WS-Attacker Repository -->
         <repository>
-          <id>wsattacker-repos</id>
-          <name>wsattacker</name>
-          <url>https://repo.nds.rub.de/repository/wsattacker-repos/</url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
+            <id>wsattacker-repos</id>
+            <name>wsattacker</name>
+            <url>https://repo.nds.rub.de/repository/wsattacker-repos/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
     
@@ -105,7 +111,7 @@
                     <source>1.8</source>
                     <target>1.8</target>
                     <descriptorRefs>
-                            <descriptorRef>jar-with-dependencies</descriptorRef>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                 </configuration>
             </plugin>
@@ -114,7 +120,7 @@
                 <version>2.2</version>
                 <configuration>
                     <descriptorRefs>
-                            <descriptorRef>jar-with-dependencies</descriptorRef>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                 </configuration>
                 <executions>
@@ -122,13 +128,13 @@
                         <id>make-assembly</id>
                         <phase>package</phase>
                         <goals>
-                                <goal>single</goal>
+                            <goal>single</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
             <!-- include LaTeX doclet-->
-<!--            <plugin>
+            <!--            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.9</version>
