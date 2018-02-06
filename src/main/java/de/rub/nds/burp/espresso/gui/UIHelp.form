@@ -46,7 +46,7 @@
   <SubComponents>
     <Component class="javax.swing.JLabel" name="headline">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Help for Using this Extension at: https://github.com/RUB-NDS/EsPReSSO"/>
+        <Property name="text" type="java.lang.String" value="Help for Using this Extension at: https://github.com/RUB-NDS/"/>
       </Properties>
     </Component>
     <Container class="javax.swing.JTabbedPane" name="helpContainerPanel">
@@ -411,7 +411,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="18" style="1"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="EsPReSSO"/>
+                <Property name="text" type="java.lang.String" value="EsPReSSO v2.0.1"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel3">

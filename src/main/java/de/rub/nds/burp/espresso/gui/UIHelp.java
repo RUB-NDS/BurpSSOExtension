@@ -77,7 +77,7 @@ public class UIHelp extends javax.swing.JPanel {
 
         setEnabled(false);
 
-        headline.setText("Help for Using this Extension at: https://github.com/RUB-NDS/EsPReSSO");
+        headline.setText("Help for Using this Extension at: https://github.com/RUB-NDS/");
 
         apiPanel.setEnabled(false);
 
@@ -221,7 +221,7 @@ public class UIHelp extends javax.swing.JPanel {
         jLabel1.setText("© 2015, Tim Guenther, Christian Mainka");
 
         jLabel2.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        jLabel2.setText("EsPReSSO");
+        jLabel2.setText("EsPReSSO v2.0.1");
 
         jLabel3.setText("Extension for Processing and Recognition of Single Sign-On");
 
