@@ -1,3 +1,4 @@
+<config>
 <name>Billion Laughs Attack</name>
 <description>This file expands to about 30 KByte but has a total of 11111 entity references and therefore exceeds a reasonable threshold of entity references.</description>
 <params>
@@ -18,4 +19,4 @@
         <data>&a4;</data>]]>
     </attackvector>
 </attackvectors>
-
+</config>

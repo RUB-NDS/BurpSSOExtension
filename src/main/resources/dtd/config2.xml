@@ -1,3 +1,4 @@
+<config>
 <name>External General Entities</name>
 <description>The idea of this attack is to declare an external general entity and reference a large file on a network resource or locally (e.g. C:/pagefile.sys or /dev/random).
 However, conducting DoS attacks in such a manner is only applicable by making the parser process a large XML document.</description>
@@ -16,3 +17,4 @@ However, conducting DoS attacks in such a manner is only applicable by making th
     </attackvector>
     <attackvector></attackvector>
 </attackvectors>
+</config>

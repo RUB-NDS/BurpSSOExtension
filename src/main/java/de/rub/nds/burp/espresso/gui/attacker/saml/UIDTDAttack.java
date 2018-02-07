@@ -20,10 +20,18 @@ package de.rub.nds.burp.espresso.gui.attacker.saml;
 
 import de.rub.nds.burp.espresso.gui.attacker.IAttack;
 import de.rub.nds.burp.utilities.Logging;
+import de.rub.nds.burp.utilities.XMLHelper;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
 import de.rub.nds.burp.utilities.listeners.saml.SamlCodeEvent;
+import java.awt.event.ItemEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 
 /**
@@ -33,9 +41,16 @@ import org.w3c.dom.Document;
  */
 public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     
+    private final String listenURL = "§tf_listenURL§";
+    private final String helperURL = "§tf_helperURL§";
+    private final String targetFILE = "§tf_targetFILE§";
+    
     private String code = null;
+    private String selectedDTD = null;
     private CodeListenerController listeners = null;
-    private ArrayList<Document> dtds; 
+    private ArrayList<Document> dtds;
+    private ArrayList<String> dtdNames;
+            
     /**
      * Creates new form UIDTDAttack
      */
@@ -71,6 +86,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         jScrollPane4 = new javax.swing.JScrollPane();
         dtdTextArea = new javax.swing.JTextArea();
         jLabel9 = new javax.swing.JLabel();
+        adjustDTDButton = new javax.swing.JButton();
 
         modifyButton.setText("Modify");
         modifyButton.addActionListener(new java.awt.event.ActionListener() {
@@ -110,12 +126,17 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         });
         targetFileList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         targetFileList.setEnabled(false);
+        targetFileList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                targetFileListValueChanged(evt);
+            }
+        });
         jScrollPane3.setViewportView(targetFileList);
 
         dtdComboBox.setToolTipText("");
-        dtdComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                dtdComboBoxActionPerformed(evt);
+        dtdComboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                dtdComboBoxItemStateChanged(evt);
             }
         });
 
@@ -126,7 +147,15 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         dtdTextArea.setRows(5);
         jScrollPane4.setViewportView(dtdTextArea);
 
-        jLabel9.setText("Selected DTD:");
+        jLabel9.setText("Selected DTD: ");
+
+        adjustDTDButton.setText("Adjust");
+        adjustDTDButton.setEnabled(false);
+        adjustDTDButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                adjustDTDButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -140,31 +169,32 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 854, Short.MAX_VALUE)
                         .addComponent(modifyButton))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jLabel8)
-                        .addComponent(jLabel9)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel3)
-                                .addComponent(jLabel4))
-                            .addGap(1, 1, 1)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(recursiveEntitieTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(48, 48, 48)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel6)
-                                        .addComponent(jLabel5)
-                                        .addComponent(jLabel7)))
-                                .addComponent(entityReferencesTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGap(2, 2, 2)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(attackeListenerTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(helperURLTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(targetFileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jScrollPane3))))))
+                    .addComponent(jLabel8)
+                    .addComponent(jLabel9)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4))
+                        .addGap(1, 1, 1)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(recursiveEntitieTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(48, 48, 48)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel6)
+                                    .addComponent(jLabel5)
+                                    .addComponent(jLabel7)))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(adjustDTDButton)
+                                .addComponent(entityReferencesTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(2, 2, 2)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(attackeListenerTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(helperURLTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(targetFileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane3)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -172,6 +202,18 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6)
+                            .addComponent(helperURLTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(3, 3, 3)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel7)
+                            .addComponent(attackeListenerTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(3, 3, 3)
+                        .addComponent(jLabel8))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
@@ -181,18 +223,9 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4)
-                            .addComponent(entityReferencesTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(helperURLTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(3, 3, 3)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(attackeListenerTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(3, 3, 3)
-                .addComponent(jLabel8)
+                            .addComponent(entityReferencesTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(adjustDTDButton)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(dtdComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -210,15 +243,130 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
     }//GEN-LAST:event_modifyButtonActionPerformed
 
-    private void dtdComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dtdComboBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_dtdComboBoxActionPerformed
+    private void dtdComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_dtdComboBoxItemStateChanged
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            disableAndClearTextfields();
+            dtdTextArea.setText("");
+            int pos = dtdNames.indexOf(evt.getItem().toString());
+            if (dtds.get(pos).getElementsByTagName("dosbox").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
+                recursiveEntitieTextField.setEnabled(true);
+                entityReferencesTextField.setEnabled(true);
+                adjustDTDButton.setEnabled(true);
+            }
+            if (dtds.get(pos).getElementsByTagName("targetFile").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
+                targetFileTextField.setEnabled(true);
+                targetFileList.setEnabled(true);
+            }
+            if (dtds.get(pos).getElementsByTagName("helperURL").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
+                helperURLTextField.setEnabled(true);
+            }            
+            if (dtds.get(pos).getElementsByTagName("attackListenerURL").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
+                attackeListenerTextField.setEnabled(true);
+            }
+            if (attackeListenerTextField.isEnabled() || helperURLTextField.isEnabled() || targetFileTextField.isEnabled()) {
+                dtdTextArea.setText(dtds.get(pos).getElementsByTagName("attackvector").item(0).getTextContent());
+                selectedDTD = dtds.get(pos).getElementsByTagName("attackvector").item(0).getTextContent();
+            }
+            if (entityReferencesTextField.isEnabled() || recursiveEntitieTextField.isEnabled()) {
+                dtdTextArea.setText(dtds.get(pos).getElementsByTagName("attackvector").item(0).getTextContent());
+                selectedDTD = dtds.get(pos).getElementsByTagName("attackvector").item(0).getTextContent();
+            }
+        }
+    }//GEN-LAST:event_dtdComboBoxItemStateChanged
+
+    private void targetFileListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_targetFileListValueChanged
+        targetFileTextField.setText(targetFileList.getSelectedValue());
+    }//GEN-LAST:event_targetFileListValueChanged
+
+    private void adjustDTDButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adjustDTDButtonActionPerformed
+	String tmp = "\n";
+        int rec = Integer.parseInt(recursiveEntitieTextField.getText());
+	int entity = Integer.parseInt(entityReferencesTextField.getText());
+        for (int i = 1; i <= rec; i++) {
+            tmp += "<!ENTITY a" + i + " \"";		
+            for (int j = 1; j <= entity; j++) {
+                tmp += "&a" + (i-1);
+            }
+            tmp += "\">\n";
+        }
+        tmp += "]>\n" + "<data>&a" + rec + ";</data>";	
+        dtdTextArea.setText(selectedDTD.substring(0, selectedDTD.lastIndexOf("\"dos\" >")+7).concat(tmp));        
+    }//GEN-LAST:event_adjustDTDButtonActionPerformed
+  
+    private void disableAndClearTextfields() {
+        adjustDTDButton.setEnabled(false);
+        recursiveEntitieTextField.setEnabled(false);
+        recursiveEntitieTextField.setText("");
+        entityReferencesTextField.setEnabled(false);
+        entityReferencesTextField.setText("");
+        targetFileTextField.setEnabled(false);
+        targetFileTextField.setText("");
+        targetFileList.setEnabled(false);
+        targetFileList.setSelectedIndex(-1);
+        helperURLTextField.setEnabled(false);
+        helperURLTextField.setText("");
+        attackeListenerTextField.setEnabled(false);
+        attackeListenerTextField.setText("");
+    }
+
+    private String replaceKeyWord(String input, String oldSubString, String newSubString) {
+        return input.replace(oldSubString, newSubString);
+    }
     
     /**
      * Read all DTDs from resources and save it.
      */    
     private void readDTDs() {
+        dtds = new ArrayList<>();
+        dtdNames = new ArrayList<>();
+        File dir = new File(System.getProperty("user.home")+"/NDS/nds_git/BurpSSOExtension-Development/src/main/resources/dtd");
+        File[] files = dir.listFiles();
+        for (File config : files) {
+            try {
+                Document dtd = XMLHelper.stringToDom(FileUtils.readFileToString(config, "UTF-8"));
+                dtds.add(dtd);
+                dtdNames.add(dtd.getElementsByTagName("name").item(0).getTextContent());
+                dtdComboBox.addItem(dtd.getElementsByTagName("name").item(0).getTextContent());
+            } catch (IOException ex) {
+                Logging.getInstance().log(getClass(), config.getPath() + " can not read", Logging.DEBUG);
+            }
+        }
+        attackeListenerTextField.getDocument().addDocumentListener(new MyDocumentListener(listenURL));
+        helperURLTextField.getDocument().addDocumentListener(new MyDocumentListener(helperURL));
+        targetFileTextField.getDocument().addDocumentListener(new MyDocumentListener(targetFILE));
+    }
+    
+    class MyDocumentListener implements DocumentListener {
         
+        private final String keyword;
+        
+        public MyDocumentListener(String keyword) {
+            this.keyword = keyword;
+        }
+        
+        @Override
+        public void insertUpdate(DocumentEvent de) {
+            try {
+                dtdTextArea.setText(replaceKeyWord(selectedDTD, keyword, de.getDocument().getText(0, de.getDocument().getLength())));
+            } catch (BadLocationException ex) {
+            }
+        }
+
+        @Override
+        public void removeUpdate(DocumentEvent de) {
+            try {
+                dtdTextArea.setText(replaceKeyWord(selectedDTD, keyword, de.getDocument().getText(0, de.getDocument().getLength())));
+            } catch (BadLocationException ex) {
+            }
+        }
+
+        @Override
+        public void changedUpdate(DocumentEvent de) {
+            try {
+                dtdTextArea.setText(replaceKeyWord(selectedDTD, keyword, de.getDocument().getText(0, de.getDocument().getLength())));
+            } catch (BadLocationException ex) {
+            }
+        }        
     }
     
     /**
@@ -252,6 +400,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton adjustDTDButton;
     private javax.swing.JTextField attackeListenerTextField;
     private javax.swing.JComboBox<String> dtdComboBox;
     private javax.swing.JTextArea dtdTextArea;
