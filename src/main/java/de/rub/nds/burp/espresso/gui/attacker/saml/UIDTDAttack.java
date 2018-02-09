@@ -24,10 +24,15 @@ import de.rub.nds.burp.utilities.XMLHelper;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
 import de.rub.nds.burp.utilities.listeners.saml.SamlCodeEvent;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -45,17 +50,34 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     private final String helperURL = "§tf_helperURL§";
     private final String targetFILE = "§tf_targetFILE§";
     
-    private String code = null;
-    private String selectedDTD = null;
+    private String code = "";
+    private String selectedDtdServer = "";
+    private String selectedDtdHelper = "";
+    private String currentDtdServer = "";
+    private String currentDtdHelper = "";
     private CodeListenerController listeners = null;
     private ArrayList<Document> dtds;
     private ArrayList<String> dtdNames;
-            
+    private boolean needEditor = false;
+    
+    private JTextArea firstEditor;
+    private JTextArea secondEditor;
+    private JScrollPane firstScrollPane;
+    private JScrollPane secondScrollPane;
+    
     /**
      * Creates new form UIDTDAttack
      */
     public UIDTDAttack() {
         initComponents();
+        firstEditor = new JTextArea();
+        firstEditor.setEditable(false);
+        secondEditor = new JTextArea();
+        secondEditor.setEditable(false);
+        firstScrollPane = new JScrollPane (firstEditor, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        firstScrollPane.setPreferredSize(new Dimension(100, 280));
+        secondScrollPane = new JScrollPane (secondEditor, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        secondScrollPane.setPreferredSize(new Dimension(100, 280));
         readDTDs();
     }
 
@@ -83,10 +105,9 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         targetFileList = new javax.swing.JList<>();
         dtdComboBox = new javax.swing.JComboBox<>();
         jLabel8 = new javax.swing.JLabel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        dtdTextArea = new javax.swing.JTextArea();
         jLabel9 = new javax.swing.JLabel();
         adjustDTDButton = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
 
         modifyButton.setText("Modify");
         modifyButton.addActionListener(new java.awt.event.ActionListener() {
@@ -142,11 +163,6 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
 
         jLabel8.setText("Select DTD:");
 
-        dtdTextArea.setEditable(false);
-        dtdTextArea.setColumns(20);
-        dtdTextArea.setRows(5);
-        jScrollPane4.setViewportView(dtdTextArea);
-
         jLabel9.setText("Selected DTD: ");
 
         adjustDTDButton.setText("Adjust");
@@ -157,6 +173,17 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             }
         });
 
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 294, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -164,13 +191,11 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(dtdComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 854, Short.MAX_VALUE)
                         .addComponent(modifyButton))
-                    .addComponent(jLabel8)
-                    .addComponent(jLabel9)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3)
@@ -194,7 +219,12 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(targetFileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jScrollPane3)))))
+                                .addComponent(jScrollPane3))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel9))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -231,7 +261,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 294, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(modifyButton)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -239,15 +269,17 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     }// </editor-fold>//GEN-END:initComponents
 
     private void modifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyButtonActionPerformed
-        listeners.notifyAll(new SamlCodeEvent(this, dtdTextArea.getText()));
+        Logging.getInstance().log(getClass(), "DRINNE", Logging.DEBUG);
+        notifyAllTabs(firstEditor.getText());
         Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
     }//GEN-LAST:event_modifyButtonActionPerformed
 
     private void dtdComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_dtdComboBoxItemStateChanged
         if (evt.getStateChange() == ItemEvent.SELECTED) {
             disableAndClearTextfields();
-            dtdTextArea.setText("");
+            // Enable textfields
             int pos = dtdNames.indexOf(evt.getItem().toString());
+            needEditor = dtds.get(pos).getElementsByTagName("attackvector").getLength() == 2;        
             if (dtds.get(pos).getElementsByTagName("dosbox").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
                 recursiveEntitieTextField.setEnabled(true);
                 entityReferencesTextField.setEnabled(true);
@@ -263,14 +295,23 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             if (dtds.get(pos).getElementsByTagName("attackListenerURL").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
                 attackeListenerTextField.setEnabled(true);
             }
-            if (attackeListenerTextField.isEnabled() || helperURLTextField.isEnabled() || targetFileTextField.isEnabled()) {
-                dtdTextArea.setText(dtds.get(pos).getElementsByTagName("attackvector").item(0).getTextContent());
-                selectedDTD = dtds.get(pos).getElementsByTagName("attackvector").item(0).getTextContent();
+            selectedDtdServer = dtds.get(pos).getElementsByTagName("attackvector").item(0).getTextContent();
+            selectedDtdServer = selectedDtdServer.substring(selectedDtdServer.indexOf("<"), selectedDtdServer.lastIndexOf(">")+1);
+            currentDtdServer = selectedDtdServer;
+            if(needEditor) {
+                selectedDtdHelper = dtds.get(pos).getElementsByTagName("attackvector").item(1).getTextContent();
+                selectedDtdHelper = selectedDtdHelper.substring(selectedDtdHelper.indexOf("<"), selectedDtdHelper.lastIndexOf(">")+1);
+                currentDtdHelper = selectedDtdHelper;
+                jPanel1.setLayout(new GridLayout(1, 2));
+                jPanel1.removeAll();
+                jPanel1.add(firstScrollPane);
+                jPanel1.add(secondScrollPane);
+            } else {
+                jPanel1.setLayout(new GridLayout(1, 1));
+                jPanel1.removeAll();
+                jPanel1.add(firstScrollPane);
             }
-            if (entityReferencesTextField.isEnabled() || recursiveEntitieTextField.isEnabled()) {
-                dtdTextArea.setText(dtds.get(pos).getElementsByTagName("attackvector").item(0).getTextContent());
-                selectedDTD = dtds.get(pos).getElementsByTagName("attackvector").item(0).getTextContent();
-            }
+            setDTD();
         }
     }//GEN-LAST:event_dtdComboBoxItemStateChanged
 
@@ -279,38 +320,17 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     }//GEN-LAST:event_targetFileListValueChanged
 
     private void adjustDTDButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adjustDTDButtonActionPerformed
-	String tmp = "\n";
-        int rec = Integer.parseInt(recursiveEntitieTextField.getText());
-	int entity = Integer.parseInt(entityReferencesTextField.getText());
-        for (int i = 1; i <= rec; i++) {
-            tmp += "<!ENTITY a" + i + " \"";		
-            for (int j = 1; j <= entity; j++) {
-                tmp += "&a" + (i-1);
-            }
-            tmp += "\">\n";
-        }
-        tmp += "]>\n" + "<data>&a" + rec + ";</data>";	
-        dtdTextArea.setText(selectedDTD.substring(0, selectedDTD.lastIndexOf("\"dos\" >")+7).concat(tmp));        
+      
     }//GEN-LAST:event_adjustDTDButtonActionPerformed
-  
-    private void disableAndClearTextfields() {
-        adjustDTDButton.setEnabled(false);
-        recursiveEntitieTextField.setEnabled(false);
-        recursiveEntitieTextField.setText("");
-        entityReferencesTextField.setEnabled(false);
-        entityReferencesTextField.setText("");
-        targetFileTextField.setEnabled(false);
-        targetFileTextField.setText("");
-        targetFileList.setEnabled(false);
-        targetFileList.setSelectedIndex(-1);
-        helperURLTextField.setEnabled(false);
-        helperURLTextField.setText("");
-        attackeListenerTextField.setEnabled(false);
-        attackeListenerTextField.setText("");
-    }
 
-    private String replaceKeyWord(String input, String oldSubString, String newSubString) {
-        return input.replace(oldSubString, newSubString);
+    /**
+     * Set DTDs in textfields.
+     */  
+    private void setDTD() {
+        firstEditor.setText(currentDtdServer);
+        if(needEditor) {
+            secondEditor.setText(currentDtdHelper);
+        }
     }
     
     /**
@@ -331,43 +351,31 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                 Logging.getInstance().log(getClass(), config.getPath() + " can not read", Logging.DEBUG);
             }
         }
-        attackeListenerTextField.getDocument().addDocumentListener(new MyDocumentListener(listenURL));
-        helperURLTextField.getDocument().addDocumentListener(new MyDocumentListener(helperURL));
-        targetFileTextField.getDocument().addDocumentListener(new MyDocumentListener(targetFILE));
+        attackeListenerTextField.getDocument().addDocumentListener(new TextfieldListener(listenURL));
+        helperURLTextField.getDocument().addDocumentListener(new TextfieldListener(helperURL));
+        targetFileTextField.getDocument().addDocumentListener(new TextfieldListener(targetFILE));
     }
-    
-    class MyDocumentListener implements DocumentListener {
-        
-        private final String keyword;
-        
-        public MyDocumentListener(String keyword) {
-            this.keyword = keyword;
-        }
-        
-        @Override
-        public void insertUpdate(DocumentEvent de) {
-            try {
-                dtdTextArea.setText(replaceKeyWord(selectedDTD, keyword, de.getDocument().getText(0, de.getDocument().getLength())));
-            } catch (BadLocationException ex) {
-            }
-        }
 
-        @Override
-        public void removeUpdate(DocumentEvent de) {
-            try {
-                dtdTextArea.setText(replaceKeyWord(selectedDTD, keyword, de.getDocument().getText(0, de.getDocument().getLength())));
-            } catch (BadLocationException ex) {
-            }
-        }
-
-        @Override
-        public void changedUpdate(DocumentEvent de) {
-            try {
-                dtdTextArea.setText(replaceKeyWord(selectedDTD, keyword, de.getDocument().getText(0, de.getDocument().getLength())));
-            } catch (BadLocationException ex) {
-            }
-        }        
-    }
+     /**
+     * Clear and disable textfields
+     */
+    private void disableAndClearTextfields() {
+        adjustDTDButton.setEnabled(false);
+        recursiveEntitieTextField.setEnabled(false);
+        recursiveEntitieTextField.setText("");
+        entityReferencesTextField.setEnabled(false);
+        entityReferencesTextField.setText("");
+        targetFileTextField.setEnabled(false);
+        targetFileTextField.setText("");
+        targetFileList.setEnabled(false);
+        targetFileList.setSelectedIndex(-1);
+        helperURLTextField.setEnabled(false);
+        helperURLTextField.setText("");
+        attackeListenerTextField.setEnabled(false);
+        attackeListenerTextField.setText("");
+        firstEditor.setText("");
+        secondEditor.setText("");
+    }  
     
     /**
      * Is called every time new Code is available.
@@ -399,11 +407,51 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         this.listeners.addCodeListener(this);
     }
 
+    /**
+     * Listener for textfields.
+     */
+    class TextfieldListener implements DocumentListener {      
+        
+        private final String keyword;
+        
+        public TextfieldListener(String keyword) {
+            this.keyword = keyword;
+        }
+
+        private void update(DocumentEvent de) {
+            try {
+                if(selectedDtdServer.contains(keyword)) {
+                    currentDtdServer = selectedDtdServer.replace(keyword, de.getDocument().getText(0, de.getDocument().getLength()));
+                }
+                if(selectedDtdHelper.contains(keyword)) {
+                    currentDtdHelper = selectedDtdHelper.replace(keyword, de.getDocument().getText(0, de.getDocument().getLength()));
+                }
+                setDTD();
+            } catch (BadLocationException ex) {
+                Logging.getInstance().log(getClass(), "Error during replacing", Logging.DEBUG);
+            }
+        }
+        
+        @Override
+        public void insertUpdate(DocumentEvent de) {
+            update(de);
+        }
+        
+        @Override
+        public void removeUpdate(DocumentEvent de) {
+            update(de);
+        }
+
+        @Override
+        public void changedUpdate(DocumentEvent de) {
+            update(de);
+        }        
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton adjustDTDButton;
     private javax.swing.JTextField attackeListenerTextField;
     private javax.swing.JComboBox<String> dtdComboBox;
-    private javax.swing.JTextArea dtdTextArea;
     private javax.swing.JTextField entityReferencesTextField;
     private javax.swing.JTextField helperURLTextField;
     private javax.swing.JLabel jLabel3;
@@ -413,8 +461,8 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JButton modifyButton;
     private javax.swing.JTextField recursiveEntitieTextField;
     private javax.swing.JList<String> targetFileList;

