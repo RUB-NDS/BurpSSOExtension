@@ -236,6 +236,7 @@
     <Component class="javax.swing.JButton" name="adjustDTDButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Adjust"/>
+        <Property name="toolTipText" type="java.lang.String" value="Write only numbers."/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>

