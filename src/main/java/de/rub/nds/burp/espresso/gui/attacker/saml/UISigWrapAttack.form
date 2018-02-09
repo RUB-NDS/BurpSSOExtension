@@ -114,7 +114,6 @@
       <Properties>
         <Property name="maximum" type="int" value="0"/>
         <Property name="toolTipText" type="java.lang.String" value="Choose an attack."/>
-        <Property name="value" type="int" value="0"/>
       </Properties>
       <Events>
         <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="attackSliderStateChanged"/>
@@ -129,6 +128,9 @@
           <BindingParameter name="javax.swing.binding.ParameterKeys.TEXT_CHANGE_STRATEGY" value="javax.swing.binding.TextChangeStrategy.ON_TYPE"/>
         </BindingProperty>
       </BindingProperties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="attackNumberActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="attackSliderLabel">
       <Properties>
