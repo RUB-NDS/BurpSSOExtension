@@ -285,11 +285,9 @@ public class SAMLEditor implements IMessageEditorTabFactory{
 		}
                 currentMessage = helpers.toggleRequestMethod(currentMessage);
                 for (IParameter param : parameters) {
-                    if (!samlContent.getValue().equals(param.getValue())
-                            && !samlContent.getName().equals(param.getName())
-                            && samlContent.getType() != param.getType()) {
-                        currentMessage = helpers.addParameter(currentMessage,param);
-                    } else {
+                    if (samlContent.getValue().equals(param.getValue())
+                            && samlContent.getName().equals(param.getName())
+                            && samlContent.getType() == param.getType()) {
                         switch (samlContent.getType()) {
                         case IParameter.PARAM_URL:
                             currentMessage = helpers.addParameter(currentMessage, helpers.buildParameter(samlContent.getName(), input, IParameter.PARAM_BODY));
@@ -297,7 +295,9 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                         case IParameter.PARAM_BODY:
                             currentMessage = helpers.addParameter(currentMessage, helpers.buildParameter(samlContent.getName(), input, IParameter.PARAM_URL));
                             break;                        
-                        }        
+                        }
+                    } else {
+                        currentMessage = helpers.addParameter(currentMessage,param);
                     }
                 }  
             }
