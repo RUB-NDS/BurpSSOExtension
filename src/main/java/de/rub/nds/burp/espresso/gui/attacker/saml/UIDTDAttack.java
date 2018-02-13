@@ -298,11 +298,11 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                 attackeListenerTextField.setEnabled(true);
             }
             selectedDtdServer = dtds.get(pos).getElementsByTagName("attackvector").item(0).getTextContent();
-            selectedDtdServer = selectedDtdServer.substring(selectedDtdServer.indexOf("<"), selectedDtdServer.lastIndexOf(">")+1);
+            //selectedDtdServer = selectedDtdServer.substring(selectedDtdServer.indexOf("<"), selectedDtdServer.lastIndexOf(">")+1);
             currentDtdServer = selectedDtdServer;
             if(needEditor) {
                 selectedDtdHelper = dtds.get(pos).getElementsByTagName("attackvector").item(1).getTextContent();
-                selectedDtdHelper = selectedDtdHelper.substring(selectedDtdHelper.indexOf("<"), selectedDtdHelper.lastIndexOf(">")+1);
+                //selectedDtdHelper = selectedDtdHelper.substring(selectedDtdHelper.indexOf("<"), selectedDtdHelper.lastIndexOf(">")+1);
                 currentDtdHelper = selectedDtdHelper;
                 jPanel1.setLayout(new GridLayout(1, 2));
                 jPanel1.removeAll();

