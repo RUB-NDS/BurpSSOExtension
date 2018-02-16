@@ -6,6 +6,7 @@
     <targetFile>false</targetFile>
     <helperURL>false</helperURL>
     <attackListenerURL>false</attackListenerURL>
+    <externalResources>false</externalResources>
 </params>
 <attackvectors>
 <attackvector>
