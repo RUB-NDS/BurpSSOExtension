@@ -18,6 +18,7 @@
  */
 package de.rub.nds.burp.utilities.table;
 
+import java.util.ArrayList;
 import junit.framework.TestCase;
 
 /**
@@ -36,7 +37,7 @@ public class TableDBTest extends TestCase {
     public void testGetTable_String() {
         System.out.println("getTable");
         String id = "123";
-        Table expResult = new Table(new TableHelper(null),"testName",id);
+        Table expResult = new Table(new TableHelper(new ArrayList<>()),"testName",id);
         TableDB.addTable(expResult);
         Table result = TableDB.getTable(id);
         assertEquals(expResult.getID(), result.getID());
@@ -50,7 +51,7 @@ public class TableDBTest extends TestCase {
     public void testGetTable_int() {
         System.out.println("getTable");
         int index = 0;
-        Table expResult = new Table(new TableHelper(null),"testName","123");
+        Table expResult = new Table(new TableHelper(new ArrayList<>()),"testName","123");
         TableDB.addTable(expResult);
         Table result = TableDB.getTable(index);
         assertEquals(expResult.getID(), result.getID());
