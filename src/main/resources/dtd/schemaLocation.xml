@@ -9,7 +9,7 @@
     <externalResources>false</externalResources>
 </params>
 <attackvectors>
-<attackvector type="system" default="true">
+<attackvector>
 <directMessage><![CDATA[ <?xml version='1.0'?>
 <ttt:data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:ttt="http://test.com/attack"

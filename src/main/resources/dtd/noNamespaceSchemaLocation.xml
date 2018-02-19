@@ -9,7 +9,7 @@
     <externalResources>false</externalResources>
 </params>
 <attackvectors>
-<attackvector type="system" default="true">
+<attackvector>
 <directMessage><![CDATA[<?xml version='1.0'?>
 <data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:noNamespaceSchemaLocation="§tf_listenURL§">4</data>]]></directMessage>

