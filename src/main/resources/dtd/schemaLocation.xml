@@ -15,4 +15,5 @@
   xmlns:ttt="http://test.com/attack"
  xsi:schemaLocation="§tf_listenURL§">4</ttt:data>]]></directMessage>
 </attackvector>
+</attackvectors>
 </config>
