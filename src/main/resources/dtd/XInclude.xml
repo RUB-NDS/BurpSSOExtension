@@ -1,5 +1,5 @@
 <config>
-<name>FileAccess: Out-of-Band channels</name>
+<name>FileAccess: Out-of-Band channels (xInclude)</name>
 <description>Just because there is no direct feedback channel available does not imply that an XXE attack is not possible. </description>
 <params>
     <dosbox>false</dosbox>

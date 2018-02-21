@@ -1,5 +1,5 @@
 <config>
-<name>Classic XXE Attack</name>
+<name>Classic XXE Attack (attribute)</name>
 <description>The idea of this attack is to force the parser to call arbitrary URLs.</description>
 <params>
     <dosbox>false</dosbox>
