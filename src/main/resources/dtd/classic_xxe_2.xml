@@ -15,7 +15,7 @@
 </attackvector>
 <attackvector type="public">
 <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE data PUBLIC p "§tf_listenURL§">]]></directMessage>
+<!DOCTYPE data PUBLIC "p" "§tf_listenURL§">]]></directMessage>
 </attackvector>
 </attackvectors>
 </config>

