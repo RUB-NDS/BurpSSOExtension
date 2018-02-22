@@ -33,14 +33,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.regex.Pattern;
-import javax.swing.ComboBoxModel;
-import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
 import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -156,6 +154,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         });
         jScrollPane3.setViewportView(targetFileList);
 
+        dtdComboBox.setMaximumRowCount(10);
         dtdComboBox.setToolTipText("");
         dtdComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -442,11 +441,15 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                 Document dtd = XMLHelper.stringToDom(FileUtils.readFileToString(config, "UTF-8"));
                 dtds.add(dtd);
                 dtdNames.add(dtd.getElementsByTagName("name").item(0).getTextContent());
-                dtdComboBox.addItem(dtd.getElementsByTagName("name").item(0).getTextContent());
             } catch (IOException ex) {
                 Logging.getInstance().log(getClass(), config.getPath() + " can not read", Logging.DEBUG);
             }
         }
+        // Set dtd vectors sorted by name
+        ArrayList<String> sortedDTDNames = new ArrayList<>(dtdNames);
+        Collections.sort(sortedDTDNames);
+        dtdComboBox.setModel(new DefaultComboBoxModel<>(sortedDTDNames.toArray(new String[sortedDTDNames.size()])));
+        dtdComboBox.setSelectedItem(0);
     }
     
     private void initEditorsAndListener() {
@@ -459,11 +462,13 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         secondScrollPane = new JScrollPane (secondEditor, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         secondScrollPane.setPreferredSize(new Dimension(100, 280));
         // Set listener
-        attackeListenerTextField.getDocument().addDocumentListener(new TextfieldListener(listenURL));
-        helperURLTextField.getDocument().addDocumentListener(new TextfieldListener(helperURL));
-        targetFileTextField.getDocument().addDocumentListener(new TextfieldListener(targetFILE));
-        publicRadioButton.addActionListener(new RadioButtonGroupListener());
-        systemRadioButton.addActionListener(new RadioButtonGroupListener());
+        TextfieldListener textfieldListener = new TextfieldListener();
+        attackeListenerTextField.getDocument().addDocumentListener(textfieldListener);
+        helperURLTextField.getDocument().addDocumentListener(textfieldListener);
+        targetFileTextField.getDocument().addDocumentListener(textfieldListener);
+        RadioButtonGroupListener radioButtonGroupListener = new RadioButtonGroupListener();
+        publicRadioButton.addActionListener(radioButtonGroupListener);
+        systemRadioButton.addActionListener(radioButtonGroupListener);
     }
 
      /**
@@ -477,7 +482,6 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         recursiveEntitieTextField.setEnabled(false);
         targetFileTextField.setEnabled(false);
         targetFileList.setEnabled(false);
-        targetFileList.setSelectedIndex(-1);
         helperURLTextField.setEnabled(false);
         attackeListenerTextField.setEnabled(false);
     }
@@ -488,6 +492,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     private void setDefaultValues() {
         recursiveEntitieTextField.setText("4");
         entityReferencesTextField.setText("10");
+        targetFileList.clearSelection();
         targetFileTextField.setText("file:///etc/hostname");
         helperURLTextField.setText("http://publicServer.com/helperDTD.dtd");
         attackeListenerTextField.setText("http://publicServer.com/");
@@ -548,24 +553,30 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
      */
     class TextfieldListener implements DocumentListener {      
         
-        private final String keyword;
-        
-        public TextfieldListener(String keyword) {
-            this.keyword = keyword;
-        }
-
         private void update(DocumentEvent de) {
-            try {
-                if(selectedDtdServer.contains(keyword)) {
-                    currentDtdServer = selectedDtdServer.replace(keyword, de.getDocument().getText(0, de.getDocument().getLength()));
-                }
-                if(selectedDtdHelper.contains(keyword)) {
-                    currentDtdHelper = selectedDtdHelper.replace(keyword, de.getDocument().getText(0, de.getDocument().getLength()));
-                }
-                setDTD();
-            } catch (BadLocationException ex) {
-                Logging.getInstance().log(getClass(), "Error during replacing", Logging.DEBUG);
+            currentDtdServer = selectedDtdServer;
+            if(selectedDtdServer.contains(listenURL)) {
+                currentDtdServer = currentDtdServer.replace(listenURL, attackeListenerTextField.getText());
             }
+            if(selectedDtdServer.contains(helperURL)) {
+                currentDtdServer = currentDtdServer.replace(helperURL, helperURLTextField.getText());
+            }
+            if(selectedDtdServer.contains(targetFILE)) {
+                currentDtdServer = currentDtdServer.replace(targetFILE, targetFileTextField.getText());
+            }
+            if(needEditor) {
+                currentDtdHelper = selectedDtdHelper;
+                if(selectedDtdHelper.contains(listenURL)) {
+                    currentDtdHelper = currentDtdHelper.replace(listenURL, attackeListenerTextField.getText());
+                }
+                if(selectedDtdHelper.contains(helperURL)) {
+                    currentDtdHelper = currentDtdHelper.replace(helperURL, helperURLTextField.getText());
+                }
+                if(selectedDtdHelper.contains(targetFILE)) {
+                    currentDtdHelper = currentDtdHelper.replace(targetFILE, targetFileTextField.getText());
+                }                
+            }
+            setDTD();
         }
         
         @Override

