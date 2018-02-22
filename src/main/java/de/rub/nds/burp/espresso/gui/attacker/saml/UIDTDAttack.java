@@ -449,7 +449,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         ArrayList<String> sortedDTDNames = new ArrayList<>(dtdNames);
         Collections.sort(sortedDTDNames);
         dtdComboBox.setModel(new DefaultComboBoxModel<>(sortedDTDNames.toArray(new String[sortedDTDNames.size()])));
-        dtdComboBox.setSelectedItem(0);
+        dtdComboBox.setSelectedIndex(0);
     }
     
     private void initEditorsAndListener() {
