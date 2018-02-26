@@ -13,7 +13,7 @@
 <directMessage><![CDATA[<!DOCTYPE data [
 <!ENTITY a0 "dosdosdosdosdosdosdos"
 ]>
-<data>&a0;&&a0;a0;&a0;&a0;&a0;</data>]]></directMessage>
+<data>&a0;&a0;&a0;&a0;&a0;&a0;</data>]]></directMessage>
 </attackvector>
 </attackvectors>
 </config>

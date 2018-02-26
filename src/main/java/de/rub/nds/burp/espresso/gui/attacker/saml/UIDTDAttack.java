@@ -320,7 +320,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                     for (int i = 1; i <= rec; i++) {
                         tmp += "<!ENTITY a" + i + " \"";		
                         for (int j = 1; j <= entity; j++) {
-                            tmp += "&a" + (i-1);
+                            tmp += "&a" + (i-1) + ";";
                         }
                         tmp += "\">\n";
                     }
@@ -334,9 +334,9 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                     int rec = Integer.parseInt(recursiveEntitieTextField.getText());
                     int entity = Integer.parseInt(entityReferencesTextField.getText());
                     for (int i = 1; i <= rec; i++) {
-                        tmp += "<!ENTITY a" + i + " \"";		
+                        tmp += "<!ENTITY % a" + i + " \"";		
                         for (int j = 1; j <= entity; j++) {
-                            tmp += "&a" + (i-1);
+                            tmp += "%a" + (i-1) + ";";
                         }
                         tmp += "\">\n";
                     }
