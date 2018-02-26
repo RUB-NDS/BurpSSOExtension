@@ -30,9 +30,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -40,6 +47,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -434,17 +442,46 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     private void readDTDs() {
         dtds = new ArrayList<>();
         dtdNames = new ArrayList<>();
-        File dir = new File(System.getProperty("user.home")+"/NDS/nds_git/BurpSSOExtension-Development/src/main/resources/dtd");
-        File[] files = dir.listFiles();
-        for (File config : files) {
+        // Get path of dtd configs
+        CodeSource src = UIDTDAttack.class.getProtectionDomain().getCodeSource();
+        List<String> pathList = new ArrayList<>();
+        if(src != null) {
+            URL jar = src.getLocation();
             try {
-                Document dtd = XMLHelper.stringToDom(FileUtils.readFileToString(config, "UTF-8"));
+                ZipInputStream zip = new ZipInputStream(jar.openStream());
+                ZipEntry ze = null;
+                while((ze = zip.getNextEntry()) != null) {
+                    String entryName = ze.getName();
+                    if( entryName.startsWith("dtd") && entryName.endsWith(".xml") ) {
+                        pathList.add(entryName);
+                    }
+                }
+            } catch (IOException ex) {
+                Logging.getInstance().log(getClass(), "IOException by", Logging.ERROR);
+            }
+            ZipEntry ze = null;
+        }
+        // Read dtd configs
+        for(String config: pathList) {
+            try {
+                Document dtd = XMLHelper.stringToDom(IOUtils.toString(getClass().getClassLoader().getResource(config), "UTF-8"));
                 dtds.add(dtd);
                 dtdNames.add(dtd.getElementsByTagName("name").item(0).getTextContent());
             } catch (IOException ex) {
-                Logging.getInstance().log(getClass(), config.getPath() + " can not read", Logging.DEBUG);
+                Logging.getInstance().log(getClass(), "IOException by", Logging.ERROR);
             }
-        }
+        }              
+//        File dir = new File(System.getProperty("user.home")+"/NDS/nds_git/BurpSSOExtension-Development/src/main/resources/dtd");
+//        File[] files = dir.listFiles();
+//        for (File config : files) {
+//            try {
+//                Document dtd = XMLHelper.stringToDom(FileUtils.readFileToString(config, "UTF-8"));
+//                dtds.add(dtd);
+//                dtdNames.add(dtd.getElementsByTagName("name").item(0).getTextContent());
+//            } catch (IOException ex) {
+//                Logging.getInstance().log(getClass(), config.getPath() + " can not read", Logging.DEBUG);
+//            }
+//        }      
         // Set dtd vectors sorted by name
         ArrayList<String> sortedDTDNames = new ArrayList<>(dtdNames);
         Collections.sort(sortedDTDNames);
