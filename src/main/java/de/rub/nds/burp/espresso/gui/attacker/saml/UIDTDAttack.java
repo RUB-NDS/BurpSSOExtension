@@ -28,15 +28,12 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -46,7 +43,6 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -69,8 +65,8 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     private String currentDtdServer = "";
     private String currentDtdHelper = "";
     private CodeListenerController listeners = null;
-    private ArrayList<Document> dtds;
-    private ArrayList<String> dtdNames;
+    private static ArrayList<Document> dtds = null;
+    private static ArrayList<String> dtdNames = null;
     private boolean needEditor = false;
     
     private JTextArea firstEditor;
@@ -83,8 +79,10 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
      */
     public UIDTDAttack() {
         initComponents();       
+        if (dtds == null && dtdNames == null) {
+            readDTDs();
+        }
         initEditorsAndListener();
-        readDTDs();
     }
 
     /**
@@ -320,7 +318,9 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     }//GEN-LAST:event_modifyButtonActionPerformed
        
     private void targetFileListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_targetFileListValueChanged
+        if(targetFileList.getSelectedValue() != null) {
         targetFileTextField.setText(targetFileList.getSelectedValue());
+        }
     }//GEN-LAST:event_targetFileListValueChanged
 
     private void adjustDTDButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adjustDTDButtonActionPerformed
@@ -475,23 +475,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             } catch (IOException ex) {
                 Logging.getInstance().log(getClass(), "IOException by", Logging.ERROR);
             }
-        }              
-//        File dir = new File(System.getProperty("user.home")+"/NDS/nds_git/BurpSSOExtension-Development/src/main/resources/dtd");
-//        File[] files = dir.listFiles();
-//        for (File config : files) {
-//            try {
-//                Document dtd = XMLHelper.stringToDom(FileUtils.readFileToString(config, "UTF-8"));
-//                dtds.add(dtd);
-//                dtdNames.add(dtd.getElementsByTagName("name").item(0).getTextContent());
-//            } catch (IOException ex) {
-//                Logging.getInstance().log(getClass(), config.getPath() + " can not read", Logging.DEBUG);
-//            }
-//        }      
-        // Set dtd vectors sorted by name
-        ArrayList<String> sortedDTDNames = new ArrayList<>(dtdNames);
-        Collections.sort(sortedDTDNames);
-        dtdComboBox.setModel(new DefaultComboBoxModel<>(sortedDTDNames.toArray(new String[sortedDTDNames.size()])));
-        dtdComboBox.setSelectedIndex(0);
+        }
     }
     
     private void initEditorsAndListener() {
@@ -511,6 +495,11 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         RadioButtonGroupListener radioButtonGroupListener = new RadioButtonGroupListener();
         publicRadioButton.addActionListener(radioButtonGroupListener);
         systemRadioButton.addActionListener(radioButtonGroupListener);
+        // Set dtd vectors sorted by name
+        ArrayList<String> sortedDTDNames = new ArrayList<>(dtdNames);
+        Collections.sort(sortedDTDNames);
+        dtdComboBox.setModel(new DefaultComboBoxModel<>(sortedDTDNames.toArray(new String[sortedDTDNames.size()])));
+        dtdComboBox.setSelectedIndex(0);
     }
 
      /**
@@ -526,6 +515,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         targetFileList.setEnabled(false);
         helperURLTextField.setEnabled(false);
         attackeListenerTextField.setEnabled(false);
+        targetFileList.clearSelection();
     }
 
     /**
