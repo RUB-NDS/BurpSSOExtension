@@ -165,12 +165,14 @@
     <Component class="javax.swing.JTextField" name="recursiveEntitieTextField">
       <Properties>
         <Property name="horizontalAlignment" type="int" value="0"/>
+        <Property name="text" type="java.lang.String" value="4"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="entityReferencesTextField">
       <Properties>
         <Property name="horizontalAlignment" type="int" value="0"/>
+        <Property name="text" type="java.lang.String" value="10"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
@@ -191,16 +193,19 @@
     </Component>
     <Component class="javax.swing.JTextField" name="targetFileTextField">
       <Properties>
+        <Property name="text" type="java.lang.String" value="file:///etc/hostname"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="helperURLTextField">
       <Properties>
+        <Property name="text" type="java.lang.String" value="http://publicServer.com/helperDTD.dtd"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="attackeListenerTextField">
       <Properties>
+        <Property name="text" type="java.lang.String" value="http://publicServer.com/"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>

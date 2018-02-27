@@ -131,9 +131,11 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         jLabel4.setText("Entity References:");
 
         recursiveEntitieTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        recursiveEntitieTextField.setText("4");
         recursiveEntitieTextField.setEnabled(false);
 
         entityReferencesTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        entityReferencesTextField.setText("10");
         entityReferencesTextField.setEnabled(false);
 
         jLabel5.setText("Target File:");
@@ -142,10 +144,13 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
 
         jLabel7.setText("Attacker Listener:");
 
+        targetFileTextField.setText("file:///etc/hostname");
         targetFileTextField.setEnabled(false);
 
+        helperURLTextField.setText("http://publicServer.com/helperDTD.dtd");
         helperURLTextField.setEnabled(false);
 
+        attackeListenerTextField.setText("http://publicServer.com/");
         attackeListenerTextField.setEnabled(false);
 
         targetFileList.setModel(new javax.swing.AbstractListModel<String>() {
@@ -423,7 +428,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             jPanel1.add(firstScrollPane);
         }
         setDTD();
-        setDefaultValues();
+        setValues();
     }//GEN-LAST:event_dtdComboBoxActionPerformed
  
     /**
@@ -524,15 +529,11 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     }
 
     /**
-     * Set default values
+     * Updated the dtd vector with textfield parameters after changed the selected dtd
+     * Put text again in one textfield to start the DocumentListener
      */
-    private void setDefaultValues() {
-        recursiveEntitieTextField.setText("4");
-        entityReferencesTextField.setText("10");
-        targetFileList.clearSelection();
-        targetFileTextField.setText("file:///etc/hostname");
-        helperURLTextField.setText("http://publicServer.com/helperDTD.dtd");
-        attackeListenerTextField.setText("http://publicServer.com/");
+    private void setValues() {
+        targetFileTextField.setText(targetFileTextField.getText());
     }  
     
     /**
@@ -581,7 +582,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             currentDtdHelper = selectedDtdHelper;
         }
         setDTD();
-        setDefaultValues();
+        setValues();
       }
     }
     
