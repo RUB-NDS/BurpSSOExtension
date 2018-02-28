@@ -18,6 +18,7 @@
  */
 package de.rub.nds.burp.espresso.gui.attacker.saml;
 
+import com.beetstra.jutf7.CharsetProvider;
 import de.rub.nds.burp.espresso.gui.attacker.IAttack;
 import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.XMLHelper;
@@ -31,13 +32,12 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.security.CodeSource;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -588,6 +588,24 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     @Override
     public void notifyAllTabs(String code) {
         if(listeners != null){
+            // Encode dtd vector if needed
+            String encoding = StringUtils.substringBetween(code, "encoding=\"", "\"");
+            if(encoding != null) {    
+                switch(encoding) {
+                    case "UTF-7":
+                        Charset charset = new CharsetProvider().charsetForName("UTF-7");
+                        ByteBuffer byteBuffer = charset.encode(code);
+                        code = new String(byteBuffer.array()).substring(0, byteBuffer.limit());
+                        break;
+                    case "UTF-16":
+                        try {
+                            code = new String(code.getBytes("UTF-8"), "UTF-16");
+                        } catch (UnsupportedEncodingException ex) {
+                            Logging.getInstance().log(getClass(), ex);
+                        }
+                        break;
+                }
+            }            
             listeners.notifyAll(new SamlCodeEvent(this, code));
         }
     }
