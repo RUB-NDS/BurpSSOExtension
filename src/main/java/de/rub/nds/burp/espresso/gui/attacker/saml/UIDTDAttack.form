@@ -79,6 +79,8 @@
                               <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="enableEditoringCheckbox" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="autoModifyCheckbox" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="jLabel8" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
@@ -133,6 +135,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="enableEditoringCheckbox" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="autoModifyCheckbox" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
@@ -290,7 +293,7 @@
     <Component class="javax.swing.JCheckBox" name="enableEditoringCheckbox">
       <Properties>
         <Property name="text" type="java.lang.String" value="Enable editoring"/>
-        <Property name="toolTipText" type="java.lang.String" value="After enabling and disabling, all changes are reset to default."/>
+        <Property name="toolTipText" type="java.lang.String" value="After enabling and disabling, the manual changes are reset."/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="enableEditoringCheckboxActionPerformed"/>
@@ -313,6 +316,15 @@
         <Property name="text" type="java.lang.String" value="SYSTEM"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="autoModifyCheckbox">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Auto modify"/>
+        <Property name="toolTipText" type="java.lang.String" value="Automatic update of SAML message with DTD vector."/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="autoModifyCheckboxActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

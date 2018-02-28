@@ -29,11 +29,15 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.security.CodeSource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -44,6 +48,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -59,7 +64,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     private final String targetFILE = "§tf_targetFILE§";
     
     private int pos;
-    private String code = "";
+    private String saml = "";
     private String selectedDtdServer = "";
     private String selectedDtdHelper = "";
     private String currentDtdServer = "";
@@ -116,6 +121,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         enableEditoringCheckbox = new javax.swing.JCheckBox();
         publicRadioButton = new javax.swing.JRadioButton();
         systemRadioButton = new javax.swing.JRadioButton();
+        autoModifyCheckbox = new javax.swing.JCheckBox();
 
         modifyButton.setText("Modify");
         modifyButton.addActionListener(new java.awt.event.ActionListener() {
@@ -198,7 +204,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         );
 
         enableEditoringCheckbox.setText("Enable editoring");
-        enableEditoringCheckbox.setToolTipText("After enabling and disabling, all changes are reset to default.");
+        enableEditoringCheckbox.setToolTipText("After enabling and disabling, the manual changes are reset.");
         enableEditoringCheckbox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 enableEditoringCheckboxActionPerformed(evt);
@@ -212,6 +218,14 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         sysPubButtonGroup.add(systemRadioButton);
         systemRadioButton.setText("SYSTEM");
         systemRadioButton.setEnabled(false);
+
+        autoModifyCheckbox.setText("Auto modify");
+        autoModifyCheckbox.setToolTipText("Automatic update of SAML message with DTD vector.");
+        autoModifyCheckbox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                autoModifyCheckboxActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -262,7 +276,9 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel9)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(enableEditoringCheckbox))
+                                .addComponent(enableEditoringCheckbox)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(autoModifyCheckbox))
                             .addComponent(jLabel8))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -303,7 +319,8 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                 .addGap(1, 1, 1)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
-                    .addComponent(enableEditoringCheckbox))
+                    .addComponent(enableEditoringCheckbox)
+                    .addComponent(autoModifyCheckbox))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -430,6 +447,16 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         setDTD();
         setValues();
     }//GEN-LAST:event_dtdComboBoxActionPerformed
+
+    private void autoModifyCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoModifyCheckboxActionPerformed
+        if(autoModifyCheckbox.isSelected()) {
+            notifyAllTabs(firstEditor.getText());
+            Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
+        } else {
+            notifyAllTabs(saml);
+            Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
+        }
+    }//GEN-LAST:event_autoModifyCheckboxActionPerformed
  
     /**
      * Set DTDs in textfields.
@@ -464,7 +491,6 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             } catch (IOException ex) {
                 Logging.getInstance().log(getClass(), "IOException by", Logging.ERROR);
             }
-            ZipEntry ze = null;
         }
         // Read dtd configs
         for(String config: pathList) {
@@ -481,6 +507,26 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     private void initEditorsAndListener() {
         firstEditor = new JTextArea();
         firstEditor.setEditable(false);
+        firstEditor.getDocument().addDocumentListener(new DocumentListener() {           
+            private void notify(DocumentEvent de) {                                              
+                if(autoModifyCheckbox.isSelected()) {
+                    notifyAllTabs(firstEditor.getText());
+                    Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
+                }
+            }
+            @Override
+            public void insertUpdate(DocumentEvent de) {
+                notify(de);
+            }
+            @Override
+            public void removeUpdate(DocumentEvent de) {
+                notify(de);
+            }
+            @Override
+            public void changedUpdate(DocumentEvent de) {
+                notify(de);
+            }  
+        });
         secondEditor = new JTextArea();
         secondEditor.setEditable(false);
         firstScrollPane = new JScrollPane (firstEditor, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -498,8 +544,8 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         // Set dtd vectors sorted by name
         ArrayList<String> sortedDTDNames = new ArrayList<>(dtdNames);
         Collections.sort(sortedDTDNames);
-        dtdComboBox.setModel(new DefaultComboBoxModel<>(sortedDTDNames.toArray(new String[sortedDTDNames.size()])));
-        dtdComboBox.setSelectedIndex(0);
+        dtdComboBox.setModel(new DefaultComboBoxModel(sortedDTDNames.toArray()));
+        dtdComboBox.setSelectedIndex(0);      
     }
 
      /**
@@ -532,7 +578,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        this.code = evt.getCode();
+        this.saml = evt.getCode();
     }
 
     /**
@@ -626,6 +672,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton adjustDTDButton;
     private javax.swing.JTextField attackeListenerTextField;
+    private javax.swing.JCheckBox autoModifyCheckbox;
     private javax.swing.JComboBox<String> dtdComboBox;
     private javax.swing.JCheckBox enableEditoringCheckbox;
     private javax.swing.JTextField entityReferencesTextField;
