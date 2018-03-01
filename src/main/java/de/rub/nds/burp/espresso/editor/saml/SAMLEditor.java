@@ -26,6 +26,7 @@ import burp.IMessageEditorTabFactory;
 import burp.IParameter;
 import de.rub.nds.burp.espresso.gui.attacker.saml.UISAMLAttacker;
 import de.rub.nds.burp.utilities.Compression;
+import de.rub.nds.burp.utilities.Encoding;
 import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
 import de.rub.nds.burp.utilities.listeners.saml.SamlCodeEvent;
@@ -85,7 +86,9 @@ public class SAMLEditor implements IMessageEditorTabFactory{
         
         private boolean rawEditorSelected = false;
         private boolean decDeflateActive;
-
+        private boolean decURLActive;
+        private boolean decBase64Active;
+        
         private byte[] currentMessage;
         private byte[] unmodifiedMessage;
         private String encodedSAML;
@@ -313,8 +316,8 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             return encodedSAML.compareTo(new String(rawEditor.getText())) != 0
                     || rawEditor.getChangeHttpMethodCheckBox().isSelected()
                     || rawEditor.getChangeAllParameters().isSelected() 
-                    || true != rawEditor.getBase64CheckBox().isSelected()
-                    || true != rawEditor.getUrlCheckBox().isSelected()
+                    || decBase64Active != rawEditor.getBase64CheckBox().isSelected()
+                    || decURLActive != rawEditor.getUrlCheckBox().isSelected()
                     || decDeflateActive != rawEditor.getDeflateCheckBox().isSelected();
         }
         
@@ -356,12 +359,22 @@ public class SAMLEditor implements IMessageEditorTabFactory{
         public String decodeSamlParam(String samlParam, byte parameterType) throws IOException, DataFormatException {
             byte [] tmp;
             decDeflateActive = false;
+            decURLActive = false;
+            decBase64Active = false;
             rawEditor.clearCheckBoxes();
-            String urlDecoded = helpers.urlDecode(samlParam);
-            rawEditor.getUrlCheckBox().setSelected(true);
-            tmp = helpers.base64Decode(urlDecoded);
-            rawEditor.getBase64CheckBox().setSelected(true);
-            if (parameterType == IParameter.PARAM_URL) {
+            if(Encoding.isURLEncoded(samlParam)) {
+                samlParam = helpers.urlDecode(samlParam);
+                rawEditor.getUrlCheckBox().setSelected(true);        
+                decURLActive = true;
+            }
+            if(Encoding.isBase64Encoded(samlParam)) {
+                tmp = helpers.base64Decode(samlParam);
+                rawEditor.getBase64CheckBox().setSelected(true);
+                decBase64Active = true;
+            } else {
+                tmp = samlParam.getBytes();
+            }
+            if (Encoding.isDeflated(tmp)) {
                 rawEditor.getDeflateCheckBox().setSelected(true);
                 decDeflateActive = true;
                 tmp = Compression.decompress(tmp);
