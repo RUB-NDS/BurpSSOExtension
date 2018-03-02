@@ -169,6 +169,7 @@
       <Properties>
         <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="text" type="java.lang.String" value="4"/>
+        <Property name="toolTipText" type="java.lang.String" value="Enter numbers only."/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
@@ -176,6 +177,7 @@
       <Properties>
         <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="text" type="java.lang.String" value="10"/>
+        <Property name="toolTipText" type="java.lang.String" value="Enter numbers only."/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
@@ -268,7 +270,7 @@
     <Component class="javax.swing.JButton" name="adjustDTDButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Adjust"/>
-        <Property name="toolTipText" type="java.lang.String" value="Write only numbers."/>
+        <Property name="toolTipText" type="java.lang.String" value=""/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
@@ -292,8 +294,8 @@
     </Container>
     <Component class="javax.swing.JCheckBox" name="enableEditoringCheckbox">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Enable editoring"/>
-        <Property name="toolTipText" type="java.lang.String" value="After enabling and disabling, the manual changes are reset."/>
+        <Property name="text" type="java.lang.String" value="Enables editoring"/>
+        <Property name="toolTipText" type="java.lang.String" value="Manual changes get lost on disabling."/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="enableEditoringCheckboxActionPerformed"/>

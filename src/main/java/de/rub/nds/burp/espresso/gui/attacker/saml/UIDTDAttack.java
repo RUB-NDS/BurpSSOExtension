@@ -136,10 +136,12 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
 
         recursiveEntitieTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         recursiveEntitieTextField.setText("4");
+        recursiveEntitieTextField.setToolTipText("Enter numbers only.");
         recursiveEntitieTextField.setEnabled(false);
 
         entityReferencesTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         entityReferencesTextField.setText("10");
+        entityReferencesTextField.setToolTipText("Enter numbers only.");
         entityReferencesTextField.setEnabled(false);
 
         jLabel5.setText("Target File:");
@@ -184,7 +186,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         jLabel9.setText("Selected DTD: ");
 
         adjustDTDButton.setText("Adjust");
-        adjustDTDButton.setToolTipText("Write only numbers.");
+        adjustDTDButton.setToolTipText("");
         adjustDTDButton.setEnabled(false);
         adjustDTDButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -203,8 +205,8 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             .addGap(0, 294, Short.MAX_VALUE)
         );
 
-        enableEditoringCheckbox.setText("Enable editoring");
-        enableEditoringCheckbox.setToolTipText("After enabling and disabling, the manual changes are reset.");
+        enableEditoringCheckbox.setText("Enables editoring");
+        enableEditoringCheckbox.setToolTipText("Manual changes get lost on disabling.");
         enableEditoringCheckbox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 enableEditoringCheckboxActionPerformed(evt);
@@ -423,13 +425,16 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         if (dtds.get(pos).getElementsByTagName("attackListenerURL").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
             attackeListenerTextField.setEnabled(true);
         }
+        Element eElement;
         if (dtds.get(pos).getElementsByTagName("attackvector").getLength() != 1) {
             systemRadioButton.setEnabled(true);
             systemRadioButton.setSelected(true);
             publicRadioButton.setEnabled(true);
+            eElement = (Element) XMLHelper.getElementByXPath(dtds.get(pos), "//attackvectors/attackvector[@type='system']");
+        } else {
+            eElement = (Element) dtds.get(pos).getElementsByTagName("attackvector").item(0);           
         }
         // Read vectors
-        Element eElement = (Element) dtds.get(pos).getElementsByTagName("attackvector").item(0);
         selectedDtdServer = eElement.getElementsByTagName("directMessage").item(0).getTextContent();
         currentDtdServer = selectedDtdServer;
         if(needEditor) {
@@ -625,9 +630,9 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
       public void actionPerformed(ActionEvent ev) {
         Element eElement;
         if(systemRadioButton.isSelected()) {
-            eElement = (Element) dtds.get(pos).getElementsByTagName("attackvector").item(0);
+            eElement = (Element) XMLHelper.getElementByXPath(dtds.get(pos), "//attackvectors/attackvector[@type='system']");
         } else {
-            eElement = (Element) dtds.get(pos).getElementsByTagName("attackvector").item(1);
+            eElement = (Element) XMLHelper.getElementByXPath(dtds.get(pos), "//attackvectors/attackvector[@type='public']");
         }
         selectedDtdServer = eElement.getElementsByTagName("directMessage").item(0).getTextContent();
         currentDtdServer = selectedDtdServer;

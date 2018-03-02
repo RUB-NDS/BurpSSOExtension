@@ -33,11 +33,17 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.*;
 import javax.xml.XMLConstants;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.InputSource;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 /**
  * Help pretty print XML content
  * @author Tim Guenther
@@ -86,6 +92,19 @@ public abstract class XMLHelper {
             Document dom = builder.parse(input);
             return dom;
         } catch (ParserConfigurationException | SAXException | IOException e) {
+            Logging.getInstance().log(XMLHelper.class, e);
+            return null;
+        }
+    }
+    
+    public static Node getElementByXPath (Document doc, String xPath) {
+        try {
+            XPathFactory xPathfactory = XPathFactory.newInstance();
+            XPath xpath = xPathfactory.newXPath();
+            XPathExpression expr = xpath.compile(xPath);
+            Node node = (Node) expr.evaluate(doc, XPathConstants.NODE);
+            return node;
+        } catch (XPathExpressionException e) {
             Logging.getInstance().log(XMLHelper.class, e);
             return null;
         }

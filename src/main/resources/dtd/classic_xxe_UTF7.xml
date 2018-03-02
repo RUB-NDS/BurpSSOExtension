@@ -1,6 +1,6 @@
 <config>
 <name>XXE Attack using UTF-7</name>
-<description>Some simple blacklisting countermeasures can probably bypassed by changing the default XML charset (which is UTF-8), to a different one, for example, UTF-16. To convert it to UTF-16, you can use the linux tool iconv: "cat file.xml | iconv -f UTF-8 -t UTF-7 > file_utf7.xml"</description>
+<description>Some simple blacklisting countermeasures can probably bypassed by changing the default XML charset (which is UTF-8), to a different one, for example, UTF-7.</description>
 <params>
     <dosbox>false</dosbox>
     <targetFile>false</targetFile>
