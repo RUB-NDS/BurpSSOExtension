@@ -59,7 +59,6 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     private final String helperURL = "§tf_helperURL§";
     private final String targetFILE = "§tf_targetFILE§";
     
-    private int pos;
     private String saml = "";
     private String selectedDtdServer = "";
     private String selectedDtdHelper = "";
@@ -393,7 +392,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             firstEditor.setEditable(true);
             secondEditor.setEditable(true);
         } else {
-            dtdComboBox.setSelectedItem(dtdNames.get(pos));
+            dtdComboBox.setSelectedItem(dtdComboBox.getSelectedItem());
             firstEditor.setEditable(false);
             secondEditor.setEditable(false);           
         }
