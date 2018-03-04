@@ -41,6 +41,7 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
     private final String SIGNATURE_WRAPPING = "Signature Wrapping";
     private final String SIGNATURE_FAKING = "Signature Faking";
     private final String DTD = "DTD";
+    private final String ENCRYPTION = "ENCRYPTION";
 
     private JComboBox attackComboBox;
     private JLabel descriptionLabel;
@@ -49,6 +50,7 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
     private UISigWrapAttack uiSigWrapAttack = null;
     private UISigFakeAttack uiSigFakeAttack = null;
     private UIDTDAttack uiDTDAttack = null;
+    private UIEncryptionAttack uiEncryptionAttack = null;
     
     /**
      * Create a new Attacker.
@@ -75,7 +77,7 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
 
         attackComboBox = new JComboBox();
         attackComboBox.setFont(new Font("Dialog", 0, 12));
-        String[] attackArray = {NO_ATTACK, SIGNATURE_FAKING, SIGNATURE_WRAPPING, DTD};
+        String[] attackArray = {NO_ATTACK, SIGNATURE_FAKING, SIGNATURE_WRAPPING, DTD, ENCRYPTION};
         attackComboBox.setModel(new DefaultComboBoxModel(attackArray));
         attackComboBox.addItemListener(this);
 
@@ -87,6 +89,8 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
 	settingsContainer.add(uiSigWrapAttack, SIGNATURE_WRAPPING);
         uiDTDAttack = new UIDTDAttack();
 	settingsContainer.add(uiDTDAttack, DTD);
+        uiEncryptionAttack = new UIEncryptionAttack();
+        settingsContainer.add(uiEncryptionAttack, ENCRYPTION);
               
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
@@ -137,5 +141,6 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
         uiSigFakeAttack.setListener(listeners);
         uiSigWrapAttack.setListener(listeners);
         uiDTDAttack.setListener(listeners);
+        uiEncryptionAttack.setListener(listeners);
     }
 }
