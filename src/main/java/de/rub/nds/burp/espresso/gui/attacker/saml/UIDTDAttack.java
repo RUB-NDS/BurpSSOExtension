@@ -31,16 +31,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -51,6 +46,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * The DTD Attack
@@ -63,15 +59,14 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     private final String helperURL = "§tf_helperURL§";
     private final String targetFILE = "§tf_targetFILE§";
     
-    private int pos;
     private String saml = "";
     private String selectedDtdServer = "";
     private String selectedDtdHelper = "";
     private String currentDtdServer = "";
     private String currentDtdHelper = "";
     private CodeListenerController listeners = null;
-    private static ArrayList<Document> dtds = null;
-    private static ArrayList<String> dtdNames = null;
+    private static Document dtds;
+    private static ArrayList<String> dtdNames;
     private boolean needEditor = false;
     
     private JTextArea firstEditor;
@@ -343,7 +338,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     }//GEN-LAST:event_targetFileListValueChanged
 
     private void adjustDTDButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adjustDTDButtonActionPerformed
-	switch(dtds.get(pos).getElementsByTagName("name").item(0).getTextContent()) {
+	switch((String) dtdComboBox.getSelectedItem()) {
             case "Billion Laughs Attack":
                 if (Pattern.matches("[0-9]+", recursiveEntitieTextField.getText()) && Pattern.matches("[0-9]+", entityReferencesTextField.getText())) {
                     String tmp = "\n";
@@ -397,7 +392,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             firstEditor.setEditable(true);
             secondEditor.setEditable(true);
         } else {
-            dtdComboBox.setSelectedItem(dtdNames.get(pos));
+            dtdComboBox.setSelectedItem(dtdComboBox.getSelectedItem());
             firstEditor.setEditable(false);
             secondEditor.setEditable(false);           
         }
@@ -406,39 +401,39 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     private void dtdComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dtdComboBoxActionPerformed
         disableFields();
         // Enable fields
-        pos = dtdNames.indexOf(dtdComboBox.getSelectedItem());
-        needEditor = dtds.get(pos).getElementsByTagName("externalResources").item(0).getTextContent().equalsIgnoreCase("TRUE");
-        if (dtds.get(pos).getElementsByTagName("dosbox").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
-            if(!dtds.get(pos).getElementsByTagName("name").item(0).getTextContent().equalsIgnoreCase("Quadratic Blowup Attack")) {
+        Element selectedDTD = (Element) XMLHelper.getElementByXPath(dtds, "//config[name='"+dtdComboBox.getSelectedItem()+"']");
+        needEditor = selectedDTD.getElementsByTagName("externalResources").item(0).getTextContent().equalsIgnoreCase("TRUE");
+        if (selectedDTD.getElementsByTagName("dosbox").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
+            if(!selectedDTD.getElementsByTagName("name").item(0).getTextContent().equalsIgnoreCase("Quadratic Blowup Attack")) {
                 recursiveEntitieTextField.setEnabled(true);
             }
             entityReferencesTextField.setEnabled(true);
             adjustDTDButton.setEnabled(true);
         }
-        if (dtds.get(pos).getElementsByTagName("targetFile").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
+        if (selectedDTD.getElementsByTagName("targetFile").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
             targetFileTextField.setEnabled(true);
             targetFileList.setEnabled(true);
         }
-        if (dtds.get(pos).getElementsByTagName("helperURL").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
+        if (selectedDTD.getElementsByTagName("helperURL").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
             helperURLTextField.setEnabled(true);
         }            
-        if (dtds.get(pos).getElementsByTagName("attackListenerURL").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
+        if (selectedDTD.getElementsByTagName("attackListenerURL").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
             attackeListenerTextField.setEnabled(true);
         }
-        Element eElement;
-        if (dtds.get(pos).getElementsByTagName("attackvector").getLength() != 1) {
+        Element attackvector;
+        if (selectedDTD.getElementsByTagName("attackvector").getLength() != 1) {
             systemRadioButton.setEnabled(true);
             systemRadioButton.setSelected(true);
             publicRadioButton.setEnabled(true);
-            eElement = (Element) XMLHelper.getElementByXPath(dtds.get(pos), "//attackvectors/attackvector[@type='system']");
+            attackvector = (Element) XMLHelper.getElementByXPath(dtds,"//config[name='"+dtdComboBox.getSelectedItem()+"']/attackvectors/attackvector[@type='system']");
         } else {
-            eElement = (Element) dtds.get(pos).getElementsByTagName("attackvector").item(0);           
+            attackvector = (Element) selectedDTD.getElementsByTagName("attackvector").item(0);           
         }
         // Read vectors
-        selectedDtdServer = eElement.getElementsByTagName("directMessage").item(0).getTextContent();
+        selectedDtdServer = attackvector.getElementsByTagName("directMessage").item(0).getTextContent();
         currentDtdServer = selectedDtdServer;
         if(needEditor) {
-            selectedDtdHelper = eElement.getElementsByTagName("helperMessage").item(0).getTextContent();
+            selectedDtdHelper = attackvector.getElementsByTagName("helperMessage").item(0).getTextContent();
             currentDtdHelper = selectedDtdHelper;
             jPanel1.setLayout(new GridLayout(1, 2));
             jPanel1.removeAll();
@@ -477,35 +472,16 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
      * Read all DTDs from resources and save it.
      */    
     private void readDTDs() {
-        dtds = new ArrayList<>();
-        dtdNames = new ArrayList<>();
-        // Get path of dtd configs
-        CodeSource src = UIDTDAttack.class.getProtectionDomain().getCodeSource();
-        List<String> pathList = new ArrayList<>();
-        if(src != null) {
-            URL jar = src.getLocation();
-            try {
-                ZipInputStream zip = new ZipInputStream(jar.openStream());
-                ZipEntry ze = null;
-                while((ze = zip.getNextEntry()) != null) {
-                    String entryName = ze.getName();
-                    if( entryName.startsWith("dtd") && entryName.endsWith(".xml") ) {
-                        pathList.add(entryName);
-                    }
-                }
-            } catch (IOException ex) {
-                Logging.getInstance().log(getClass(), "IOException by", Logging.ERROR);
+        try {
+            dtds = XMLHelper.stringToDom(IOUtils.toString(getClass().getClassLoader().getResource("dtd_configs.xml"),"UTF-8"));
+            NodeList names = dtds.getElementsByTagName("name");
+            dtdNames = new ArrayList<>();
+            for (int i = 0; i < names.getLength(); i++) {
+                dtdNames.add(names.item(i).getTextContent());
             }
-        }
-        // Read dtd configs
-        for(String config: pathList) {
-            try {
-                Document dtd = XMLHelper.stringToDom(IOUtils.toString(getClass().getClassLoader().getResource(config), "UTF-8"));
-                dtds.add(dtd);
-                dtdNames.add(dtd.getElementsByTagName("name").item(0).getTextContent());
-            } catch (IOException ex) {
-                Logging.getInstance().log(getClass(), "IOException by", Logging.ERROR);
-            }
+            Collections.sort(dtdNames);
+        } catch (IOException ex) {
+            Logging.getInstance().log(getClass(), ex);
         }
     }
     
@@ -547,9 +523,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         publicRadioButton.addActionListener(radioButtonGroupListener);
         systemRadioButton.addActionListener(radioButtonGroupListener);
         // Set dtd vectors sorted by name
-        ArrayList<String> sortedDTDNames = new ArrayList<>(dtdNames);
-        Collections.sort(sortedDTDNames);
-        dtdComboBox.setModel(new DefaultComboBoxModel(sortedDTDNames.toArray()));
+        dtdComboBox.setModel(new DefaultComboBoxModel(dtdNames.toArray()));
         dtdComboBox.setSelectedIndex(0);      
     }
 
@@ -630,9 +604,9 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
       public void actionPerformed(ActionEvent ev) {
         Element eElement;
         if(systemRadioButton.isSelected()) {
-            eElement = (Element) XMLHelper.getElementByXPath(dtds.get(pos), "//attackvectors/attackvector[@type='system']");
+            eElement = (Element) XMLHelper.getElementByXPath(dtds,"//config[name='"+dtdComboBox.getSelectedItem()+"']/attackvectors/attackvector[@type='system']");
         } else {
-            eElement = (Element) XMLHelper.getElementByXPath(dtds.get(pos), "//attackvectors/attackvector[@type='public']");
+            eElement = (Element) XMLHelper.getElementByXPath(dtds,"//config[name='"+dtdComboBox.getSelectedItem()+"']/attackvectors/attackvector[@type='public']");
         }
         selectedDtdServer = eElement.getElementsByTagName("directMessage").item(0).getTextContent();
         currentDtdServer = selectedDtdServer;

