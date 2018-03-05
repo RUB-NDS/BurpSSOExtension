@@ -20,6 +20,7 @@ package de.rub.nds.burp.espresso.gui.attacker.saml;
 
 import com.beetstra.jutf7.CharsetProvider;
 import de.rub.nds.burp.espresso.gui.attacker.IAttack;
+import de.rub.nds.burp.utilities.EncodingType;
 import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.XMLHelper;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
@@ -43,7 +44,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -68,6 +68,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     private static Document dtds;
     private static ArrayList<String> dtdNames;
     private boolean needEditor = false;
+    private String encoding;
     
     private JTextArea firstEditor;
     private JTextArea secondEditor;
@@ -403,6 +404,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         // Enable fields
         Element selectedDTD = (Element) XMLHelper.getElementByXPath(dtds, "//config[name='"+dtdComboBox.getSelectedItem()+"']");
         needEditor = selectedDTD.getElementsByTagName("externalResources").item(0).getTextContent().equalsIgnoreCase("TRUE");
+        encoding = selectedDTD.getElementsByTagName("encoding").item(0).getTextContent();
         if (selectedDTD.getElementsByTagName("dosbox").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
             if(!selectedDTD.getElementsByTagName("name").item(0).getTextContent().equalsIgnoreCase("Quadratic Blowup Attack")) {
                 recursiveEntitieTextField.setEnabled(true);
@@ -567,23 +569,22 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     @Override
     public void notifyAllTabs(String code) {
         if(listeners != null){
-            // Encode dtd vector if needed
-            String encoding = StringUtils.substringBetween(code, "encoding=\"", "\"");
-            if(encoding != null) {    
-                switch(encoding) {
-                    case "UTF-7":
-                        Charset charset = new CharsetProvider().charsetForName("UTF-7");
-                        ByteBuffer byteBuffer = charset.encode(code);
-                        code = new String(byteBuffer.array()).substring(0, byteBuffer.limit());
-                        break;
-                    case "UTF-16":
-                        try {
-                            code = new String(code.getBytes("UTF-8"), "UTF-16");
-                        } catch (UnsupportedEncodingException ex) {
-                            Logging.getInstance().log(getClass(), ex);
-                        }
-                        break;
-                }
+            // Encode dtd vector if needed  
+            switch(EncodingType.fromString(encoding)) {
+                case UTF_7:
+                    Charset charset = new CharsetProvider().charsetForName("UTF-7");
+                    ByteBuffer byteBuffer = charset.encode(code);
+                    code = new String(byteBuffer.array()).substring(0, byteBuffer.limit());
+                    break;
+                case UTF_16:
+                    try {
+                        code = new String(code.getBytes("UTF-8"), "UTF-16");
+                    } catch (UnsupportedEncodingException ex) {
+                        Logging.getInstance().log(getClass(), ex);
+                    }
+                    break;
+                default:
+                    break;
             }            
             listeners.notifyAll(new SamlCodeEvent(this, code));
         }

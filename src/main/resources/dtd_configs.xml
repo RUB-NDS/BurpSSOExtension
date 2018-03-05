@@ -8,6 +8,7 @@
         <helperURL>false</helperURL>
         <attackListenerURL>true</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
     <attackvectors>
     <attackvector type="system" default="true">
@@ -31,6 +32,7 @@
         <helperURL>false</helperURL>
         <attackListenerURL>true</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
     <attackvectors>
     <attackvector type="system" default="true">
@@ -56,6 +58,7 @@
         <helperURL>false</helperURL>
         <attackListenerURL>true</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-16</encoding>
     </params>
     <attackvectors>
     <attackvector type="system" default="true">
@@ -85,6 +88,7 @@
         <helperURL>false</helperURL>
         <attackListenerURL>true</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-7</encoding>
     </params>
     <attackvectors>
     <attackvector type="system" default="true">
@@ -114,6 +118,7 @@
         <helperURL>false</helperURL>
         <attackListenerURL>true</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
     <attackvectors>
     <attackvector type="system" default="true">
@@ -139,6 +144,7 @@
         <helperURL>true</helperURL>
         <attackListenerURL>false</attackListenerURL>
         <externalResources>true</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
     <attackvectors>
     <attackvector type="system" default="true">
@@ -176,6 +182,7 @@
         <helperURL>false</helperURL>
         <attackListenerURL>false</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
     <attackvectors>
     <attackvector>
@@ -199,6 +206,7 @@
         <helperURL>false</helperURL>
         <attackListenerURL>false</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
     <attackvectors>
     <attackvector>
@@ -218,6 +226,7 @@
         <helperURL>false</helperURL>
         <attackListenerURL>false</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
     <attackvectors>
     <attackvector>
@@ -238,6 +247,7 @@
         <helperURL>true</helperURL>
         <attackListenerURL>false</attackListenerURL>
         <externalResources>true</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
     <attackvectors>
     <attackvector type="system" default="true">
@@ -273,6 +283,7 @@
         <helperURL>true</helperURL>
         <attackListenerURL>false</attackListenerURL>
         <externalResources>true</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
     <attackvectors>
     <attackvector type="system" default="true">
@@ -312,6 +323,7 @@
         <helperURL>false</helperURL>
         <attackListenerURL>true</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
     <attackvectors>
     <attackvector>
@@ -330,6 +342,7 @@ xsi:noNamespaceSchemaLocation="§tf_listenURL§">4</data>]]></directMessage>
         <helperURL>false</helperURL>
         <attackListenerURL>true</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
     <attackvectors>
     <attackvector>
@@ -349,6 +362,7 @@ xsi:schemaLocation="§tf_listenURL§">4</ttt:data>]]></directMessage>
         <helperURL>true</helperURL>
         <attackListenerURL>true</attackListenerURL>
         <externalResources>true</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
     <attackvectors>
     <attackvector type="system" default="true">
@@ -378,6 +392,7 @@ xsi:schemaLocation="§tf_listenURL§">4</ttt:data>]]></directMessage>
         <helperURL>true</helperURL>
         <attackListenerURL>true</attackListenerURL>
         <externalResources>true</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
     <attackvectors>
     <attackvector type="system" default="true">
@@ -415,6 +430,7 @@ xsi:schemaLocation="§tf_listenURL§">4</ttt:data>]]></directMessage>
         <helperURL>false</helperURL>
         <attackListenerURL>true</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
     <attackvectors>
     <attackvector>
