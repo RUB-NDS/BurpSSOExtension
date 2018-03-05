@@ -248,7 +248,6 @@
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
           <StringArray count="0"/>
         </Property>
-        <Property name="toolTipText" type="java.lang.String" value=""/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dtdComboBoxActionPerformed"/>
@@ -270,7 +269,6 @@
     <Component class="javax.swing.JButton" name="adjustDTDButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Adjust"/>
-        <Property name="toolTipText" type="java.lang.String" value=""/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>

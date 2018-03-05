@@ -170,7 +170,6 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         jScrollPane3.setViewportView(targetFileList);
 
         dtdComboBox.setMaximumRowCount(10);
-        dtdComboBox.setToolTipText("");
         dtdComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 dtdComboBoxActionPerformed(evt);
@@ -182,7 +181,6 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         jLabel9.setText("Selected DTD: ");
 
         adjustDTDButton.setText("Adjust");
-        adjustDTDButton.setToolTipText("");
         adjustDTDButton.setEnabled(false);
         adjustDTDButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
