@@ -18,6 +18,7 @@
  */
 package de.rub.nds.burp.espresso.gui;
 
+import burp.IBurpExtenderCallbacks;
 import de.rub.nds.burp.utilities.Logging;
 import java.io.File;
 import java.io.FileReader;
@@ -37,13 +38,16 @@ import org.json.simple.parser.ParseException;
  * @author Tim Guenther
  * @version 1.0
  */
-public class UIOptions extends JPanel {  
+public class UIOptions extends JPanel {
+    private IBurpExtenderCallbacks callbacks;
+
     private JFileChooser fc;
     
     private File schema, cert, privkey, pubkey;
     private File scriptOut, scriptIn;
     private File extLib, config;
     
+    private static String configInitialized;
     private static boolean samlActive=true;
     private static boolean openIDActive=true;
     private static boolean openIDConnectActive=true;
@@ -60,44 +64,18 @@ public class UIOptions extends JPanel {
     /**
      * Creates new form UIOptions
      */
-    public UIOptions() {
+    public UIOptions(IBurpExtenderCallbacks callbacks) {
+        this.callbacks = callbacks;
         initComponents();
         hideAllUnsedComponents();
         
-        String path = System.getProperty("user.home")+"/EsPReSSO";
-        String decoded_path = null;
-        try {
-            if(path != null){
-                decoded_path = URLDecoder.decode(path, "UTF-8");
-                if(decoded_path != null){
-                    File file = new File(decoded_path);
-                    if(!file.exists()){
-                        file.mkdir();
-                    }
-                    path = decoded_path + "/config.json";
-                    file = new File(path);                    
-                    if(!file.exists()){
-                        // First start no config created
-                        file.createNewFile();
-                        configText1.setText(path);
-                        saveConfig(path);
-                    } else {
-                        // load previous config
-                        configText1.setText(path);
-                        loadConfig(path);
-                    }
-                }
-            }
-        } catch (UnsupportedEncodingException ex) {
-            JOptionPane.showMessageDialog(this,
-                        ex.toString(),
-                        "ERROR 2",
-                        JOptionPane.ERROR_MESSAGE);
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this,
-                        ex.toString(),
-                        "ERROR 2",
-                        JOptionPane.ERROR_MESSAGE);
+        configInitialized = callbacks.loadExtensionSetting("configInitialized");
+        if (!"true".equals(configInitialized)) {
+            // first time extension is loaded, use default values
+            saveConfig();
+            callbacks.saveExtensionSetting("configInitialized", "true");
+        } else if (configInitialized.equals("true")) {
+            loadConfig();
         }
     }
     
@@ -105,7 +83,7 @@ public class UIOptions extends JPanel {
      * Load the configuration file and apply the configs to the UI. 
      * @param path The absolute path to the configuration file.
      */
-    private void loadConfig(String path){
+    private void importConfig(String path){
         File file = new File(path);
         if(!file.exists()){
             JOptionPane.showMessageDialog(this,
@@ -167,7 +145,7 @@ public class UIOptions extends JPanel {
                 str = (String) json_conf.get("Libraries");
                 libText1.setText(str);
                 
-                str = (String) json_conf.get("Config");
+//                str = (String) json_conf.get("Config");
                 
                 LoggingLevel = ((Long) json_conf.get("LogLvl")).intValue();
                 logginglvlComboBox.setSelectedIndex(LoggingLevel);
@@ -200,7 +178,7 @@ public class UIOptions extends JPanel {
                             JOptionPane.ERROR_MESSAGE);
             Logging.getInstance().log(getClass(), "The file:\n"+path+"\n is not readable or directory.", Logging.ERROR);
         }
-        saveConfig(path);
+        saveConfig();
         Logging.getInstance().log(getClass(), "The config from "+path+" is now loaded.", Logging.INFO);
     }
     
@@ -208,7 +186,7 @@ public class UIOptions extends JPanel {
      * Save all configurations in the UI to the system.
      * @param path The path to the place where the configuration file should be stored.
      */
-    private void saveConfig(String path){
+    private void exportConfig(String path){
         File file = new File(path);
         if(!file.exists()){
             try {
@@ -247,7 +225,7 @@ public class UIOptions extends JPanel {
             
             config_obj.put("Libraries", libText1.getText());
             
-            config_obj.put("Config", path);
+//            config_obj.put("Config", path);
             
             config_obj.put("LogLvl", LoggingLevel);
             
@@ -1009,7 +987,7 @@ public class UIOptions extends JPanel {
             return;
         }
         String path = file.getPath();
-        saveConfig(path);
+        exportConfig(path);
     }//GEN-LAST:event_configSave1ActionPerformed
 
     private void configImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configImportActionPerformed
@@ -1023,7 +1001,7 @@ public class UIOptions extends JPanel {
             return;
         }
         String path = file.getPath();
-        loadConfig(path);
+        importConfig(path);
     }//GEN-LAST:event_configImportActionPerformed
 
     private void certOpen1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_certOpen1ActionPerformed
@@ -1106,7 +1084,7 @@ public class UIOptions extends JPanel {
     }//GEN-LAST:event_msAccountActionPerformed
 
     private void configApplyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configApplyActionPerformed
-        saveConfig(configText1.getText());
+        saveConfig();
     }//GEN-LAST:event_configApplyActionPerformed
 
     private void logginglvlComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logginglvlComboBoxActionPerformed
@@ -1216,6 +1194,9 @@ public class UIOptions extends JPanel {
         certLabel1.setVisible(false);
         certOpen1.setVisible(false);
         certText1.setVisible(false);
+        // path to config file no longer necessary when using burp callbacks 
+        configText1.setVisible(false);
+        configLabel1.setVisible(false);
         
         //revalidate 
         this.revalidate();
@@ -1293,6 +1274,87 @@ public class UIOptions extends JPanel {
      */
     public static int getLoggingLevel(){
         return LoggingLevel;
+    }
+
+    private void saveConfig() {
+        callbacks.saveExtensionSetting("SSOActive", Boolean.toString(activeSSOProtocols.isSelected()));
+        callbacks.saveExtensionSetting("OpenIDActive", Boolean.toString(openID1.isSelected()));
+        callbacks.saveExtensionSetting("OpenIDConnectActive", Boolean.toString(openIDConnect1.isSelected()));
+        callbacks.saveExtensionSetting("OAuthActive", Boolean.toString(oAuth.isSelected()));
+        callbacks.saveExtensionSetting("FacebookConnectActive", Boolean.toString(facebookConnect.isSelected()));
+        callbacks.saveExtensionSetting("BrowserIDActive", Boolean.toString(browserID1.isSelected()));
+        callbacks.saveExtensionSetting("SAMLActive", Boolean.toString(saml1.isSelected()));
+        callbacks.saveExtensionSetting("MicrosoftAccountActive", Boolean.toString(msAccount.isSelected()));
+
+        callbacks.saveExtensionSetting("HighlightActive", Boolean.toString(highlightBool));
+
+        callbacks.saveExtensionSetting("Schema", schemaText1.getText());
+        callbacks.saveExtensionSetting("Certificate", certText1.getText());
+        callbacks.saveExtensionSetting("Private Key", privKeyText1.getText());
+        callbacks.saveExtensionSetting("Public Key", pubKeyText1.getText());
+
+        callbacks.saveExtensionSetting("Input Script", scriptInText1.getText());
+        callbacks.saveExtensionSetting("Output Script", scriptOutText1.getText());
+
+        callbacks.saveExtensionSetting("Libraries", libText1.getText());
+
+//            callbacks.saveExtensionSetting("Config", path);
+
+        callbacks.saveExtensionSetting("LogLvl", String.valueOf(LoggingLevel));
+    }
+
+    private void loadConfig() {
+        openIDActive = Boolean.valueOf(callbacks.loadExtensionSetting("OpenIDActive"));
+        openID1.setSelected(openIDActive);
+        openIDConnectActive = Boolean.valueOf("OpenIDConnectActive");
+        openIDConnect1.setSelected(openIDConnectActive);
+        oAuthActive = Boolean.valueOf("OAuthActive");
+        oAuth.setSelected(oAuthActive);
+        facebookConnectActive = Boolean.valueOf("FacebookConnectActive");
+        facebookConnect.setSelected(facebookConnectActive);
+        browserIDActive = Boolean.valueOf("BrowserIDActive");
+        browserID1.setSelected(browserIDActive);
+        samlActive = Boolean.valueOf("SAMLActive");
+        saml1.setSelected(samlActive);
+        msAccountActive = Boolean.valueOf("MicrosoftAccountActive");
+        msAccount.setSelected(msAccountActive);
+
+        boolean asp = Boolean.valueOf("SSOActive");
+        activeSSOProtocols.setSelected(asp);
+        if(!asp){
+            oAuth.setEnabled(false);
+            facebookConnect.setEnabled(false);
+            saml1.setEnabled(false);
+            openID1.setEnabled(false);
+            openIDConnect1.setEnabled(false);
+            browserID1.setEnabled(false);
+            msAccount.setEnabled(false);
+        }
+
+        highlightBool = Boolean.valueOf("HighlightActive");
+        highlightSSO.setSelected(highlightBool);
+
+        String str = callbacks.loadExtensionSetting("Schema");
+        schemaText1.setText(str);
+        str = callbacks.loadExtensionSetting("Certificate");
+        certText1.setText(str);
+        str = callbacks.loadExtensionSetting("Private Key");
+        privKeyText1.setText(str);
+        str = callbacks.loadExtensionSetting("Public Key");
+        pubKeyText1.setText(str);
+
+        str = callbacks.loadExtensionSetting("Input Script");
+        scriptInText1.setText(str);
+        str = callbacks.loadExtensionSetting("Output Script");
+        scriptOutText1.setText(str);
+
+        str = callbacks.loadExtensionSetting("Libraries");
+        libText1.setText(str);
+
+//                str = (String) json_conf.get("Config");
+
+        LoggingLevel = Integer.parseInt(callbacks.loadExtensionSetting("LogLvl"));
+        logginglvlComboBox.setSelectedIndex(LoggingLevel);
     }
     
 }

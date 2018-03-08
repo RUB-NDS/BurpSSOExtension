@@ -72,7 +72,7 @@ public class UIMain extends JTabbedPane{
         //sso history
         history = new UIHistory(callbacks);
         //options
-        options = new UIOptions();
+        options = new UIOptions(callbacks);
         //help
         help = new UIHelp();
 
