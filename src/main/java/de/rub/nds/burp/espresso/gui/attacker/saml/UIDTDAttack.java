@@ -199,8 +199,8 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             .addGap(0, 294, Short.MAX_VALUE)
         );
 
-        enableEditoringCheckbox.setText("Enables editoring");
-        enableEditoringCheckbox.setToolTipText("Manual changes get lost on disabling.");
+        enableEditoringCheckbox.setText("Enable editing");
+        enableEditoringCheckbox.setToolTipText("Discards manual changes");
         enableEditoringCheckbox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 enableEditoringCheckboxActionPerformed(evt);

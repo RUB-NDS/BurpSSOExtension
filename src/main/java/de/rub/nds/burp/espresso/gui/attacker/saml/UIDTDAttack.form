@@ -292,8 +292,8 @@
     </Container>
     <Component class="javax.swing.JCheckBox" name="enableEditoringCheckbox">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Enables editoring"/>
-        <Property name="toolTipText" type="java.lang.String" value="Manual changes get lost on disabling."/>
+        <Property name="text" type="java.lang.String" value="Enable editing"/>
+        <Property name="toolTipText" type="java.lang.String" value="Discards manual changes"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="enableEditoringCheckboxActionPerformed"/>
