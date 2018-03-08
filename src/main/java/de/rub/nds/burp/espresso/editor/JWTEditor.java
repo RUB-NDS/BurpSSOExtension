@@ -103,9 +103,9 @@ public class JWTEditor implements IMessageEditorTabFactory{
             txtInput.setEditable(editable);
 
             // create a source code viewer
-            sourceViewerHeader = new UISourceViewer();
-            sourceViewerPayload = new UISourceViewer();
-            sourceViewerSignature = new UISourceViewer();
+            sourceViewerHeader = new UISourceViewer(callbacks);
+            sourceViewerPayload = new UISourceViewer(callbacks);
+            sourceViewerSignature = new UISourceViewer(callbacks);
             editor.addTab("Header", sourceViewerHeader);
             editor.addTab("Payload", sourceViewerPayload);
             editor.addTab("Base64(Signature)", sourceViewerSignature);
