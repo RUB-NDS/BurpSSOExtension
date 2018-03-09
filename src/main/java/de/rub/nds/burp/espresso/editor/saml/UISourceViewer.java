@@ -47,7 +47,7 @@ public class UISourceViewer extends JPanel implements ICodeListener{
     private JCheckBox checkBox;
     private RTextScrollPane sp;
     private IBurpExtenderCallbacks callbacks;
-    private String wrapLines;
+    private boolean wrapLines;
     /**
      * Create a new Source Code Viewer.
      * @param sourceCode The Code that should be highlighted.
@@ -74,8 +74,8 @@ public class UISourceViewer extends JPanel implements ICodeListener{
         textArea.setSyntaxEditingStyle(codeStyle);
         textArea.setText(sourceCode);
         textArea.setCodeFoldingEnabled(true);
-        wrapLines = callbacks.loadExtensionSetting("wrapLinesInSourceViewer");
-        if ("true".equals(wrapLines)) {
+        wrapLines = Boolean.valueOf(callbacks.loadExtensionSetting("wrapLinesInSourceViewer"));
+        if (wrapLines) {
             textArea.setLineWrap(true);
         } else {
             textArea.setLineWrap(false);

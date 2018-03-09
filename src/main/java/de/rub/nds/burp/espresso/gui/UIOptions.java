@@ -47,7 +47,7 @@ public class UIOptions extends JPanel {
     private File scriptOut, scriptIn;
     private File extLib, config;
     
-    private static String configInitialized;
+    private static boolean configInitialized;
     private static boolean samlActive=true;
     private static boolean openIDActive=true;
     private static boolean openIDConnectActive=true;
@@ -69,13 +69,13 @@ public class UIOptions extends JPanel {
         initComponents();
         hideAllUnsedComponents();
         
-        configInitialized = callbacks.loadExtensionSetting("configInitialized");
-        if (!"true".equals(configInitialized)) {
+        configInitialized = Boolean.valueOf(callbacks.loadExtensionSetting("configInitialized"));
+        if (configInitialized) {
+            loadConfig();
+        } else {
             // first time extension is loaded, use default values
             saveConfig();
             callbacks.saveExtensionSetting("configInitialized", "true");
-        } else if (configInitialized.equals("true")) {
-            loadConfig();
         }
     }
     
