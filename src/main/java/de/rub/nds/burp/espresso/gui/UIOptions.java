@@ -1306,20 +1306,20 @@ public class UIOptions extends JPanel {
     private void loadConfig() {
         openIDActive = Boolean.valueOf(callbacks.loadExtensionSetting("OpenIDActive"));
         openID1.setSelected(openIDActive);
-        openIDConnectActive = Boolean.valueOf("OpenIDConnectActive");
+        openIDConnectActive = Boolean.valueOf(callbacks.loadExtensionSetting("OpenIDConnectActive"));
         openIDConnect1.setSelected(openIDConnectActive);
-        oAuthActive = Boolean.valueOf("OAuthActive");
+        oAuthActive = Boolean.valueOf(callbacks.loadExtensionSetting("OAuthActive"));
         oAuth.setSelected(oAuthActive);
-        facebookConnectActive = Boolean.valueOf("FacebookConnectActive");
+        facebookConnectActive = Boolean.valueOf(callbacks.loadExtensionSetting("FacebookConnectActive"));
         facebookConnect.setSelected(facebookConnectActive);
-        browserIDActive = Boolean.valueOf("BrowserIDActive");
+        browserIDActive = Boolean.valueOf(callbacks.loadExtensionSetting("BrowserIDActive"));
         browserID1.setSelected(browserIDActive);
-        samlActive = Boolean.valueOf("SAMLActive");
+        samlActive = Boolean.valueOf(callbacks.loadExtensionSetting("SAMLActive"));
         saml1.setSelected(samlActive);
-        msAccountActive = Boolean.valueOf("MicrosoftAccountActive");
+        msAccountActive = Boolean.valueOf(callbacks.loadExtensionSetting("MicrosoftAccountActive"));
         msAccount.setSelected(msAccountActive);
 
-        boolean asp = Boolean.valueOf("SSOActive");
+        boolean asp = Boolean.valueOf(callbacks.loadExtensionSetting("SSOActive"));
         activeSSOProtocols.setSelected(asp);
         if(!asp){
             oAuth.setEnabled(false);
@@ -1331,7 +1331,7 @@ public class UIOptions extends JPanel {
             msAccount.setEnabled(false);
         }
 
-        highlightBool = Boolean.valueOf("HighlightActive");
+        highlightBool = Boolean.valueOf(callbacks.loadExtensionSetting("HighlightActive"));
         highlightSSO.setSelected(highlightBool);
 
         String str = callbacks.loadExtensionSetting("Schema");
