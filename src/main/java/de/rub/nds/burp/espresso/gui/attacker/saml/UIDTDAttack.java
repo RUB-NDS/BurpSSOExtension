@@ -26,6 +26,7 @@ import de.rub.nds.burp.utilities.XMLHelper;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
 import de.rub.nds.burp.utilities.listeners.saml.SamlCodeEvent;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -38,11 +39,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.regex.Pattern;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComponent;
+import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -67,6 +71,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     private CodeListenerController listeners = null;
     private static Document dtds;
     private static ArrayList<String> dtdNames;
+    private static ArrayList<String> dtdDescriptions;
     private boolean needEditor = false;
     
     private JTextArea firstEditor;
@@ -522,6 +527,10 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                 dtdNames.add(names.item(i).getTextContent());
             }
             Collections.sort(dtdNames);
+            dtdDescriptions = new ArrayList<>();
+            for (int i = 0; i < dtdNames.size(); i++) {
+                dtdDescriptions.add(XMLHelper.getElementByXPath(dtds,"//config[name='"+dtdNames.get(i)+"']/description").getTextContent());
+            }
         } catch (IOException ex) {
             Logging.getInstance().log(getClass(), ex);
         }
@@ -573,6 +582,16 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         utf16RadioButton.setActionCommand(EncodingType.UTF_16.getEncoding());
         // Set dtd vectors sorted by name
         dtdComboBox.setModel(new DefaultComboBoxModel(dtdNames.toArray()));
+        dtdComboBox.setRenderer(new BasicComboBoxRenderer() {            
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                JComponent comp = (JComponent) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (-1 < index && null != value && null != dtdDescriptions) {
+                    list.setToolTipText(dtdDescriptions.get(index));
+                }
+                return comp;
+            }       
+        });  
         dtdComboBox.setSelectedIndex(0);          
     }
 
