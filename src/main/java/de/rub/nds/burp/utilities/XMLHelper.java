@@ -109,15 +109,4 @@ public abstract class XMLHelper {
             return null;
         }
     }
-    
-    public static String getAbsolutePath (Node node) {
-        String path = node.getNodeName();
-        Node parent = node.getParentNode();
-        while(parent != null) {
-            path = parent.getNodeName() + "/" + path;
-            parent = parent.getParentNode();
-        }
-        // Delete "#Document" from path
-        return path.substring(9);
-    }
 }

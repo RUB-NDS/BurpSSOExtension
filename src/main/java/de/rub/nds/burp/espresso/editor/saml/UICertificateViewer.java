@@ -35,6 +35,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import wsattacker.library.xmlutilities.dom.DomUtilities;
 
 /**
  *
@@ -149,7 +150,7 @@ public class UICertificateViewer extends javax.swing.JPanel implements ICodeList
                 X509Certificate certificate = (X509Certificate) cf.generateCertificate(
                         new ByteArrayInputStream(helpers.base64Decode(list.item(i).getTextContent())));
                 certificates.add(certificate);
-                certificatePaths.addElement(XMLHelper.getAbsolutePath(list.item(i)));
+                certificatePaths.addElement(DomUtilities.getFastXPath(list.item(i)));
             } catch (CertificateException ex) {
                 Logging.getInstance().log(getClass(), ex);
             }
