@@ -40,6 +40,7 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
     private final String NO_ATTACK = "No Attack";
     private final String SIGNATURE_WRAPPING = "Signature Wrapping";
     private final String SIGNATURE_FAKING = "Signature Faking";
+    private final String SIGNATURE_EXCLUSION = "Signature Exclusion";
     private final String DTD = "DTD";
 
     private JComboBox attackComboBox;
@@ -48,6 +49,7 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
     
     private UISigWrapAttack uiSigWrapAttack = null;
     private UISigFakeAttack uiSigFakeAttack = null;
+    private UISigExcAttack uiSigExcAttack = null;
     private UIDTDAttack uiDTDAttack = null;
     
     /**
@@ -75,7 +77,7 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
 
         attackComboBox = new JComboBox();
         attackComboBox.setFont(new Font("Dialog", 0, 12));
-        String[] attackArray = {NO_ATTACK, SIGNATURE_FAKING, SIGNATURE_WRAPPING, DTD};
+        String[] attackArray = {NO_ATTACK, SIGNATURE_FAKING, SIGNATURE_EXCLUSION, SIGNATURE_WRAPPING, DTD};
         attackComboBox.setModel(new DefaultComboBoxModel(attackArray));
         attackComboBox.addItemListener(this);
 
@@ -83,6 +85,8 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
         settingsContainer.add(new JPanel(), NO_ATTACK);
         uiSigFakeAttack = new UISigFakeAttack();
         settingsContainer.add(uiSigFakeAttack, SIGNATURE_FAKING);
+        uiSigExcAttack = new UISigExcAttack();
+        settingsContainer.add(uiSigExcAttack, SIGNATURE_EXCLUSION);
         uiSigWrapAttack = new UISigWrapAttack();
 	settingsContainer.add(uiSigWrapAttack, SIGNATURE_WRAPPING);
         uiDTDAttack = new UIDTDAttack();
@@ -135,6 +139,7 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
      */
     public void setListeners(CodeListenerController listeners){
         uiSigFakeAttack.setListener(listeners);
+        uiSigExcAttack.setListener(listeners);
         uiSigWrapAttack.setListener(listeners);
         uiDTDAttack.setListener(listeners);
     }
