@@ -18,6 +18,7 @@
  */
 package de.rub.nds.burp.espresso.editor.saml;
 
+import burp.IBurpExtenderCallbacks;
 import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.XMLHelper;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
@@ -49,13 +50,16 @@ public class UISourceViewer extends JPanel implements ICodeListener{
     private RTextScrollPane sp;
     private JLabel label;
 
+    private IBurpExtenderCallbacks callbacks;
+    private boolean wrapLines;
     /**
      * Create a new Source Code Viewer.
      * @param sourceCode The Code that should be highlighted.
      * @param codeStyle The kind of highlighting.
      */
-    public UISourceViewer(String sourceCode, String codeStyle) {
+    public UISourceViewer(IBurpExtenderCallbacks callbacks, String sourceCode, String codeStyle) {
         super(new BorderLayout());
+        this.callbacks = callbacks;
         this.sourceCode = sourceCode;
         this.codeStyle = codeStyle;
         initComponent();
@@ -64,7 +68,8 @@ public class UISourceViewer extends JPanel implements ICodeListener{
     /**
      * Create a new Source Code Viewer.
      */
-    public UISourceViewer(){
+    public UISourceViewer(IBurpExtenderCallbacks callbacks){
+        this.callbacks = callbacks;
         initComponent();
     }
     
@@ -76,7 +81,12 @@ public class UISourceViewer extends JPanel implements ICodeListener{
         textArea.setSyntaxEditingStyle(codeStyle);
         textArea.setText(sourceCode);
         textArea.setCodeFoldingEnabled(true);
-        textArea.setLineWrap(false);
+        wrapLines = Boolean.valueOf(callbacks.loadExtensionSetting("wrapLinesInSourceViewer"));
+        if (wrapLines) {
+            textArea.setLineWrap(true);
+        } else {
+            textArea.setLineWrap(false);
+        }
         sp = new RTextScrollPane(textArea);
         sp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);        
         checkBox = new JCheckBox("Softwraps for long lines");
@@ -111,9 +121,11 @@ public class UISourceViewer extends JPanel implements ICodeListener{
         if(checkBox.isSelected()) {
             textArea.setLineWrap(true);
             sp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            callbacks.saveExtensionSetting("wrapLinesInSourceViewer", "true");
         } else {
             textArea.setLineWrap(false);
             sp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED); 
+            callbacks.saveExtensionSetting("wrapLinesInSourceViewer", "false");
         }
     }
     

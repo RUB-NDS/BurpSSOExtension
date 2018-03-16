@@ -105,7 +105,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             guiContainer = new JTabbedPane();
             
             // create a source code viewer
-            sourceViewer = new UISourceViewer();
+            sourceViewer = new UISourceViewer(callbacks);
             sourceViewer.setListener(listeners);
             guiContainer.addTab("Source Code", sourceViewer);
             
