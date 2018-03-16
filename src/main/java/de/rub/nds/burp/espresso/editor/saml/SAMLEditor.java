@@ -83,7 +83,6 @@ public class SAMLEditor implements IMessageEditorTabFactory{
         private final UISourceViewer sourceViewer;
         private final UIRawEditor rawEditor;
         private final UISAMLAttacker samlAttacker;
-        private final UICertificateViewer certificateViewer;
         
         private boolean rawEditorSelected = false;
         private boolean decDeflateActive;
@@ -114,11 +113,6 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             rawEditor = new UIRawEditor(callbacks, editable);
             rawEditor.setListener(listeners);
             guiContainer.addTab("SAML", rawEditor.getComponent());
-            
-            // create a certificate viewer
-            certificateViewer = new UICertificateViewer(callbacks);
-            certificateViewer.setListener(listeners);
-            guiContainer.addTab("Certificates", certificateViewer);
             
             // create the attacker
             samlAttacker = new UISAMLAttacker();
@@ -216,7 +210,6 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 sourceViewer.setEnabled(false);
                 rawEditor.setEnabled(false);
                 samlAttacker.setEnabled(false);
-                certificateViewer.setEnabled(false);
                 guiContainer.setEnabled(false);
             } else if(samlContent != null){
                 // reactivate our tabs
@@ -225,7 +218,6 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 rawEditor.setEnabled(true);
                 rawEditor.getChangeHttpMethodCheckBox().setEnabled(true);
                 samlAttacker.setEnabled(true);
-                certificateViewer.setEnabled(true);
                 guiContainer.setEnabled(true);
                 
                 // change the name of the rawEditor to the Parametername
