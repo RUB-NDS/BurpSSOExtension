@@ -19,13 +19,10 @@
 package de.rub.nds.burp.utilities.protocols.xmlenc;
 
 import de.rub.nds.burp.utilities.ByteArrayHelper;
-import de.rub.nds.burp.utilities.Logging;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
+import java.security.Security;
+import java.util.Base64;
+import javax.crypto.Cipher;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -72,6 +69,26 @@ public class XmlEncryptionHelperTest {
         String result = xmlEncryptionHelper.encryptKey(certificate, AsymmetricAlgorithm.RSA_OAEP_MGF1P);
         assertNotNull(result);
         assertNotEquals("", result);
+    }
+    
+    /**
+     * Test of encryptKey method, of class XmlEncryptionHelper.
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testEncryptKeyPlainRSA() throws Exception {
+        byte[] key = new byte[]{0, 0, 0, 7};
+        xmlEncryptionHelper.setSymmetricKey(key);
+        String result = xmlEncryptionHelper.encryptKey(certificate, AsymmetricAlgorithm.RSA);
+        System.out.println(result);
+        assertNotNull(result);
+        assertNotEquals("", result);
+        
+        Security.addProvider(new BouncyCastleProvider());
+        Cipher cipher = Cipher.getInstance(AsymmetricAlgorithm.RSA.getJavaName());
+        cipher.init(Cipher.ENCRYPT_MODE, XmlEncryptionHelper.getPublicKey(certificate));
+        String expected = Base64.getEncoder().encodeToString(cipher.doFinal(key));
+        assertEquals(expected, result);
     }
     
     @Test

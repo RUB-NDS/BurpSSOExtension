@@ -20,6 +20,7 @@ package de.rub.nds.burp.utilities.protocols.xmlenc;
 
 import de.rub.nds.burp.utilities.ByteArrayHelper;
 import java.io.ByteArrayInputStream;
+import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -27,6 +28,8 @@ import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.security.interfaces.RSAPublicKey;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Iterator;
@@ -47,22 +50,38 @@ public class XmlEncryptionHelper {
 
     public String encryptKey(String certificate, AsymmetricAlgorithm algorithm) throws CertificateException, NoSuchAlgorithmException,
             NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        CertificateFactory cf = CertificateFactory.getInstance("X.509");
-        Collection c = cf.generateCertificates(new ByteArrayInputStream(certificate.getBytes()));
-        Iterator i = c.iterator();
-        PublicKey publicKey = null;
-        while (i.hasNext()) {
-            Certificate cert = (Certificate) i.next();
-            publicKey = cert.getPublicKey();
-        }
-        Cipher cipher = Cipher.getInstance(algorithm.getJavaName());
+        RSAPublicKey publicKey = getPublicKey(certificate);
         if (publicKey != null) {
-            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-            byte[] result = cipher.doFinal(symmetricKey);
-            return Base64.getEncoder().encodeToString(result);
+            if (algorithm == AsymmetricAlgorithm.RSA) {
+                // this algorithm is only supported in Bouncy Castle 
+                BigInteger sk = new BigInteger(symmetricKey);
+                BigInteger biResult = sk.modPow(publicKey.getPublicExponent(), publicKey.getModulus());
+                byte[] result = biResult.toByteArray();
+                if(result[0] == 0) {
+                    result = Arrays.copyOfRange(result, 1, result.length);
+                }
+                return Base64.getEncoder().encodeToString(result);
+            } else {
+                Cipher cipher = Cipher.getInstance(algorithm.getJavaName());
+                cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+                byte[] result = cipher.doFinal(symmetricKey);
+                return Base64.getEncoder().encodeToString(result);
+            }
         } else {
             return "";
         }
+    }
+
+    public static RSAPublicKey getPublicKey(String certificate) throws CertificateException {
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        Collection c = cf.generateCertificates(new ByteArrayInputStream(certificate.getBytes()));
+        Iterator i = c.iterator();
+        RSAPublicKey publicKey = null;
+        while (i.hasNext()) {
+            Certificate cert = (Certificate) i.next();
+            publicKey = (RSAPublicKey) cert.getPublicKey();
+        }
+        return publicKey;
     }
 
     public String encryptData(byte[] data, SymmetricAlgorithm algorithm) throws NoSuchAlgorithmException, NoSuchPaddingException,

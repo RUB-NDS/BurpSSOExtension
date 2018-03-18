@@ -26,6 +26,7 @@ import java.util.Arrays;
  */
 public enum AsymmetricAlgorithm {
     
+    RSA("RSA/None/NoPadding", "Plain RSA encryption for testing purposes"),
     RSA_OAEP_MGF1P("RSA/ECB/OAEPWithSHA-1AndMGF1Padding", "http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p"),
     RSA_PKCS1_15("RSA/ECB/PKCS1Padding", "http://www.w3.org/2001/04/xmlenc#rsa-1_5");
 
