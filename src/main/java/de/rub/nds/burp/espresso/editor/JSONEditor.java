@@ -99,7 +99,7 @@ public class JSONEditor implements IMessageEditorTabFactory{
             burpEditor.setEditable(editable);
 
             // create a source code viewer
-            sourceViewer = new UISourceViewer();
+            sourceViewer = new UISourceViewer(callbacks);
             guiContainer.addTab("JSON Viewer", sourceViewer);
             guiContainer.addTab("Raw", burpEditor.getComponent());
         }

@@ -4,32 +4,32 @@
     <groupId>burp</groupId>
     <!-- formaly kown as BurpExtensionSSO -->
     <artifactId>EsPReSSO</artifactId>
-    <version>2.0.2</version>
+    <version>3.0</version>
     <packaging>jar</packaging>
     <inceptionYear>2015</inceptionYear>
     <dependencies>
         <!-- Burp Suite Extension API -->
         <dependency>
-            <groupId>com.h3xstream.retirejs</groupId>
-            <artifactId>burp-api</artifactId>
-            <version>1.0.0</version>
+            <groupId>net.portswigger.burp.extender</groupId>
+            <artifactId>burp-extender-api</artifactId>
+            <version>1.7.22</version>
         </dependency>
         <!-- Syntax Highlighting -->
         <dependency>
             <groupId>com.fifesoft</groupId>
             <artifactId>rsyntaxtextarea</artifactId>
-            <version>2.5.7</version>
+            <version>2.6.1</version>
         </dependency>
         <!-- JSON -->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20141113</version>
+            <version>20180130</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
-            <version>1.1</version>
+            <version>1.1.1</version>
         </dependency>
         <!-- Signature Faking Library -->
         <dependency>
@@ -41,26 +41,43 @@
             <groupId>wsattacker.library</groupId>
             <artifactId>Signature_Wrapping_Library</artifactId>
             <version>1.7</version>
-          </dependency>
+        </dependency>
         <dependency>
             <groupId>org.jdesktop</groupId>
             <artifactId>beansbinding</artifactId>
             <version>1.2.1</version>
+        </dependency>
+        <!--CommonIO-->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <artifactId>junit</artifactId>
+            <groupId>junit</groupId>
+            <version>4.12</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.beetstra.jutf7/jutf7 -->
+        <dependency>
+            <groupId>com.beetstra.jutf7</groupId>
+            <artifactId>jutf7</artifactId>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
     
     <repositories>
         <!-- WS-Attacker Repository -->
         <repository>
-          <id>wsattacker-repos</id>
-          <name>wsattacker</name>
-          <url>https://repo.nds.rub.de/repository/wsattacker-repos/</url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
+            <id>wsattacker-repos</id>
+            <name>wsattacker</name>
+            <url>https://repo.nds.rub.de/repository/wsattacker-repos/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
     
@@ -100,21 +117,21 @@
             <!-- include dependencies in jar -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.7.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
                     <descriptorRefs>
-                            <descriptorRef>jar-with-dependencies</descriptorRef>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                 </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.2</version>
+                <version>2.6</version>
                 <configuration>
                     <descriptorRefs>
-                            <descriptorRef>jar-with-dependencies</descriptorRef>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                 </configuration>
                 <executions>
@@ -122,13 +139,13 @@
                         <id>make-assembly</id>
                         <phase>package</phase>
                         <goals>
-                                <goal>single</goal>
+                            <goal>single</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
             <!-- include LaTeX doclet-->
-<!--            <plugin>
+            <!--            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.9</version>

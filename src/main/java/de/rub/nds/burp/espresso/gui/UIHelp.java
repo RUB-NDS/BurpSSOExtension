@@ -74,6 +74,12 @@ public class UIHelp extends javax.swing.JPanel {
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
 
         setEnabled(false);
 
@@ -221,7 +227,7 @@ public class UIHelp extends javax.swing.JPanel {
         jLabel1.setText("© 2015, Tim Guenther, Christian Mainka");
 
         jLabel2.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        jLabel2.setText("EsPReSSO v2.0.1");
+        jLabel2.setText("EsPReSSO v3.0");
 
         jLabel3.setText("Extension for Processing and Recognition of Single Sign-On");
 
@@ -245,6 +251,18 @@ public class UIHelp extends javax.swing.JPanel {
 
         jLabel12.setText("https://github.com/RUB-NDS/WS-Attacker/");
 
+        jLabel13.setText("junit, Eclipse Public License 1.0, © Erich Gamma and Kent Beck");
+
+        jLabel14.setText("https://github.com/junit-team/junit4   ");
+
+        jLabel15.setText("jutf7 , MIT license, © 2011, Jaap Beetstra");
+
+        jLabel16.setText("https://sourceforge.net/projects/jutf7/");
+
+        jLabel17.setText("commons-io, Apache License 2.0, © 2012, Scott Sanders, et al.");
+
+        jLabel18.setText("https://github.com/apache/commons-io      ");
+
         javax.swing.GroupLayout impressumLayout = new javax.swing.GroupLayout(impressum);
         impressum.setLayout(impressumLayout);
         impressumLayout.setHorizontalGroup(
@@ -263,7 +281,13 @@ public class UIHelp extends javax.swing.JPanel {
                     .addComponent(jLabel9)
                     .addComponent(jLabel10)
                     .addComponent(jLabel11)
-                    .addComponent(jLabel12))
+                    .addComponent(jLabel12)
+                    .addComponent(jLabel13)
+                    .addComponent(jLabel14)
+                    .addComponent(jLabel15)
+                    .addComponent(jLabel16)
+                    .addComponent(jLabel17)
+                    .addComponent(jLabel18))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         impressumLayout.setVerticalGroup(
@@ -293,7 +317,19 @@ public class UIHelp extends javax.swing.JPanel {
                 .addComponent(jLabel11)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel12)
-                .addContainerGap(345, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel13)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel14)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel15)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel16)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel17)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel18)
+                .addContainerGap(183, Short.MAX_VALUE))
         );
 
         helpContainerPanel.addTab("About", impressum);
@@ -336,6 +372,12 @@ public class UIHelp extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

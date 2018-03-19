@@ -33,11 +33,17 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.*;
 import javax.xml.XMLConstants;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.InputSource;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 /**
  * Help pretty print XML content
  * @author Tim Guenther
@@ -54,15 +60,23 @@ public abstract class XMLHelper {
     */
 
     public static String format(String input, int indent) {
+        // javax.xml.transform.Transformer does not keep DTDs and always expands
+        // entity references defined in inline DTDs - so we do not pretty-print those
+        if (input.toUpperCase().contains("DOCTYPE")) {
+            Logging.getInstance().log(XMLHelper.class,"XML contains inline DTD, skip pretty printing", Logging.DEBUG);
+            return input;
+        }
         try {
             Source xmlInput = new StreamSource(new StringReader(input));
             StringWriter stringWriter = new StringWriter();
             StreamResult xmlOutput = new StreamResult(stringWriter);
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET,"");
             Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, input.startsWith("<?xml") ? "yes" : "no");
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", String.valueOf(indent));
             transformer.transform(xmlInput, xmlOutput);
@@ -83,6 +97,19 @@ public abstract class XMLHelper {
             Document dom = builder.parse(input);
             return dom;
         } catch (ParserConfigurationException | SAXException | IOException e) {
+            Logging.getInstance().log(XMLHelper.class, e);
+            return stringToDom("<error>Failed to parse input XML</error>");
+        }
+    }
+    
+    public static Node getElementByXPath (Document doc, String xPath) {
+        try {
+            XPathFactory xPathfactory = XPathFactory.newInstance();
+            XPath xpath = xPathfactory.newXPath();
+            XPathExpression expr = xpath.compile(xPath);
+            Node node = (Node) expr.evaluate(doc, XPathConstants.NODE);
+            return node;
+        } catch (XPathExpressionException e) {
             Logging.getInstance().log(XMLHelper.class, e);
             return null;
         }

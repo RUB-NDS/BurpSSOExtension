@@ -18,12 +18,19 @@
  */
 package de.rub.nds.burp.espresso.editor.saml;
 
+import burp.IBurpExtenderCallbacks;
 import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.XMLHelper;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.ICodeListener;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.GroupLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -39,14 +46,19 @@ public class UISourceViewer extends JPanel implements ICodeListener{
     private String codeStyle = SyntaxConstants.SYNTAX_STYLE_XML;
     private RSyntaxTextArea textArea;
     private CodeListenerController listeners = null;
+    private JCheckBox checkBox;
+    private RTextScrollPane sp;
 
+    private IBurpExtenderCallbacks callbacks;
+    private boolean wrapLines;
     /**
      * Create a new Source Code Viewer.
      * @param sourceCode The Code that should be highlighted.
      * @param codeStyle The kind of highlighting.
      */
-    public UISourceViewer(String sourceCode, String codeStyle) {
+    public UISourceViewer(IBurpExtenderCallbacks callbacks, String sourceCode, String codeStyle) {
         super(new BorderLayout());
+        this.callbacks = callbacks;
         this.sourceCode = sourceCode;
         this.codeStyle = codeStyle;
         initComponent();
@@ -55,8 +67,8 @@ public class UISourceViewer extends JPanel implements ICodeListener{
     /**
      * Create a new Source Code Viewer.
      */
-    public UISourceViewer(){
-        super(new BorderLayout());
+    public UISourceViewer(IBurpExtenderCallbacks callbacks){
+        this.callbacks = callbacks;
         initComponent();
     }
     
@@ -65,8 +77,48 @@ public class UISourceViewer extends JPanel implements ICodeListener{
         textArea.setSyntaxEditingStyle(codeStyle);
         textArea.setText(sourceCode);
         textArea.setCodeFoldingEnabled(true);
-        RTextScrollPane sp = new RTextScrollPane(textArea);
-        this.add(sp);
+        wrapLines = Boolean.valueOf(callbacks.loadExtensionSetting("wrapLinesInSourceViewer"));
+        if (wrapLines) {
+            textArea.setLineWrap(true);
+        } else {
+            textArea.setLineWrap(false);
+        }
+        sp = new RTextScrollPane(textArea);
+        sp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);        
+        checkBox = new JCheckBox("Softwraps for long lines");
+        checkBox.setSelected(false);
+        checkBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                checkBoxActionPerformed(ae);
+            }
+        });
+        
+        GroupLayout layout = new GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(sp)        
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(checkBox))
+        );
+        layout.setVerticalGroup(
+            layout.createSequentialGroup()
+            .addComponent(sp)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                .addComponent(checkBox))
+        );
+    }
+    
+    private void checkBoxActionPerformed(ActionEvent evt) {
+        if(checkBox.isSelected()) {
+            textArea.setLineWrap(true);
+            sp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            callbacks.saveExtensionSetting("wrapLinesInSourceViewer", "true");
+        } else {
+            textArea.setLineWrap(false);
+            sp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED); 
+            callbacks.saveExtensionSetting("wrapLinesInSourceViewer", "false");
+        }
     }
     
     /**

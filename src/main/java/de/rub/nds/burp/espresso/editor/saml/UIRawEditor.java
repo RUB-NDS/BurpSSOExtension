@@ -20,14 +20,18 @@ package de.rub.nds.burp.espresso.editor.saml;
 
 import burp.IBurpExtenderCallbacks;
 import burp.ITextEditor;
-import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.ICodeListener;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
-import de.rub.nds.burp.utilities.listeners.saml.SamlCodeEvent;
 import java.awt.Component;
+import java.awt.GridLayout;
+import javax.swing.GroupLayout;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
-
+import javax.swing.JScrollPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+        
 /**
  * Show the text without syntax highlight.
  * The Editor is based on Burps ITextEditor.
@@ -38,8 +42,12 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
     
     private ITextEditor burpEditor = null;
     private CodeListenerController listeners = null;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JButton sendButton;
+    private JScrollPane rawEditor;
+    private JCheckBox base64CheckBox;
+    private JCheckBox urlCheckBox;
+    private JCheckBox deflateCheckBox;
+    private JCheckBox changeHttpMethodCheckbox;
+    private JCheckBox changeAllParameters;
     
     /**
      * Create a new {@link burp.ITextEditor} to implement a new Burp like text area.
@@ -55,42 +63,63 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
     
     private void initComponents() {
 
-        sendButton = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        rawEditor = new JScrollPane();
+        rawEditor.setViewportView(burpEditor.getComponent());
         
-        jScrollPane1.setViewportView(burpEditor.getComponent());
-
-        sendButton.setText("Update");
-        sendButton.setToolTipText("Send the Payload to the Attacker and the Source Code tab.");
-        sendButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                sendButtonActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        base64CheckBox = new JCheckBox("Base64");
+        urlCheckBox = new JCheckBox("URL Enc");
+        deflateCheckBox = new JCheckBox("Deflate");
+        changeHttpMethodCheckbox = new JCheckBox("Change HTTP method");
+        changeHttpMethodCheckbox.setToolTipText("Change GET <-> POST with SAML parameter.");
+        changeHttpMethodCheckbox.setEnabled(true);
+        changeHttpMethodCheckbox.addChangeListener(new ChangeListener() {
+               @Override
+                public void stateChanged(ChangeEvent ce) {
+                        clickedChangeHttpMethodCheckbox();
+                }
+            });
+        changeAllParameters = new JCheckBox("Switch all parameters");
+        changeAllParameters.setToolTipText("Change GET <-> POST with all paramater.");
+        changeAllParameters.setEnabled(false);
+                
+        GroupLayout layout = new GroupLayout(this);
+        layout.setVerticalGroup(layout.createParallelGroup()
+            .addComponent(rawEditor)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(sendButton)
-                .addGap(0, 247, Short.MAX_VALUE))
-            .addComponent(jScrollPane1)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(sendButton))
-        );
+                .addComponent(deflateCheckBox)
+                .addComponent(base64CheckBox)
+                .addComponent(urlCheckBox)
+                .addComponent(changeHttpMethodCheckbox)
+                .addComponent(changeAllParameters)));
+        layout.setHorizontalGroup(layout.createSequentialGroup()
+            .addComponent(rawEditor)
+            .addGroup(layout.createParallelGroup()
+                .addComponent(deflateCheckBox)
+                .addComponent(base64CheckBox)
+                .addComponent(urlCheckBox)
+                .addComponent(changeHttpMethodCheckbox)
+                .addComponent(changeAllParameters)));
+        this.setLayout(layout);
     }
-    
-    private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {                                           
-        if(listeners != null){
-            listeners.notifyAll(new SamlCodeEvent(this, new String(getText())));
-             Logging.getInstance().log(getClass(), "Notify all Listeners.", Logging.DEBUG);
+
+    /**
+     * Enable/Disable "changeAllParameters" checkbox
+     */   
+    private void clickedChangeHttpMethodCheckbox() {
+        if(changeHttpMethodCheckbox.isSelected()) {
+            changeAllParameters.setEnabled(true);
+        } else {
+            changeAllParameters.setEnabled(false);
         }
+    }
+
+    /**
+     * Disable checkboxes in the history.
+     */   
+    public void disableModifyFeatures() {
+        this.removeAll();
+        this.setLayout(new GridLayout(1,1));
+        this.add(rawEditor);
     }
 
     /**
@@ -171,7 +200,6 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
      * @param enabled True to enable, false to disable the component.
      */
     public void setEnabled(boolean enabled){
-        sendButton.setEnabled(enabled);
         if(enabled){
            burpEditor.setText(getText());
         } else {
@@ -196,5 +224,37 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
     public void setListener(CodeListenerController listeners) {
         this.listeners = listeners;
         this.listeners.addCodeListener(this);
+    }
+
+    public JCheckBox getBase64CheckBox() {
+        return base64CheckBox;
+    }
+        
+    public JCheckBox getDeflateCheckBox() {
+        return deflateCheckBox;
+    }
+    
+    
+    public JCheckBox getUrlCheckBox() {
+        return urlCheckBox;
+    }
+
+    public JCheckBox getChangeHttpMethodCheckBox() {
+        return changeHttpMethodCheckbox;
+    }
+
+    public JCheckBox getChangeAllParameters() {
+        return changeAllParameters;
+    }
+
+    /**
+     * Set all checkboxes false
+     */
+    public void clearCheckBoxes() {
+        deflateCheckBox.setSelected(false);
+        base64CheckBox.setSelected(false);
+        urlCheckBox.setSelected(false);
+        changeHttpMethodCheckbox.setSelected(false);
+        changeAllParameters.setSelected(false);
     }
 }

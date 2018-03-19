@@ -75,10 +75,11 @@ public class Compression {
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
 		byte[] buffer = new byte[1024];
-		while (!inflater.finished()) {
-			int count = inflater.inflate(buffer);
-			outputStream.write(buffer, 0, count);
-		}
+                int count;
+		do {
+                    count = inflater.inflate(buffer);
+                    outputStream.write(buffer, 0, count);
+		} while (count != 0);
 		outputStream.close();
 		byte[] output = outputStream.toByteArray();
 
