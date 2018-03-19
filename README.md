@@ -23,11 +23,12 @@ Supported Protocols:
 - [x] Microsoft Account
 
 ### Attacking
-- [x] DTD- and WS-Attacker integration while interception SAML messages
+- [x] WS-Attacker integration while intercepting SAML messages
+- [x] DTD-Attacker integration while intercepting SAML messages
 
 ### Beautifier
 - [x] Syntax Highlight
-- [x] Highlight SSO messages in proxy window, incl. the SSO type
+- [x] Highlight SSO messages in proxy window and display the protocol type
 - [x] Show all recognized SSO messages in a history tab
 - [x] Context menu for 'Analyze SSO Protocol'
 
@@ -47,7 +48,7 @@ $ mvn clean package
 - Load the JAR file from the target folder into Burp's Extender. (Start Burp with Java 1.8)
 - SSO messages are highlighted automatically in Burp's HTTP history (Proxy tab).
 - SAML, JSON and JWT editors and viewers attached automatically.
-- A SOO History, Options and Help can be found in a new tab called 'EsPReSSO'.
+- A SSO History, Options and Help can be found in a new tab called 'EsPReSSO'.
 
 ## Dependencies and Licences
 
