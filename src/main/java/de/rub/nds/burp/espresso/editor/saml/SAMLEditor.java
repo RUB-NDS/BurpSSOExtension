@@ -200,7 +200,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                     //Do nothing!
                 } catch(Exception e){
                     Logging.getInstance().log(getClass(), e);
-                }
+}
             }
             // save message
             currentMessage = content;
@@ -248,7 +248,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                     encodedSAML = xml;
                     listeners.notifyAll(new SamlCodeEvent(this, xml));
                     Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
-                }
+                }   
             } else {
                 Logging.getInstance().log(getClass(), "content != null, samlContent == null", Logging.ERROR);
             }

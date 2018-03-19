@@ -25,10 +25,12 @@ import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.ICodeListener;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.GroupLayout;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -46,6 +48,8 @@ public class UISourceViewer extends JPanel implements ICodeListener{
     private CodeListenerController listeners = null;
     private JCheckBox checkBox;
     private RTextScrollPane sp;
+    private JLabel label;
+
     private IBurpExtenderCallbacks callbacks;
     private boolean wrapLines;
     /**
@@ -69,7 +73,10 @@ public class UISourceViewer extends JPanel implements ICodeListener{
         initComponent();
     }
     
-    private void initComponent(){        
+    private void initComponent(){
+        label = new JLabel();
+        label.setText("Please note: External entities are processed!");
+        label.setForeground(Color.RED);
         textArea = new RSyntaxTextArea(20, 60);
         textArea.setSyntaxEditingStyle(codeStyle);
         textArea.setText(sourceCode);
@@ -94,16 +101,18 @@ public class UISourceViewer extends JPanel implements ICodeListener{
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(sp)        
             .addGroup(layout.createSequentialGroup()
-                .addComponent(checkBox)
-                .addGap(0, 247, Short.MAX_VALUE))
-            .addComponent(sp)
+                .addComponent(label)
+                .addGap(15)
+                .addComponent(checkBox))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(sp, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            layout.createSequentialGroup()
+            .addComponent(sp)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                .addComponent(label)
+                .addGap(15)
                 .addComponent(checkBox))
         );
     }

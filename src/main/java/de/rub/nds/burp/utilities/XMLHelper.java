@@ -68,7 +68,6 @@ public abstract class XMLHelper {
             transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
             transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET,"");
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
             Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
