@@ -48,7 +48,6 @@ public class UISourceViewer extends JPanel implements ICodeListener{
     private CodeListenerController listeners = null;
     private JCheckBox checkBox;
     private RTextScrollPane sp;
-    private JLabel label;
 
     private IBurpExtenderCallbacks callbacks;
     private boolean wrapLines;
@@ -74,9 +73,6 @@ public class UISourceViewer extends JPanel implements ICodeListener{
     }
     
     private void initComponent(){
-        label = new JLabel();
-        label.setText("Please note: External entities are processed!");
-        label.setForeground(Color.RED);
         textArea = new RSyntaxTextArea(20, 60);
         textArea.setSyntaxEditingStyle(codeStyle);
         textArea.setText(sourceCode);
@@ -103,16 +99,12 @@ public class UISourceViewer extends JPanel implements ICodeListener{
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(sp)        
             .addGroup(layout.createSequentialGroup()
-                .addComponent(label)
-                .addGap(15)
                 .addComponent(checkBox))
         );
         layout.setVerticalGroup(
             layout.createSequentialGroup()
             .addComponent(sp)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                .addComponent(label)
-                .addGap(15)
                 .addComponent(checkBox))
         );
     }
