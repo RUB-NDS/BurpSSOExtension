@@ -82,6 +82,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
 
         private final UISourceViewer sourceViewer;
         private final UIRawEditor rawEditor;
+        private final UICertificateViewer certificateViewer;
         private final UISAMLAttacker samlAttacker;
         
         private boolean rawEditorSelected = false;
@@ -113,6 +114,11 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             rawEditor = new UIRawEditor(callbacks, editable);
             rawEditor.setListener(listeners);
             guiContainer.addTab("SAML", rawEditor.getComponent());
+
+            // create the certificate viewer
+            certificateViewer = new UICertificateViewer(callbacks);
+            certificateViewer.setListener(listeners);
+            guiContainer.addTab("Certificates", certificateViewer);
             
             // create the attacker
             samlAttacker = new UISAMLAttacker();
@@ -195,7 +201,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 //remove the attacker
                 try{
                     rawEditor.disableModifyFeatures();
-                    guiContainer.remove(2);
+                    guiContainer.remove(3);
                 } catch(IndexOutOfBoundsException e){
                     //Do nothing!
                 } catch(Exception e){
@@ -212,6 +218,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 sourceViewer.setEnabled(false);
                 rawEditor.setEnabled(false);
                 samlAttacker.setEnabled(false);
+                certificateViewer.setEnabled(false);
                 guiContainer.setEnabled(false);
             } else if(samlContent != null){
                 // reactivate our tabs
@@ -219,6 +226,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 sourceViewer.setEnabled(true);
                 rawEditor.setEnabled(true);
                 rawEditor.getChangeHttpMethodCheckBox().setEnabled(true);
+                certificateViewer.setEnabled(true);
                 samlAttacker.setEnabled(true);
                 guiContainer.setEnabled(true);
                 
