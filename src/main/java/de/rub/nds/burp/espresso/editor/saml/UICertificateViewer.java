@@ -171,7 +171,7 @@ public class UICertificateViewer extends javax.swing.JPanel implements ICodeList
     private void jButtonCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCopyActionPerformed
         String toCopy = "-----BEGIN CERTIFICATE-----\n"
                 + certificatesBase64.get(jListCertificateNames.getSelectedIndex()) 
-                + "\n-----BEGIN CERTIFICATE-----";
+                + "\n-----END CERTIFICATE-----";
         StringSelection stringSelection = new StringSelection(toCopy);
         Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
         clpbrd.setContents(stringSelection, null);
