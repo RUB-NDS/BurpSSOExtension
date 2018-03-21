@@ -201,9 +201,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 //remove the attacker
                 try{
                     rawEditor.disableModifyFeatures();
-                    guiContainer.remove(3);
-                } catch(IndexOutOfBoundsException e){
-                    //Do nothing!
+                    guiContainer.remove(samlAttacker);
                 } catch(Exception e){
                     Logging.getInstance().log(getClass(), e);
 }

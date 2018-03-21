@@ -212,7 +212,7 @@ public class UICertificateViewer extends javax.swing.JPanel implements ICodeList
         for(int i = 0; i < list.getLength(); i++) {
             try {
                 // Save certificate as Base64 encoded
-                certificatesBase64.add(list.item(0).getTextContent());
+                certificatesBase64.add(list.item(i).getTextContent());
                 // Save certificate as X509Certificate object
                 CertificateFactory cf = CertificateFactory.getInstance("X.509");
                 X509Certificate certificate = (X509Certificate) cf.generateCertificate(
