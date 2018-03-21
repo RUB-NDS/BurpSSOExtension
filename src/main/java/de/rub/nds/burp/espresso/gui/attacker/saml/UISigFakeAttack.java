@@ -20,23 +20,38 @@ package de.rub.nds.burp.espresso.gui.attacker.saml;
 
 import de.rub.nds.burp.espresso.gui.attacker.IAttack;
 import de.rub.nds.burp.utilities.Logging;
+import de.rub.nds.burp.utilities.XMLHelper;
+import de.rub.nds.burp.utilities.attacks.signatureFaking.SignatureFakingOracle;
+import de.rub.nds.burp.utilities.attacks.signatureFaking.exceptions.CertificateHandlerException;
+import de.rub.nds.burp.utilities.attacks.signatureFaking.exceptions.SignatureFakingException;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
 import de.rub.nds.burp.utilities.listeners.saml.SamlCodeEvent;
-import wsattacker.library.signatureFaking.SignatureFakingOracle;
-import wsattacker.library.signatureFaking.exceptions.SignatureFakingException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import wsattacker.library.xmlutilities.dom.DomUtilities;
+import wsattacker.library.xmlutilities.namespace.NamespaceConstants;
 
 /**
- * The Signature Faking Attack
- * @author Tim Guenther
+ * The Signature Exlusion Attack
+ * @author Nurullah Erinola
  * @version 1.0
  */
-public class UISigFakeAttack extends javax.swing.JPanel implements IAttack{
-    private String code = null;
+public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
+    
+    private String saml = null;
+    private Document doc = null;
     private CodeListenerController listeners = null;
-
+    private DefaultListModel signaturePaths;
+    
     /**
-     * Creates new form UISigFakeAttack
+     * Creates new form UISigExcAttack
      */
     public UISigFakeAttack() {
         initComponents();
@@ -51,19 +66,29 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack{
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        headlineLabel = new javax.swing.JLabel();
-        descriptionLabel = new javax.swing.JLabel();
-        modifyButton = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jScrollPaneSignatures = new javax.swing.JScrollPane();
+        jListSignatures = new javax.swing.JList<>();
+        jButtonFakeSelected = new javax.swing.JButton();
+        jButtonFakeAll = new javax.swing.JButton();
 
-        headlineLabel.setText("Signature Faking Attack");
+        jLabel1.setText("Select to be faked signature:");
 
-        descriptionLabel.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
-        descriptionLabel.setText("For the Signature Faking Attack is no Configuration needed. Click on the button below to modify the current Message.");
+        jScrollPaneSignatures.setViewportView(jListSignatures);
 
-        modifyButton.setText("Modify");
-        modifyButton.addActionListener(new java.awt.event.ActionListener() {
+        jButtonFakeSelected.setText("Fake");
+        jButtonFakeSelected.setToolTipText("Fake selected signatures.");
+        jButtonFakeSelected.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                modifyButtonActionPerformed(evt);
+                jButtonFakeSelectedActionPerformed(evt);
+            }
+        });
+
+        jButtonFakeAll.setText("Fake all");
+        jButtonFakeAll.setToolTipText("Fake all signatures.");
+        jButtonFakeAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonFakeAllActionPerformed(evt);
             }
         });
 
@@ -74,11 +99,14 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack{
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(descriptionLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPaneSignatures, javax.swing.GroupLayout.DEFAULT_SIZE, 559, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(headlineLabel)
-                            .addComponent(modifyButton))
+                            .addComponent(jLabel1)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButtonFakeSelected)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jButtonFakeAll)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -86,40 +114,73 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack{
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(headlineLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(descriptionLabel)
-                .addGap(18, 18, 18)
-                .addComponent(modifyButton)
-                .addContainerGap(218, Short.MAX_VALUE))
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPaneSignatures, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButtonFakeAll)
+                    .addComponent(jButtonFakeSelected))
+                .addContainerGap(104, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void modifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyButtonActionPerformed
-        if(code != null){
+    private void jButtonFakeAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonFakeAllActionPerformed
+        if(doc != null) {
             Logging.getInstance().log(getClass(), "Start signature faking.", Logging.INFO);
             try {
-                SignatureFakingOracle sof = new SignatureFakingOracle(code);
-                sof.fakeSignatures();
-                
-                notifyAllTabs(code);
-                
-                Logging.getInstance().log(getClass(), "Signature faking successfull.", Logging.INFO);
+                SignatureFakingOracle oracle = new SignatureFakingOracle(doc);
+                oracle.fakeSignatures();
+                doc = oracle.getDocument();
             } catch (SignatureFakingException ex) {
-                Logging.getInstance().log(getClass(), ex);
+                Logging.getInstance().log(UISigFakeAttack.class, ex);
             }
-        } else {
-            Logging.getInstance().log(getClass(), "No data to fake the signature, code is null.", Logging.ERROR);
+            saml = XMLHelper.docToString(doc);
+            notifyAllTabs(saml); 
+            Logging.getInstance().log(getClass(), "Signature faking successfull.", Logging.INFO);
         }
-    }//GEN-LAST:event_modifyButtonActionPerformed
+    }//GEN-LAST:event_jButtonFakeAllActionPerformed
 
+    private void jButtonFakeSelectedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonFakeSelectedActionPerformed
+        if(doc != null && !jListSignatures.isSelectionEmpty()) {
+            Logging.getInstance().log(getClass(), "Start signature exclusion.", Logging.INFO);
+            try {
+                SignatureFakingOracle oracle = new SignatureFakingOracle(doc);
+                for(int i : jListSignatures.getSelectedIndices()) {
+                    oracle.fakeSignature(i);
+                }
+                doc = oracle.getDocument();
+            } catch (CertificateHandlerException | SignatureFakingException ex) {
+                Logging.getInstance().log(UISigFakeAttack.class, ex);
+            }
+            saml = XMLHelper.docToString(doc);
+            notifyAllTabs(saml);
+            Logging.getInstance().log(getClass(), "Signature exclusion successfull.", Logging.INFO);
+        }
+    }//GEN-LAST:event_jButtonFakeSelectedActionPerformed
+ 
+    /**
+     * Update JList with signature paths
+     */
+    private void update() {
+        signaturePaths = new DefaultListModel();
+        doc = XMLHelper.stringToDom(saml);
+        // Search signatures in SAML message
+        NodeList list = doc.getElementsByTagNameNS(NamespaceConstants.URI_NS_DS, "Signature");
+        for(int i = 0; i < list.getLength(); i++) {
+            signaturePaths.addElement(DomUtilities.getFastXPath(list.item(i)));
+        }
+        jListSignatures.setModel(signaturePaths);
+    }
+ 
     /**
      * Is called every time new Code is available.
      * @param evt {@link de.rub.nds.burp.utilities.listeners.AbstractCodeEvent} The new source code.
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        this.code = evt.getCode();
+        this.saml = evt.getCode();
+        update();
     }
 
     /**
@@ -144,8 +205,10 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack{
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel descriptionLabel;
-    private javax.swing.JLabel headlineLabel;
-    private javax.swing.JButton modifyButton;
+    private javax.swing.JButton jButtonFakeAll;
+    private javax.swing.JButton jButtonFakeSelected;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JList<String> jListSignatures;
+    private javax.swing.JScrollPane jScrollPaneSignatures;
     // End of variables declaration//GEN-END:variables
 }
