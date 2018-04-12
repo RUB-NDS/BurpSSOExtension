@@ -19,7 +19,6 @@
 package de.rub.nds.burp.utilities.attacks.signatureFaking;
 
 import de.rub.nds.burp.utilities.Logging;
-import de.rub.nds.burp.utilities.XMLHelper;
 import de.rub.nds.burp.utilities.attacks.signatureFaking.exceptions.CertificateHandlerException;
 import de.rub.nds.burp.utilities.attacks.signatureFaking.exceptions.SignatureFakingException;
 import de.rub.nds.burp.utilities.attacks.signatureFaking.helper.CertificateHandler;
@@ -53,6 +52,8 @@ public class SignatureFakingOracle
 {
 
     private Document doc;
+    
+    private boolean replaceAll;
 
     private List<Node> signatureValueElements;
 
@@ -66,9 +67,10 @@ public class SignatureFakingOracle
      * Creates SignatureWrappingOracle, parses the document and searches for all the SignatureValue and KeyInfo elements
      * 
      * @param document
+     * @param replaceAllcertificates
      * @throws SignatureFakingException
      */
-    public SignatureFakingOracle( final Document document ) 
+    public SignatureFakingOracle( final Document document, final boolean replaceAllcertificates) 
             throws SignatureFakingException
     {
         Security.addProvider( new BouncyCastleProvider() );
@@ -77,6 +79,7 @@ public class SignatureFakingOracle
         certificates = new LinkedList<String>();
         certHandlers = new LinkedList<CertificateHandler>();
         doc = document;
+        replaceAll = replaceAllcertificates;
         crawlSignatureElements();
         Logging.getInstance().log(getClass(), "found " + signatureValueElements.size() + " SignatureValue elements", Logging.DEBUG);
         crawlKeyInfoElements();
@@ -203,25 +206,32 @@ public class SignatureFakingOracle
 
     private void appendCertificate( Node keyInfo, String certificate )
     {
-        keyInfo.setTextContent( "" );
         String prefix = keyInfo.getPrefix();
-        if ( prefix == null )
-        {
-            prefix = "";
-        }
+        if(replaceAll == true) {
+            keyInfo.setTextContent( "" );
+            if ( prefix == null )
+            {
+                prefix = "";
+            }
+            else
+            {
+                prefix = prefix + ":";
+            }
+            Node data = keyInfo.getOwnerDocument().createElementNS( NamespaceConstants.URI_NS_DS, prefix + "X509Data" );
+            keyInfo.appendChild( data );
+            Node cert =
+                keyInfo.getOwnerDocument().createElementNS( NamespaceConstants.URI_NS_DS, prefix + "X509Certificate" );
+            data.appendChild( cert );
+            cert.setTextContent( certificate );
+        } 
         else
         {
-            prefix = prefix + ":";
+            List<Element> l = DomUtilities.findChildren( keyInfo, "X509Certificate", NamespaceConstants.URI_NS_DS, true );
+            Node cert = l.get( 0 );
+            cert.setTextContent( certificate );
         }
-        Node data = keyInfo.getOwnerDocument().createElementNS( NamespaceConstants.URI_NS_DS, prefix + "X509Data" );
-        keyInfo.appendChild( data );
-        Node cert =
-            keyInfo.getOwnerDocument().createElementNS( NamespaceConstants.URI_NS_DS, prefix + "X509Certificate" );
-        data.appendChild( cert );
-        cert.setTextContent( certificate );
         Logging.getInstance().log(getClass(), "Appending Certificate \r\n" + certificate + "\r\nto the" + prefix + "X509Certificate element", Logging.DEBUG);
     }
-
     private byte[] resignValue( byte[] signatureValue, CertificateHandler ch )
         throws SignatureFakingException
     {

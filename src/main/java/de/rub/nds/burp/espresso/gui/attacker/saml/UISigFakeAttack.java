@@ -27,13 +27,8 @@ import de.rub.nds.burp.utilities.attacks.signatureFaking.exceptions.SignatureFak
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
 import de.rub.nds.burp.utilities.listeners.saml.SamlCodeEvent;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import wsattacker.library.xmlutilities.dom.DomUtilities;
 import wsattacker.library.xmlutilities.namespace.NamespaceConstants;
@@ -71,6 +66,7 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
         jListSignatures = new javax.swing.JList<>();
         jButtonFakeSelected = new javax.swing.JButton();
         jButtonFakeAll = new javax.swing.JButton();
+        jCheckBoxReplaceAll = new javax.swing.JCheckBox();
 
         jLabel1.setText("Select to be faked signature:");
 
@@ -92,6 +88,8 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
             }
         });
 
+        jCheckBoxReplaceAll.setText("Replace all certificates");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -102,11 +100,14 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
                     .addComponent(jScrollPaneSignatures, javax.swing.GroupLayout.DEFAULT_SIZE, 559, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jButtonFakeSelected)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButtonFakeAll)))
+                                .addComponent(jButtonFakeAll))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jCheckBoxReplaceAll)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -114,7 +115,9 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jCheckBoxReplaceAll))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPaneSignatures, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -129,7 +132,7 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
         if(doc != null) {
             Logging.getInstance().log(getClass(), "Start signature faking.", Logging.INFO);
             try {
-                SignatureFakingOracle oracle = new SignatureFakingOracle(doc);
+                SignatureFakingOracle oracle = new SignatureFakingOracle(doc, jCheckBoxReplaceAll.isSelected());
                 oracle.fakeSignatures();
                 doc = oracle.getDocument();
             } catch (SignatureFakingException ex) {
@@ -145,7 +148,7 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
         if(doc != null && !jListSignatures.isSelectionEmpty()) {
             Logging.getInstance().log(getClass(), "Start signature exclusion.", Logging.INFO);
             try {
-                SignatureFakingOracle oracle = new SignatureFakingOracle(doc);
+                SignatureFakingOracle oracle = new SignatureFakingOracle(doc, jCheckBoxReplaceAll.isSelected());
                 for(int i : jListSignatures.getSelectedIndices()) {
                     oracle.fakeSignature(i);
                 }
@@ -207,6 +210,7 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonFakeAll;
     private javax.swing.JButton jButtonFakeSelected;
+    private javax.swing.JCheckBox jCheckBoxReplaceAll;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JList<String> jListSignatures;
     private javax.swing.JScrollPane jScrollPaneSignatures;
