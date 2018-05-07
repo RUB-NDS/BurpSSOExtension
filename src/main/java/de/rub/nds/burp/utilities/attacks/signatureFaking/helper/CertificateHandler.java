@@ -26,7 +26,6 @@ import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.security.SignatureException;
 import java.security.cert.CertificateEncodingException;
@@ -36,18 +35,7 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.util.*;
 import org.apache.commons.codec.binary.Base64;
-import sun.security.util.ObjectIdentifier;
-import sun.security.x509.AlgorithmId;
-import sun.security.x509.CertificateAlgorithmId;
-import sun.security.x509.CertificateIssuerName;
-import sun.security.x509.CertificateSerialNumber;
-import sun.security.x509.CertificateSubjectName;
-import sun.security.x509.CertificateValidity;
-import sun.security.x509.CertificateVersion;
-import sun.security.x509.CertificateX509Key;
-import sun.security.x509.X500Name;
-import sun.security.x509.X509CertImpl;
-import sun.security.x509.X509CertInfo;
+import org.bouncycastle.x509.X509V3CertificateGenerator;
 
 /**
  * @author Juraj Somorovsky - juraj.somorovsky@rub.de
@@ -59,7 +47,7 @@ public class CertificateHandler
 
     private PublicKey originalPublicKey;
 
-    private X509CertImpl fakedCertificate;
+    private X509Certificate fakedCertificate;
 
     private KeyPair fakedKeyPair;
 
@@ -87,48 +75,23 @@ public class CertificateHandler
         try
         {
             Logging.getInstance().log(getClass(), "Faking the found certificate", Logging.DEBUG);
-            // TODO: implement this with bouncy castle
+            
             KeyPairGenerator kpg = KeyPairGenerator.getInstance( originalPublicKey.getAlgorithm() );
             kpg.initialize( ( (RSAPublicKey) certificate.getPublicKey() ).getModulus().bitLength() );
             fakedKeyPair = kpg.generateKeyPair();
 
-            X509CertInfo info = new X509CertInfo();
-            CertificateValidity interval =
-                new CertificateValidity( certificate.getNotBefore(), certificate.getNotAfter() );
-            // TODO: new SecureRandom().generateSeed(64) is very slow! Replace
-            // it?
-            // BigInteger sn = new BigInteger(new
-            // SecureRandom().generateSeed(64));
-            BigInteger sn = new BigInteger( 64, new Random() );
-            X500Name owner = new X500Name( certificate.getSubjectDN().getName() );
-            X500Name issuer = new X500Name( certificate.getIssuerDN().getName() );
+            X509V3CertificateGenerator v3CertGen = new X509V3CertificateGenerator();
+            v3CertGen.setSubjectDN(certificate.getSubjectX500Principal());
+            v3CertGen.setIssuerDN(certificate.getIssuerX500Principal());
+            v3CertGen.setNotAfter(certificate.getNotAfter());
+            v3CertGen.setNotBefore(certificate.getNotBefore());
+            v3CertGen.setSerialNumber(new BigInteger(64, new Random()));
+            v3CertGen.setSignatureAlgorithm(certificate.getSigAlgName());
+            v3CertGen.setPublicKey(fakedKeyPair.getPublic());
 
-            info.set( X509CertInfo.VALIDITY, interval );
-            info.set( X509CertInfo.SERIAL_NUMBER, new CertificateSerialNumber( sn ) );
-            // API Change in Java7 vs Java8
-            try
-            {
-                info.set( X509CertInfo.SUBJECT, new CertificateSubjectName( owner ) );
-                info.set( X509CertInfo.ISSUER, new CertificateIssuerName( issuer ) );
-            }
-            catch ( Exception e )
-            {
-                info.set( X509CertInfo.SUBJECT, owner );
-                info.set( X509CertInfo.ISSUER, issuer );
-            }
-            info.set( X509CertInfo.KEY, new CertificateX509Key( fakedKeyPair.getPublic() ) );
-
-            info.set( X509CertInfo.VERSION, new CertificateVersion( CertificateVersion.V3 ) );
-
-            AlgorithmId algo = new AlgorithmId( new ObjectIdentifier( certificate.getSigAlgOID() ) );
-            info.set( X509CertInfo.ALGORITHM_ID, new CertificateAlgorithmId( algo ) );
-
-            // Sign the cert to identify the algorithm that's used.
-            fakedCertificate = new X509CertImpl( info );
-            fakedCertificate.sign( fakedKeyPair.getPrivate(), certificate.getSigAlgName() );
+            fakedCertificate = v3CertGen.generate(fakedKeyPair.getPrivate());
         }
-        catch ( CertificateException | IOException | InvalidKeyException | NoSuchAlgorithmException
-                | NoSuchProviderException | SignatureException e )
+        catch (CertificateEncodingException | SecurityException | SignatureException | InvalidKeyException | NoSuchAlgorithmException e )
         {
             throw new CertificateHandlerException( e );
         }
@@ -144,12 +107,12 @@ public class CertificateHandler
         this.originalPublicKey = originalPublicKey;
     }
 
-    public X509CertImpl getFakedCertificate()
+    public X509Certificate getFakedCertificate()
     {
         return fakedCertificate;
     }
 
-    public void setFakedCertificate( X509CertImpl fakedCertificate )
+    public void setFakedCertificate( X509Certificate fakedCertificate )
     {
         this.fakedCertificate = fakedCertificate;
     }
