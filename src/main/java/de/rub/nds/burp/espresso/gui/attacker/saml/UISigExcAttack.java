@@ -23,10 +23,11 @@ import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.XMLHelper;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
-import de.rub.nds.burp.utilities.listeners.saml.SamlCodeEvent;
+import de.rub.nds.burp.utilities.listeners.events.SamlCodeEvent;
+import de.rub.nds.burp.utilities.listeners.events.SigAlgoCodeEvent;
+import de.rub.nds.burp.utilities.listeners.events.SignatureCodeEvent;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
-import javax.swing.ListModel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -39,11 +40,14 @@ import wsattacker.library.xmlutilities.dom.DomUtilities;
  */
 public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
     
+    private String getParamSignature = null;
+    private String getParamSigAlgo = null;
     private String saml = null;
     private Document doc = null;
     private CodeListenerController listeners = null;
     private DefaultListModel signaturePaths;
     private ArrayList<Element> signatures;
+    private boolean sigInGetParam = false;
     
     /**
      * Creates new form UISigExcAttack
@@ -127,8 +131,12 @@ public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
                 removeElement(element);
             }
             saml = XMLHelper.docToString(doc);
-            notifyAllTabs(saml); 
+            notifyAllTabs(new SamlCodeEvent(this, saml));
             Logging.getInstance().log(getClass(), "Signature exclusion successfull.", Logging.INFO);
+        }
+        if(sigInGetParam == true) {
+            notifyAllTabs(new SigAlgoCodeEvent(this, ""));
+            notifyAllTabs(new SignatureCodeEvent(this, ""));
         }
     }//GEN-LAST:event_jButtonDeleteAllActionPerformed
 
@@ -136,10 +144,15 @@ public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
         if(!jListSignatures.isSelectionEmpty()) {
             Logging.getInstance().log(getClass(), "Start signature exclusion.", Logging.INFO);
             for(int i : jListSignatures.getSelectedIndices()) {
-                removeElement(signatures.get(i));
+                if(signatures.size() < i) {
+                    removeElement(signatures.get(i));
+                } else {
+                    notifyAllTabs(new SigAlgoCodeEvent(this, ""));
+                    notifyAllTabs(new SignatureCodeEvent(this, ""));
+                }
             }
             saml = XMLHelper.docToString(doc);
-            notifyAllTabs(saml);
+            notifyAllTabs(new SamlCodeEvent(this, saml));
             Logging.getInstance().log(getClass(), "Signature exclusion successfull.", Logging.INFO);
         }
     }//GEN-LAST:event_jButtonDeleteSelectedActionPerformed
@@ -167,6 +180,12 @@ public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
             signatures.add((Element) list.item(i));
             signaturePaths.addElement(DomUtilities.getFastXPath(list.item(i)));
         }
+        // Seach signature in GET parameters
+        sigInGetParam = !"".equals(getParamSigAlgo) && !"".equals(getParamSignature)
+                && getParamSigAlgo != null && getParamSignature != null;
+        if (sigInGetParam == true) {
+            signaturePaths.addElement("Signature as GET parameter");
+        }
         jListSignatures.setModel(signaturePaths);
     }
  
@@ -176,18 +195,26 @@ public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        this.saml = evt.getCode();
+        if(evt instanceof SamlCodeEvent) {
+            this.saml = evt.getCode();
+        }
+        if(evt instanceof SignatureCodeEvent) {
+            this.getParamSignature = evt.getCode();
+        }
+        if(evt instanceof SigAlgoCodeEvent) {
+            this.getParamSigAlgo = evt.getCode();
+        }
         update();
     }
 
     /**
      * Notify all registered listeners with the new code.
-     * @param code The new source code.
+     * @param evt The new source code.
      */
     @Override
-    public void notifyAllTabs(String code) {
+    public void notifyAllTabs(AbstractCodeEvent evt) {
         if(listeners != null){
-            listeners.notifyAll(new SamlCodeEvent(this, code));
+            listeners.notifyAll(evt);
         }
     }
 

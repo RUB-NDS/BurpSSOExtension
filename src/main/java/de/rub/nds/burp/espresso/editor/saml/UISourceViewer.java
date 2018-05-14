@@ -19,18 +19,16 @@
 package de.rub.nds.burp.espresso.editor.saml;
 
 import burp.IBurpExtenderCallbacks;
-import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.XMLHelper;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.ICodeListener;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
+import de.rub.nds.burp.utilities.listeners.events.SamlCodeEvent;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.GroupLayout;
 import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -165,7 +163,9 @@ public class UISourceViewer extends JPanel implements ICodeListener{
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        setPrettyXML(evt.getCode(), 2);
+        if(evt instanceof SamlCodeEvent) {
+            setPrettyXML(evt.getCode(), 2);
+        }
     }
 
     /**

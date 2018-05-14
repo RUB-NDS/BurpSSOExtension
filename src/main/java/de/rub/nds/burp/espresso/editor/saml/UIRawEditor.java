@@ -23,6 +23,7 @@ import burp.ITextEditor;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.ICodeListener;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
+import de.rub.nds.burp.utilities.listeners.events.SamlCodeEvent;
 import java.awt.Component;
 import java.awt.GridLayout;
 import javax.swing.GroupLayout;
@@ -213,7 +214,9 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        burpEditor.setText(evt.getCode().getBytes());
+        if(evt instanceof SamlCodeEvent) {
+            burpEditor.setText(evt.getCode().getBytes());
+        }
     }
 
     /**

@@ -26,7 +26,7 @@ import de.rub.nds.burp.utilities.attacks.signatureFaking.exceptions.CertificateH
 import de.rub.nds.burp.utilities.attacks.signatureFaking.exceptions.SignatureFakingException;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
-import de.rub.nds.burp.utilities.listeners.saml.SamlCodeEvent;
+import de.rub.nds.burp.utilities.listeners.events.SamlCodeEvent;
 import javax.swing.DefaultListModel;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -139,7 +139,7 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
                 Logging.getInstance().log(UISigFakeAttack.class, ex);
             }
             saml = XMLHelper.docToString(doc);
-            notifyAllTabs(saml); 
+            notifyAllTabs(new SamlCodeEvent(this, saml)); 
             Logging.getInstance().log(getClass(), "Signature faking successfull.", Logging.INFO);
         }
     }//GEN-LAST:event_jButtonFakeAllActionPerformed
@@ -157,7 +157,7 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
                 Logging.getInstance().log(UISigFakeAttack.class, ex);
             }
             saml = XMLHelper.docToString(doc);
-            notifyAllTabs(saml);
+            notifyAllTabs(new SamlCodeEvent(this, saml));
             Logging.getInstance().log(getClass(), "Signature exclusion successfull.", Logging.INFO);
         }
     }//GEN-LAST:event_jButtonFakeSelectedActionPerformed
@@ -182,18 +182,20 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        this.saml = evt.getCode();
-        update();
+        if(evt instanceof SamlCodeEvent) {
+            this.saml = evt.getCode();
+            update();
+        }
     }
 
     /**
      * Notify all registered listeners with the new code.
-     * @param code The new source code.
+     * @param evt The new source code.
      */
     @Override
-    public void notifyAllTabs(String code) {
+    public void notifyAllTabs(AbstractCodeEvent evt) {
         if(listeners != null){
-            listeners.notifyAll(new SamlCodeEvent(this, code));
+            listeners.notifyAll(evt);
         }
     }
 

@@ -28,11 +28,14 @@ import de.rub.nds.burp.espresso.gui.attacker.saml.UISAMLAttacker;
 import de.rub.nds.burp.utilities.Compression;
 import de.rub.nds.burp.utilities.Encoding;
 import de.rub.nds.burp.utilities.Logging;
+import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
-import de.rub.nds.burp.utilities.listeners.saml.SamlCodeEvent;
+import de.rub.nds.burp.utilities.listeners.ICodeListener;
+import de.rub.nds.burp.utilities.listeners.events.SamlCodeEvent;
+import de.rub.nds.burp.utilities.listeners.events.SigAlgoCodeEvent;
+import de.rub.nds.burp.utilities.listeners.events.SignatureCodeEvent;
 import java.awt.Component;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.zip.DataFormatException;
 import javax.swing.JTabbedPane;
@@ -51,6 +54,8 @@ public class SAMLEditor implements IMessageEditorTabFactory{
     
     private final String samlRequest = "SAMLRequest";
     private final String samlResponse = "SAMLResponse";
+    private final String signature = "Signature";
+    private final String signatureAlgorithm = "SigAlgo";
     
     /**
      * SAML Editor.
@@ -75,7 +80,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             return new InputTab(controller, editable);
     }
 
-    class InputTab implements IMessageEditorTab {
+    class InputTab implements IMessageEditorTab, ICodeListener{
 
         private final boolean editable;
         private final JTabbedPane guiContainer;
@@ -89,11 +94,15 @@ public class SAMLEditor implements IMessageEditorTabFactory{
         private boolean decDeflateActive;
         private boolean decURLActive;
         private boolean decBase64Active;
+        private boolean sigAlgoChanged;
+        private boolean sigChanged;
         
         private byte[] currentMessage;
         private byte[] unmodifiedMessage;
         private String encodedSAML;
         private IParameter samlContent = null;
+        private IParameter sigAlgoContent = null;
+        private IParameter sigContent = null;
         
         private CodeListenerController listeners = new CodeListenerController();
 
@@ -103,6 +112,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
          */
         public InputTab(IMessageEditorController controller, boolean editable) {
             this.editable = editable;
+            this.setListener(listeners);
             guiContainer = new JTabbedPane();
             
             // create a source code viewer
@@ -254,7 +264,16 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                     encodedSAML = xml;
                     listeners.notifyAll(new SamlCodeEvent(this, xml));
                     Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
-                }   
+                }
+                // Save SigAlgo and Signature GET parameter. Notify all tabs.
+                sigAlgoContent = helpers.getRequestParameter(content, signatureAlgorithm);
+                if(sigAlgoContent != null) {
+                    listeners.notifyAll(new SigAlgoCodeEvent(this, sigAlgoContent.getValue()));
+                }                
+                sigContent = helpers.getRequestParameter(content, signature);
+                if(sigContent != null) {
+                    listeners.notifyAll(new SignatureCodeEvent(this, sigContent.getValue()));
+                }
             } else {
                 Logging.getInstance().log(getClass(), "content != null, samlContent == null", Logging.ERROR);
             }
@@ -324,7 +343,9 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                     || rawEditor.getChangeAllParameters().isSelected() 
                     || decBase64Active != rawEditor.getBase64CheckBox().isSelected()
                     || decURLActive != rawEditor.getUrlCheckBox().isSelected()
-                    || decDeflateActive != rawEditor.getDeflateCheckBox().isSelected();
+                    || decDeflateActive != rawEditor.getDeflateCheckBox().isSelected()
+                    || sigAlgoChanged
+                    || sigChanged;
         }
         
         /**
@@ -386,6 +407,41 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 tmp = Compression.decompress(tmp);
             }
             return new String(tmp);
+        }
+
+        /**
+         * Is called every time new Code is available.
+         * @param evt {@link de.rub.nds.burp.utilities.listeners.AbstractCodeEvent} The new source code.
+         */
+        @Override
+        public void setCode(AbstractCodeEvent evt) {
+            if(evt instanceof SigAlgoCodeEvent) {
+                sigAlgoChanged = sigAlgoContent.getValue().compareTo(evt.getCode()) != 0;
+                if(!evt.getCode().equals("")) {
+                    currentMessage = helpers.updateParameter(currentMessage, helpers.buildParameter(sigAlgoContent.getName(), evt.getCode(), sigAlgoContent.getType()));
+                } else {
+                    // If empty delete SigAlgo parameter
+                    currentMessage = helpers.removeParameter(currentMessage, sigAlgoContent);
+                }
+            }
+            if(evt instanceof SignatureCodeEvent) {
+                sigChanged = sigContent.getValue().compareTo(evt.getCode()) != 0;
+                if(!evt.getCode().equals("")) {
+                    currentMessage = helpers.updateParameter(currentMessage, helpers.buildParameter(sigContent.getName(), evt.getCode(), sigContent.getType()));
+                } else {
+                    // If empty delete Signature parameter
+                    currentMessage = helpers.removeParameter(currentMessage, sigContent);
+                }
+            }
+        }
+
+        /**
+         * Set the listener for the editor.
+         * @param listeners {@link de.rub.nds.burp.utilities.listeners.CodeListenerController}
+         */
+        @Override
+        public void setListener(CodeListenerController listeners) {
+            listeners.addCodeListener(this);
         }
     }
 }
