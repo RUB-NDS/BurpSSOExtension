@@ -48,6 +48,7 @@ public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
     private DefaultListModel signaturePaths;
     private ArrayList<Element> signatures;
     private boolean sigInGetParam = false;
+    private String sigPathGetPost = "Signature as GET/POST parameter";
     
     /**
      * Creates new form UISigExcAttack
@@ -71,7 +72,7 @@ public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
         jButtonDeleteSelected = new javax.swing.JButton();
         jButtonDeleteAll = new javax.swing.JButton();
 
-        jLabel1.setText("Select to be deleted signatures:");
+        jLabel1.setText("Select signature to be faked:");
 
         jScrollPaneSignatures.setViewportView(jListSignatures);
 
@@ -144,11 +145,11 @@ public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
         if(!jListSignatures.isSelectionEmpty()) {
             Logging.getInstance().log(getClass(), "Start signature exclusion.", Logging.INFO);
             for(int i : jListSignatures.getSelectedIndices()) {
-                if(signatures.size() < i) {
-                    removeElement(signatures.get(i));
-                } else {
+                if(signaturePaths.get(i).equals(sigPathGetPost)) {
                     notifyAllTabs(new SigAlgoCodeEvent(this, ""));
                     notifyAllTabs(new SignatureCodeEvent(this, ""));
+                } else {
+                    removeElement(signatures.get(i));
                 }
             }
             saml = XMLHelper.docToString(doc);
@@ -181,10 +182,8 @@ public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
             signaturePaths.addElement(DomUtilities.getFastXPath(list.item(i)));
         }
         // Seach signature in GET parameters
-        sigInGetParam = !"".equals(getParamSigAlgo) && !"".equals(getParamSignature)
-                && getParamSigAlgo != null && getParamSignature != null;
         if (sigInGetParam == true) {
-            signaturePaths.addElement("Signature as GET parameter");
+            signaturePaths.addElement(sigPathGetPost);
         }
         jListSignatures.setModel(signaturePaths);
     }
@@ -197,12 +196,14 @@ public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
     public void setCode(AbstractCodeEvent evt) {
         if(evt instanceof SamlCodeEvent) {
             this.saml = evt.getCode();
-        }
-        if(evt instanceof SignatureCodeEvent) {
-            this.getParamSignature = evt.getCode();
-        }
-        if(evt instanceof SigAlgoCodeEvent) {
+        } else if(evt instanceof SignatureCodeEvent) {
+            this.getParamSignature = evt.getCode();           
+            sigInGetParam = !"".equals(getParamSigAlgo) && !"".equals(getParamSignature)
+                    && getParamSigAlgo != null && getParamSignature != null;
+        } else if(evt instanceof SigAlgoCodeEvent) {
             this.getParamSigAlgo = evt.getCode();
+            sigInGetParam = !"".equals(getParamSigAlgo) && !"".equals(getParamSignature)
+                    && getParamSigAlgo != null && getParamSignature != null;
         }
         update();
     }

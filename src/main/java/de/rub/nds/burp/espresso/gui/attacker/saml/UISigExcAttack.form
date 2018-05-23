@@ -56,7 +56,7 @@
   <SubComponents>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Select to be deleted signatures:"/>
+        <Property name="text" type="java.lang.String" value="Select signature to be faked:"/>
       </Properties>
     </Component>
     <Container class="javax.swing.JScrollPane" name="jScrollPaneSignatures">

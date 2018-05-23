@@ -55,7 +55,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
     private final String samlRequest = "SAMLRequest";
     private final String samlResponse = "SAMLResponse";
     private final String signature = "Signature";
-    private final String signatureAlgorithm = "SigAlgo";
+    private final String signatureAlgorithm = "SigAlg";
     
     /**
      * SAML Editor.
@@ -268,11 +268,15 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 // Save SigAlgo and Signature GET parameter. Notify all tabs.
                 sigAlgoContent = helpers.getRequestParameter(content, signatureAlgorithm);
                 if(sigAlgoContent != null) {
-                    listeners.notifyAll(new SigAlgoCodeEvent(this, sigAlgoContent.getValue()));
+                    if(sigAlgoContent.getType() == IParameter.PARAM_URL || sigAlgoContent.getType() == IParameter.PARAM_BODY) {
+                        listeners.notifyAll(new SigAlgoCodeEvent(this, sigAlgoContent.getValue()));
+                    }
                 }                
                 sigContent = helpers.getRequestParameter(content, signature);
                 if(sigContent != null) {
-                    listeners.notifyAll(new SignatureCodeEvent(this, sigContent.getValue()));
+                    if(sigContent.getType() == IParameter.PARAM_URL || sigContent.getType() == IParameter.PARAM_BODY){
+                        listeners.notifyAll(new SignatureCodeEvent(this, sigContent.getValue()));
+                    }
                 }
             } else {
                 Logging.getInstance().log(getClass(), "content != null, samlContent == null", Logging.ERROR);
@@ -338,7 +342,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
          */
         @Override
         public boolean isModified() {
-            return encodedSAML.compareTo(new String(rawEditor.getText())) != 0
+            return encodedSAML.equals(new String(rawEditor.getText()))
                     || rawEditor.getChangeHttpMethodCheckBox().isSelected()
                     || rawEditor.getChangeAllParameters().isSelected() 
                     || decBase64Active != rawEditor.getBase64CheckBox().isSelected()
@@ -416,16 +420,15 @@ public class SAMLEditor implements IMessageEditorTabFactory{
         @Override
         public void setCode(AbstractCodeEvent evt) {
             if(evt instanceof SigAlgoCodeEvent) {
-                sigAlgoChanged = sigAlgoContent.getValue().compareTo(evt.getCode()) != 0;
+                sigAlgoChanged = sigAlgoContent.getValue().equals(evt.getCode());
                 if(!evt.getCode().equals("")) {
                     currentMessage = helpers.updateParameter(currentMessage, helpers.buildParameter(sigAlgoContent.getName(), evt.getCode(), sigAlgoContent.getType()));
                 } else {
                     // If empty delete SigAlgo parameter
                     currentMessage = helpers.removeParameter(currentMessage, sigAlgoContent);
                 }
-            }
-            if(evt instanceof SignatureCodeEvent) {
-                sigChanged = sigContent.getValue().compareTo(evt.getCode()) != 0;
+            } else if(evt instanceof SignatureCodeEvent) {
+                sigChanged = sigContent.getValue().equals(evt.getCode());
                 if(!evt.getCode().equals("")) {
                     currentMessage = helpers.updateParameter(currentMessage, helpers.buildParameter(sigContent.getName(), evt.getCode(), sigContent.getType()));
                 } else {
