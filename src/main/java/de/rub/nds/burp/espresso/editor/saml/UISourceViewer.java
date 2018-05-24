@@ -163,9 +163,7 @@ public class UISourceViewer extends JPanel implements ICodeListener{
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        if(evt instanceof SamlCodeEvent) {
-            setPrettyXML(evt.getCode(), 2);
-        }
+        setPrettyXML(evt.getCode(), 2);
     }
 
     /**

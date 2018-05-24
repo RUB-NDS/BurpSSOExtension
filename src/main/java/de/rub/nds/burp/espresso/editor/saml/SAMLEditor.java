@@ -30,6 +30,7 @@ import de.rub.nds.burp.utilities.Encoding;
 import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
+import de.rub.nds.burp.utilities.listeners.CodeListenerControllerType;
 import de.rub.nds.burp.utilities.listeners.ICodeListener;
 import de.rub.nds.burp.utilities.listeners.events.SamlCodeEvent;
 import de.rub.nds.burp.utilities.listeners.events.SigAlgoCodeEvent;
@@ -104,7 +105,8 @@ public class SAMLEditor implements IMessageEditorTabFactory{
         private IParameter sigAlgoContent = null;
         private IParameter sigContent = null;
         
-        private CodeListenerController listeners = new CodeListenerController();
+        private CodeListenerController listeners = new CodeListenerController(CodeListenerControllerType.SAML);
+        private CodeListenerController listenersSignature = new CodeListenerController(CodeListenerControllerType.SIGNATURE);
 
         /**
          * Implementing the IMessageEditorTab.
@@ -112,7 +114,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
          */
         public InputTab(IMessageEditorController controller, boolean editable) {
             this.editable = editable;
-            this.setListener(listeners);
+            this.setListener(listenersSignature);
             guiContainer = new JTabbedPane();
             
             // create a source code viewer
@@ -133,6 +135,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             // create the attacker
             samlAttacker = new UISAMLAttacker();
             samlAttacker.setListeners(listeners);
+            samlAttacker.setListenersSignature(listenersSignature);
             guiContainer.addTab("Attacker", samlAttacker);
             
             guiContainer.addChangeListener(new ChangeListener() {
@@ -269,13 +272,13 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 sigAlgoContent = helpers.getRequestParameter(content, signatureAlgorithm);
                 if(sigAlgoContent != null) {
                     if(sigAlgoContent.getType() == IParameter.PARAM_URL || sigAlgoContent.getType() == IParameter.PARAM_BODY) {
-                        listeners.notifyAll(new SigAlgoCodeEvent(this, sigAlgoContent.getValue()));
+                        listenersSignature.notifyAll(new SigAlgoCodeEvent(this, sigAlgoContent.getValue()));
                     }
                 }                
                 sigContent = helpers.getRequestParameter(content, signature);
                 if(sigContent != null) {
                     if(sigContent.getType() == IParameter.PARAM_URL || sigContent.getType() == IParameter.PARAM_BODY){
-                        listeners.notifyAll(new SignatureCodeEvent(this, sigContent.getValue()));
+                        listenersSignature.notifyAll(new SignatureCodeEvent(this, sigContent.getValue()));
                     }
                 }
             } else {
@@ -420,7 +423,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
         @Override
         public void setCode(AbstractCodeEvent evt) {
             if(evt instanceof SigAlgoCodeEvent) {
-                sigAlgoChanged = sigAlgoContent.getValue().equals(evt.getCode());
+                sigAlgoChanged = !sigAlgoContent.getValue().equals(evt.getCode());
                 if(!evt.getCode().equals("")) {
                     currentMessage = helpers.updateParameter(currentMessage, helpers.buildParameter(sigAlgoContent.getName(), evt.getCode(), sigAlgoContent.getType()));
                 } else {
@@ -428,7 +431,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                     currentMessage = helpers.removeParameter(currentMessage, sigAlgoContent);
                 }
             } else if(evt instanceof SignatureCodeEvent) {
-                sigChanged = sigContent.getValue().equals(evt.getCode());
+                sigChanged = !sigContent.getValue().equals(evt.getCode());
                 if(!evt.getCode().equals("")) {
                     currentMessage = helpers.updateParameter(currentMessage, helpers.buildParameter(sigContent.getName(), evt.getCode(), sigContent.getType()));
                 } else {

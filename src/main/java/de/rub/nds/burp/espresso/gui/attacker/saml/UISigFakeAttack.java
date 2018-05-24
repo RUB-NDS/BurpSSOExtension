@@ -182,10 +182,8 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        if(evt instanceof SamlCodeEvent) {
-            this.saml = evt.getCode();
-            update();
-        }
+        this.saml = evt.getCode();
+        update();
     }
 
     /**

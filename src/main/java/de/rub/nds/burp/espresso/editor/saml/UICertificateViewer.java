@@ -233,18 +233,16 @@ public class UICertificateViewer extends javax.swing.JPanel implements ICodeList
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        if(evt instanceof SamlCodeEvent) {
-            code = evt.getCode();
-            if(containsCertificate()) {
-                this.removeAll();
-                initComponents();
-                jTextareaOrgCert.setLineWrap(wrapLines);
-                jCheckBoxSoftwraps.setSelected(wrapLines);
-                update();
-            } else {
-                this.removeAll();
-                this.add(jLabelNoCert);
-            }
+        code = evt.getCode();
+        if(containsCertificate()) {
+            this.removeAll();
+            initComponents();
+            jTextareaOrgCert.setLineWrap(wrapLines);
+            jCheckBoxSoftwraps.setSelected(wrapLines);
+            update();
+        } else {
+            this.removeAll();
+            this.add(jLabelNoCert);
         }
     }
 
