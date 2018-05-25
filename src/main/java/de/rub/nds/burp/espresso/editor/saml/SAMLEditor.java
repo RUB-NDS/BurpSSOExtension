@@ -345,7 +345,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
          */
         @Override
         public boolean isModified() {
-            return encodedSAML.equals(new String(rawEditor.getText()))
+            return !encodedSAML.equals(new String(rawEditor.getText()))
                     || rawEditor.getChangeHttpMethodCheckBox().isSelected()
                     || rawEditor.getChangeAllParameters().isSelected() 
                     || decBase64Active != rawEditor.getBase64CheckBox().isSelected()

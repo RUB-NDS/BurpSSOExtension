@@ -219,11 +219,12 @@ public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
         if(evt instanceof SamlCodeEvent) {
             if(listeners != null) {
                 listeners.notifyAll(evt);
+                Logging.getInstance().log(getClass(), "Notify all Listeners (SamlCodeEvent).", Logging.DEBUG);
             }
         } else if(evt instanceof SigAlgoCodeEvent || evt instanceof SignatureCodeEvent) {
             if(listenersSig != null) {
-                Logging.getInstance().log(getClass(), "NOTIFY DRINNE", Logging.INFO);
                 listenersSig.notifyAll(evt);
+                Logging.getInstance().log(getClass(), "Notify all Listeners (SigAlgoCodeEvent/SignatureCodeEvent).", Logging.DEBUG);
             }
         }
     }
