@@ -23,7 +23,6 @@ import burp.IExtensionHelpers;
 import burp.IIntruderAttack;
 import burp.IIntruderPayloadGenerator;
 import burp.IIntruderPayloadGeneratorFactory;
-import burp.IParameter;
 import de.rub.nds.burp.utilities.Compression;
 import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.XMLHelper;
@@ -36,18 +35,19 @@ import org.w3c.dom.NodeList;
 
 /**
  * DTD Payload Generator.
+ *
  * @author Nurullah Erinola
  */
 public class DTDPayloadFactory implements IIntruderPayloadGeneratorFactory {
-    
+
     private final IBurpExtenderCallbacks callbacks;
-    private final IExtensionHelpers helpers;  
-    
+    private final IExtensionHelpers helpers;
+
     public DTDPayloadFactory(IBurpExtenderCallbacks callbacks) {
         this.callbacks = callbacks;
         this.helpers = callbacks.getHelpers();
     }
-    
+
     @Override
     public String getGeneratorName() {
         return "DTD Payloads";
@@ -57,32 +57,32 @@ public class DTDPayloadFactory implements IIntruderPayloadGeneratorFactory {
     public IIntruderPayloadGenerator createNewInstance(IIntruderAttack attack) {
         return new DTDPayloadGenerator(attack);
     }
-    
+
     class DTDPayloadGenerator implements IIntruderPayloadGenerator {
 
         private final String listenURL = "§tf_listenURL§";
         private final String helperURL = "§tf_helperURL§";
         private final String targetFILE = "§tf_targetFILE§";
-        private final String samlRequest = "SAMLRequest";
-        private final String samlResponse = "SAMLResponse";
-        
+
         private InputJDialog dialog;
         private String listener = "listener.org";
         private String protocol = "http";
-        
+
         private IIntruderAttack attack;
+        private ArrayList<String> rawDtds;
         private ArrayList<String> dtds;
+
         private int payloadIndex;
-        private boolean isSamlRequest = false;
-        private boolean isSamlResponse = false;
-        
+
         public DTDPayloadGenerator(IIntruderAttack attack) {
             this.attack = attack;
-            isSAML();
-            dialog = new InputJDialog();
-            readDTDs();
+            // setd dtds to raw vectors (no protocol handlers)
+            parseVectors();
+            dialog = new InputJDialog(rawDtds.size());
+            // fill in selected protcol handlers and listeners
+            generateDTDs();
         }
-        
+
         @Override
         public boolean hasMorePayloads() {
             return payloadIndex < dtds.size();
@@ -99,26 +99,21 @@ public class DTDPayloadFactory implements IIntruderPayloadGeneratorFactory {
         public void reset() {
             payloadIndex = 0;
         }
-        
-        private void readDTDs() {
+
+        private void parseVectors() {
             try {
-                dtds = new ArrayList<>();
-                Document doc = XMLHelper.stringToDom(IOUtils.toString(getClass().getClassLoader().getResource("dtd_configs.xml"),"UTF-8"));
+                rawDtds = new ArrayList<>();
+                Document doc = XMLHelper.stringToDom(IOUtils.toString(getClass().getClassLoader().getResource("dtd_configs.xml"), "UTF-8"));
                 NodeList configs = doc.getElementsByTagName("config");
                 for (int i = 0; i < configs.getLength(); i++) {
                     Element config = (Element) configs.item(i);
-                    if(config.getElementsByTagName("helperURL").item(0).getTextContent().equalsIgnoreCase("TRUE")
+                    if (config.getElementsByTagName("helperURL").item(0).getTextContent().equalsIgnoreCase("TRUE")
                             || config.getElementsByTagName("attackListenerURL").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
                         NodeList vectors = config.getElementsByTagName("directMessage");
+
                         for (int j = 0; j < vectors.getLength(); j++) {
                             String vector = vectors.item(j).getTextContent();
-                            //Replacing
-                            protocol = dialog.getProtocol();
-                            listener = dialog.getListener();
-                            vector = vector.replace(targetFILE, "file:///etc/hostname");
-                            vector = vector.replace(helperURL, protocol+listener+"/helper.dtd");
-                            vector = vector.replace(listenURL, protocol+listener);
-                            dtds.add(encode(vector));
+                            rawDtds.add(vector);
                         }
                     }
                 }
@@ -126,21 +121,28 @@ public class DTDPayloadFactory implements IIntruderPayloadGeneratorFactory {
                 Logging.getInstance().log(getClass(), ex);
             }
         }
-        
-        private void isSAML() {
-            IParameter samlContent = helpers.getRequestParameter(attack.getRequestTemplate(), samlRequest);
-            if (null != samlContent){
-                isSamlRequest = true;
+
+        private void generateDTDs() {
+            dtds = new ArrayList<>();
+            ArrayList<String> listeners = dialog.getListeners();
+            ArrayList<String> protocols = dialog.getProtocols();
+            int listenerIndex = 0;
+            for (String vector : rawDtds) {
+                for (String protocol : protocols) {
+                    // TODO: do not use targetFiles, perhaps add specific config 
+                    vector = vector.replace(targetFILE, "file:///etc/hostname");
+                    vector = vector.replace(helperURL, protocol + listeners.get(listenerIndex));
+                    vector = vector.replace(listenURL, protocol + listeners.get(listenerIndex));
+                    dtds.add(encode(vector));
+                    listenerIndex++;
+                }
             }
-            samlContent = helpers.getRequestParameter(attack.getRequestTemplate(), samlResponse);
-            if (null != samlContent){
-                isSamlResponse = true;
-            }
+
         }
-        
+
         private String encode(String vector) {
             byte[] tmp = vector.getBytes();
-            if (isSamlResponse) {
+            if (dialog.getCompressionChoice()) {
                 try {
                     tmp = Compression.compress(tmp);
                     tmp = helpers.base64Encode(tmp).getBytes();
@@ -149,11 +151,11 @@ public class DTDPayloadFactory implements IIntruderPayloadGeneratorFactory {
                     tmp = vector.getBytes();
                     Logging.getInstance().log(getClass(), "failed to re-encode SAML param", Logging.ERROR);
                 }
-            }
-            if (isSamlRequest) {
+            } else {
                 tmp = helpers.base64Encode(tmp).getBytes();
                 tmp = helpers.urlEncode(tmp);
             }
+
             return new String(tmp);
         }
     }

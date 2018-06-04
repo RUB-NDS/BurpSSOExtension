@@ -18,22 +18,31 @@
  */
 package de.rub.nds.burp.espresso.intruder;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.swing.JFrame;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  * @author Nurullah Erinola
  */
 public class InputJDialog extends javax.swing.JDialog {
 
+    private int dtdVectorCount;
     /**
      * Creates new form InputJDialog
      */
-    public InputJDialog() {
-        super(new JFrame(), true);        
+    public InputJDialog(int vectorCount) {
+        super(new JFrame(), true);
+        this.dtdVectorCount = vectorCount;
         initComponents();
-        initJRadioButtons();
+        setListenersChangedListener();
         setLocationRelativeTo(null);
         setVisible(true);
+        // add hint to listeners pane
+        checkListenerCount();
     }
 
     /**
@@ -45,48 +54,82 @@ public class InputJDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        buttonGroupProtocols = new javax.swing.ButtonGroup();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jButtonOk = new javax.swing.JButton();
-        jRadioButtonHttp = new javax.swing.JRadioButton();
-        jRadioButtonHttps = new javax.swing.JRadioButton();
-        jRadioButtonFtp = new javax.swing.JRadioButton();
-        jRadioButtonsmp = new javax.swing.JRadioButton();
-        jTextFieldListener = new javax.swing.JTextField();
+        deflateCheckBox = new javax.swing.JCheckBox();
+        jLabel3 = new javax.swing.JLabel();
+        jCheckBox2 = new javax.swing.JCheckBox();
+        jCheckBox3 = new javax.swing.JCheckBox();
+        jCheckBox4 = new javax.swing.JCheckBox();
+        jCheckBox5 = new javax.swing.JCheckBox();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        listenerInputTextArea = new javax.swing.JTextArea();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        hintListenersTextPane = new javax.swing.JTextPane();
+        jSeparator1 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jLabel1.setText("Attacker Listener:");
 
-        jLabel2.setText("Protocol:");
+        jLabel2.setText("Protocol Handler:");
 
         jButtonOk.setText("Ok");
+        jButtonOk.setEnabled(false);
         jButtonOk.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonOkActionPerformed(evt);
             }
         });
 
-        buttonGroupProtocols.add(jRadioButtonHttp);
-        jRadioButtonHttp.setSelected(true);
-        jRadioButtonHttp.setText("http");
-
-        buttonGroupProtocols.add(jRadioButtonHttps);
-        jRadioButtonHttps.setText("https");
-
-        buttonGroupProtocols.add(jRadioButtonFtp);
-        jRadioButtonFtp.setText("ftp");
-        jRadioButtonFtp.addActionListener(new java.awt.event.ActionListener() {
+        deflateCheckBox.setText("Enable deflate compression");
+        deflateCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButtonFtpActionPerformed(evt);
+                deflateCheckBoxActionPerformed(evt);
             }
         });
 
-        buttonGroupProtocols.add(jRadioButtonsmp);
-        jRadioButtonsmp.setText("smp");
+        jCheckBox2.setSelected(true);
+        jCheckBox2.setText("HTTP");
+        jCheckBox2.setName("http://"); // NOI18N
+        jCheckBox2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                protocolCheckBoxActionPerformed(evt);
+            }
+        });
 
-        jTextFieldListener.setText("attackerListener.org");
+        jCheckBox3.setText("HTTPS");
+        jCheckBox3.setName("https://"); // NOI18N
+        jCheckBox3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                protocolCheckBoxActionPerformed(evt);
+            }
+        });
+
+        jCheckBox4.setText("FTP");
+        jCheckBox4.setName("ftp://"); // NOI18N
+        jCheckBox4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                protocolCheckBoxActionPerformed(evt);
+            }
+        });
+
+        jCheckBox5.setText("SMB");
+        jCheckBox5.setName("smb://"); // NOI18N
+        jCheckBox5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                protocolCheckBoxActionPerformed(evt);
+            }
+        });
+
+        listenerInputTextArea.setColumns(20);
+        listenerInputTextArea.setRows(5);
+        jScrollPane2.setViewportView(listenerInputTextArea);
+
+        hintListenersTextPane.setEditable(false);
+        hintListenersTextPane.setText("Add one or more listeners (URLs w/o scheme)");
+        jScrollPane3.setViewportView(hintListenersTextPane);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -95,21 +138,39 @@ public class InputJDialog extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextFieldListener)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(deflateCheckBox)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jSeparator1)
+                                .addGap(19, 19, 19))
+                            .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jRadioButtonsmp)
-                                    .addComponent(jRadioButtonHttp)
-                                    .addComponent(jRadioButtonHttps)
-                                    .addComponent(jRadioButtonFtp))))
-                        .addGap(0, 241, Short.MAX_VALUE))
-                    .addComponent(jButtonOk, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                                    .addComponent(jButtonOk, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(6, 6, 6)
+                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel1)
+                                            .addComponent(jLabel2)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jCheckBox2)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jCheckBox3)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jCheckBox4)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jCheckBox5)))
+                                        .addGap(0, 216, Short.MAX_VALUE)))
+                                .addContainerGap())))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -117,20 +178,27 @@ public class InputJDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextFieldListener, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 72, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jRadioButtonHttp))
+                    .addComponent(jCheckBox2)
+                    .addComponent(jCheckBox3)
+                    .addComponent(jCheckBox4)
+                    .addComponent(jCheckBox5))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jRadioButtonHttps)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jRadioButtonFtp)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jRadioButtonsmp)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButtonOk)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addGap(12, 12, 12)
+                        .addComponent(deflateCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonOk))
+                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(11, Short.MAX_VALUE))
         );
 
         pack();
@@ -140,34 +208,114 @@ public class InputJDialog extends javax.swing.JDialog {
         this.dispose();
     }//GEN-LAST:event_jButtonOkActionPerformed
 
-    private void jRadioButtonFtpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonFtpActionPerformed
+    private void protocolCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_protocolCheckBoxActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jRadioButtonFtpActionPerformed
+        checkListenerCount();
+    }//GEN-LAST:event_protocolCheckBoxActionPerformed
 
-    private void initJRadioButtons() {
-        jRadioButtonHttp.setActionCommand("http://");
-        jRadioButtonHttps.setActionCommand("https://");
-        jRadioButtonFtp.setActionCommand("ftp://");
-        jRadioButtonsmp.setActionCommand("smp://");
+    private void deflateCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deflateCheckBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_deflateCheckBoxActionPerformed
+
+    private void setListenersChangedListener() {
+        listenerInputTextArea.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                checkListenerCount();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                checkListenerCount();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                checkListenerCount();
+            }
+        });
+
     }
-    
-    public String getListener() {
-        return jTextFieldListener.getText();
+
+
+    public Boolean getCompressionChoice() {
+        return deflateCheckBox.isSelected();
     }
-    
-    public String getProtocol() {
-        return buttonGroupProtocols.getSelection().getActionCommand();
+
+    // TODO: allow custom protoclhandler to be entered (add textfield...)
+    public ArrayList<String> getProtocols() {
+        ArrayList<String> protocols = new ArrayList<>();
+        if (jCheckBox2.isSelected()) protocols.add(jCheckBox2.getName());
+        if (jCheckBox3.isSelected()) protocols.add(jCheckBox3.getName());
+        if (jCheckBox4.isSelected()) protocols.add(jCheckBox4.getName());
+        if (jCheckBox5.isSelected()) protocols.add(jCheckBox5.getName());
+
+        return protocols;
     }
+
+    public ArrayList<String> getListeners() {
+        // returns exact number of required listener URLs
+        int required = dtdVectorCount * getProtocols().size();
+        List<String> list = getUserListeners();
+        ArrayList<String> listeners = new ArrayList<>(required);
+        if (list.size() == 1) {
+            for (int i=0; i<required; i++) {
+                listeners.add(list.get(0));
+            }
+        } else {
+            listeners.addAll(list);
+        }
+
+        return listeners;
+    }
+
+        public List<String> getUserListeners() {
+        // split on comma or whitespace (incl. newline)
+        List<String> listeners = Arrays.asList(listenerInputTextArea.getText().split("\\s*,?\\s+"));
+
+        return listeners;
+    }
+
+    private void checkListenerCount() {
+        int listenerCount = getUserListeners().size();
+        int protocolCount = getProtocols().size();
+        int required = protocolCount * dtdVectorCount;
+        String hint = "Enter exactly one or >=" + required + " listeners (URLs w/o scheme)";
+
+        // we need at least a single listener URL and a protocol handler
+        if (listenerCount == 0 || protocolCount == 0) {
+            jButtonOk.setEnabled(false);
+            hintListenersTextPane.setText(hint);
+        } else {
+            // if multiple listeners are given, we need at least
+            // number(selected protocols) times number(dtdVectors)
+            if (listenerCount == 1 || listenerCount >= required){
+                jButtonOk.setEnabled(true);
+                hintListenersTextPane.setText("About to send " + required + " requests.");
+            } else {
+                // add label hint
+                hintListenersTextPane.setText(hint);
+                jButtonOk.setEnabled(false);
+            }
+        }
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.ButtonGroup buttonGroupProtocols;
+    private javax.swing.JCheckBox deflateCheckBox;
+    private javax.swing.JTextPane hintListenersTextPane;
     private javax.swing.JButton jButtonOk;
+    private javax.swing.JCheckBox jCheckBox2;
+    private javax.swing.JCheckBox jCheckBox3;
+    private javax.swing.JCheckBox jCheckBox4;
+    private javax.swing.JCheckBox jCheckBox5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JRadioButton jRadioButtonFtp;
-    private javax.swing.JRadioButton jRadioButtonHttp;
-    private javax.swing.JRadioButton jRadioButtonHttps;
-    private javax.swing.JRadioButton jRadioButtonsmp;
-    private javax.swing.JTextField jTextFieldListener;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JTextArea listenerInputTextArea;
     // End of variables declaration//GEN-END:variables
 }
