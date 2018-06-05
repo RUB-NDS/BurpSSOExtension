@@ -16,20 +16,22 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package de.rub.nds.burp.espresso.gui.attacker;
-
-import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
-import de.rub.nds.burp.utilities.listeners.ICodeListener;
+package de.rub.nds.burp.utilities.attacks.signatureFaking.exceptions;
 
 /**
- * The IAttack interface.
- * This interface must be implemented by every attack in the Attacker.
- * @author Tim Guenther
+ * @author Juraj Somorovsky - juraj.somorovsky@rub.de
  */
-public interface IAttack extends ICodeListener{
-    /**
-     * Notify all registered listeners with the new code.
-     * @param evt The new source code.
-     */
-    public void notifyAllTabs(AbstractCodeEvent evt);
+public class SignatureFakingException
+    extends Exception
+{
+
+    public SignatureFakingException( String message )
+    {
+        super( message );
+    }
+
+    public SignatureFakingException( Exception e )
+    {
+        super( e );
+    }
 }

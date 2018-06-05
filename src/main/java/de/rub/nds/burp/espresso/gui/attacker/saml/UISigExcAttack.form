@@ -22,15 +22,11 @@
                   <Component id="jScrollPaneSignatures" pref="559" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Component id="jButtonFakeSelected" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="jButtonFakeAll" min="-2" max="-2" attributes="0"/>
-                          </Group>
+                          <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jCheckBoxReplaceAll" min="-2" max="-2" attributes="0"/>
+                              <Component id="jButtonDeleteSelected" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="jButtonDeleteAll" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -44,16 +40,13 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jCheckBoxReplaceAll" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
+              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jScrollPaneSignatures" min="-2" pref="97" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jButtonFakeAll" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButtonFakeSelected" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="jButtonDeleteAll" min="-2" max="-2" attributes="0"/>
+                  <Component id="jButtonDeleteSelected" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace pref="104" max="32767" attributes="0"/>
           </Group>
@@ -63,7 +56,7 @@
   <SubComponents>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Select to be faked signature:"/>
+        <Property name="text" type="java.lang.String" value="Select signature to be faked:"/>
       </Properties>
     </Component>
     <Container class="javax.swing.JScrollPane" name="jScrollPaneSignatures">
@@ -85,28 +78,23 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JButton" name="jButtonFakeSelected">
+    <Component class="javax.swing.JButton" name="jButtonDeleteSelected">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Fake"/>
-        <Property name="toolTipText" type="java.lang.String" value="Fake selected signatures."/>
+        <Property name="text" type="java.lang.String" value="Delete"/>
+        <Property name="toolTipText" type="java.lang.String" value="Delete selected signatures."/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonFakeSelectedActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonDeleteSelectedActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="jButtonFakeAll">
+    <Component class="javax.swing.JButton" name="jButtonDeleteAll">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Fake all"/>
-        <Property name="toolTipText" type="java.lang.String" value="Fake all signatures."/>
+        <Property name="text" type="java.lang.String" value="Delete all"/>
+        <Property name="toolTipText" type="java.lang.String" value="Delete all signatures."/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonFakeAllActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonDeleteAllActionPerformed"/>
       </Events>
-    </Component>
-    <Component class="javax.swing.JCheckBox" name="jCheckBoxReplaceAll">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Replace all certificates"/>
-      </Properties>
     </Component>
   </SubComponents>
 </Form>

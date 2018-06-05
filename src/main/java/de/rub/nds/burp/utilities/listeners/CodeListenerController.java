@@ -27,11 +27,22 @@ import javax.swing.event.EventListenerList;
  */
 public class CodeListenerController {
     private EventListenerList listeners = new EventListenerList();
+    private CodeListenerControllerType type;
     
     /**
      * Default Constructor.
+     * @param type
      */
-    public CodeListenerController(){
+    public CodeListenerController(CodeListenerControllerType type){
+        this.type = type;
+    }
+
+    /**
+     * Return the type of the listener {@link de.rub.nds.burp.utilities.listeners.ICodeListener}
+     * @return The type of the listener.
+     */
+    public CodeListenerControllerType getType() {
+        return type;
     }
     
     /**

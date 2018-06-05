@@ -16,23 +16,24 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package de.rub.nds.burp.utilities.listeners.saml;
-
-import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
+package de.rub.nds.burp.utilities.listeners;
 
 /**
- * The specific CodeEvent for SAML Messages.
- * @author Tim Guenther
+ * @author Nurullah Erinola
  */
-public class SamlCodeEvent extends AbstractCodeEvent{
-
-    /**
-     * Create a new SamlCodeEvent
-     * @param source The origin of the event.
-     * @param code The data (source code) to submit.
-     */
-    public SamlCodeEvent(Object source, String code) {
-        super(source, code);
-    }
+public enum CodeListenerControllerType {
     
+    SAML("SAML"),
+    SIGNATURE("SIGNATURE");
+
+    private CodeListenerControllerType(String type) {
+        this.type = type;
+    }
+
+    private final String type;
+
+    public String getType() {
+        return type;
+    }
+
 }
