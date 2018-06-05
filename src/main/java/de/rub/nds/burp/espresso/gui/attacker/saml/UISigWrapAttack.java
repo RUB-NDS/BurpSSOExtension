@@ -379,25 +379,23 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        if(evt instanceof SamlCodeEvent) {
-            this.code = evt.getCode();
-            initXsw();
+        this.code = evt.getCode();
+        initXsw();
 
-            // Disable the ui for further editing after modification.
-            if(evt.getSource().equals(this)){
+        // Disable the ui for further editing after modification.
+        if(evt.getSource().equals(this)){
 
-                String[] payloadError = {""};
-                payloadComboBox.setModel(new DefaultComboBoxModel(payloadError));
-                payloadValue.setText("");
-                attackSliderLabel.setText("(3.) Choose Attack Vector");
-                attackSlider.setMaximum(0);
-                attackDescriptionTextArea.setText("");
-                finalPayload.setText("Modifications successfully transmitted.\nSee the Source code or SAMLResponse/Request tab.");
+            String[] payloadError = {""};
+            payloadComboBox.setModel(new DefaultComboBoxModel(payloadError));
+            payloadValue.setText("");
+            attackSliderLabel.setText("(3.) Choose Attack Vector");
+            attackSlider.setMaximum(0);
+            attackDescriptionTextArea.setText("");
+            finalPayload.setText("Modifications successfully transmitted.\nSee the Source code or SAMLResponse/Request tab.");
 
-                updateOracle.setEnabled(false);
-                modifyButton.setEnabled(false);
+            updateOracle.setEnabled(false);
+            modifyButton.setEnabled(false);
 
-            }
         }
     }
 

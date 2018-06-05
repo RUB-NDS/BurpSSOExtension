@@ -23,6 +23,7 @@ import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.XMLHelper;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
+import de.rub.nds.burp.utilities.listeners.CodeListenerControllerType;
 import de.rub.nds.burp.utilities.listeners.events.SamlCodeEvent;
 import de.rub.nds.burp.utilities.listeners.events.SigAlgoCodeEvent;
 import de.rub.nds.burp.utilities.listeners.events.SignatureCodeEvent;
@@ -45,6 +46,7 @@ public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
     private String saml = null;
     private Document doc = null;
     private CodeListenerController listeners = null;
+    private CodeListenerController listenersSig = null;
     private DefaultListModel signaturePaths;
     private ArrayList<Element> signatures;
     private boolean sigInGetParam = false;
@@ -210,12 +212,20 @@ public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
 
     /**
      * Notify all registered listeners with the new code.
-     * @param evt The new source code.
+     * @param evt The event with the new code.
      */
     @Override
     public void notifyAllTabs(AbstractCodeEvent evt) {
-        if(listeners != null){
-            listeners.notifyAll(evt);
+        if(evt instanceof SamlCodeEvent) {
+            if(listeners != null) {
+                listeners.notifyAll(evt);
+                Logging.getInstance().log(getClass(), "Notify all Listeners (SamlCodeEvent).", Logging.DEBUG);
+            }
+        } else if(evt instanceof SigAlgoCodeEvent || evt instanceof SignatureCodeEvent) {
+            if(listenersSig != null) {
+                listenersSig.notifyAll(evt);
+                Logging.getInstance().log(getClass(), "Notify all Listeners (SigAlgoCodeEvent/SignatureCodeEvent).", Logging.DEBUG);
+            }
         }
     }
 
@@ -225,8 +235,13 @@ public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
      */
     @Override
     public void setListener(CodeListenerController listeners) {
-        this.listeners = listeners;
-        this.listeners.addCodeListener(this);
+        if(listeners.getType() == CodeListenerControllerType.SAML) {
+            this.listeners = listeners;
+            this.listeners.addCodeListener(this);
+        } else if(listeners.getType() == CodeListenerControllerType.SIGNATURE) {
+            this.listenersSig = listeners;
+            this.listenersSig.addCodeListener(this);
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

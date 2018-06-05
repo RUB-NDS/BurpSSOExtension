@@ -214,9 +214,7 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        if(evt instanceof SamlCodeEvent) {
-            burpEditor.setText(evt.getCode().getBytes());
-        }
+        burpEditor.setText(evt.getCode().getBytes());
     }
 
     /**

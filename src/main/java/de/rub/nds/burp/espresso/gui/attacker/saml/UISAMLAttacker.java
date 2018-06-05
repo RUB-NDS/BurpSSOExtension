@@ -143,4 +143,12 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
         uiSigWrapAttack.setListener(listeners);
         uiDTDAttack.setListener(listeners);
     }
+    
+    /**
+     * Set the listener for the editor.
+     * @param listeners {@link de.rub.nds.burp.utilities.listeners.CodeListenerController}
+     */
+    public void setListenersSignature(CodeListenerController listeners){
+        uiSigExcAttack.setListener(listeners);
+    }
 }
