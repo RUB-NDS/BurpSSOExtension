@@ -16,20 +16,22 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package de.rub.nds.burp.espresso.gui.attacker;
+package de.rub.nds.burp.utilities.listeners.events;
 
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
-import de.rub.nds.burp.utilities.listeners.ICodeListener;
 
 /**
- * The IAttack interface.
- * This interface must be implemented by every attack in the Attacker.
- * @author Tim Guenther
+ * @author Nurullah Erinola
  */
-public interface IAttack extends ICodeListener{
+public class SigAlgoCodeEvent extends AbstractCodeEvent{
+
     /**
-     * Notify all registered listeners with the new code.
-     * @param evt The new source code.
+     * Create a new SigAlgoCodeEvent
+     * @param source The origin of the event.
+     * @param code The data (source code) to submit.
      */
-    public void notifyAllTabs(AbstractCodeEvent evt);
+    public SigAlgoCodeEvent(Object source, String code) {
+        super(source, code);
+    }
+    
 }

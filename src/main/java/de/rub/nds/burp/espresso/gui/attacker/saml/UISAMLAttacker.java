@@ -39,6 +39,7 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
     // The attack options.
     private final String NO_ATTACK = "No Attack";
     private final String SIGNATURE_WRAPPING = "Signature Wrapping";
+    private final String SIGNATURE_EXCLUSION = "Signature Exclusion";
     private final String SIGNATURE_FAKING = "Signature Faking";
     private final String DTD = "DTD";
 
@@ -48,6 +49,7 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
     
     private UISigWrapAttack uiSigWrapAttack = null;
     private UISigFakeAttack uiSigFakeAttack = null;
+    private UISigExcAttack uiSigExcAttack = null;
     private UIDTDAttack uiDTDAttack = null;
     
     /**
@@ -75,12 +77,14 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
 
         attackComboBox = new JComboBox();
         attackComboBox.setFont(new Font("Dialog", 0, 12));
-        String[] attackArray = {NO_ATTACK, SIGNATURE_FAKING, SIGNATURE_WRAPPING, DTD};
+        String[] attackArray = {NO_ATTACK, SIGNATURE_EXCLUSION, SIGNATURE_FAKING, SIGNATURE_WRAPPING, DTD};
         attackComboBox.setModel(new DefaultComboBoxModel(attackArray));
         attackComboBox.addItemListener(this);
 
         settingsContainer = new JPanel(new CardLayout());
         settingsContainer.add(new JPanel(), NO_ATTACK);
+        uiSigExcAttack = new UISigExcAttack();
+        settingsContainer.add(uiSigExcAttack, SIGNATURE_EXCLUSION);
         uiSigFakeAttack = new UISigFakeAttack();
         settingsContainer.add(uiSigFakeAttack, SIGNATURE_FAKING);
         uiSigWrapAttack = new UISigWrapAttack();
@@ -134,8 +138,17 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
      * @param listeners {@link de.rub.nds.burp.utilities.listeners.CodeListenerController}
      */
     public void setListeners(CodeListenerController listeners){
+        uiSigExcAttack.setListener(listeners);
         uiSigFakeAttack.setListener(listeners);
         uiSigWrapAttack.setListener(listeners);
         uiDTDAttack.setListener(listeners);
+    }
+    
+    /**
+     * Set the listener for the editor.
+     * @param listeners {@link de.rub.nds.burp.utilities.listeners.CodeListenerController}
+     */
+    public void setListenersSignature(CodeListenerController listeners){
+        uiSigExcAttack.setListener(listeners);
     }
 }

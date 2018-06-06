@@ -33,6 +33,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.*;
 import javax.xml.XMLConstants;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -87,6 +88,25 @@ public abstract class XMLHelper {
         }
     }
 
+    public static String docToString(Document doc) {
+        try {
+            Source docInput = new DOMSource(doc);
+            StringWriter stringWriter = new StringWriter();
+            StreamResult xmlOutput = new StreamResult(stringWriter);
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET,"");
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.transform(docInput, xmlOutput);
+            return xmlOutput.getWriter().toString();
+        } catch (IllegalArgumentException | TransformerException e) {
+            Logging.getInstance().log(XMLHelper.class, e);
+            return "<error>Failed to transform document</error>";
+        }
+    }    
+    
     public static Document stringToDom (String xmlString) {
         try {
             InputSource input = new InputSource(new StringReader(xmlString));

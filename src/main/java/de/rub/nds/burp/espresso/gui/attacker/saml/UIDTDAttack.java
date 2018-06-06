@@ -25,7 +25,7 @@ import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.XMLHelper;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
-import de.rub.nds.burp.utilities.listeners.saml.SamlCodeEvent;
+import de.rub.nds.burp.utilities.listeners.events.SamlCodeEvent;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -385,7 +385,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     }// </editor-fold>//GEN-END:initComponents
     
     private void modifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyButtonActionPerformed
-        notifyAllTabs(firstEditor.getText());
+        notifyAllTabs(new SamlCodeEvent(this, firstEditor.getText()));
         Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
     }//GEN-LAST:event_modifyButtonActionPerformed
        
@@ -522,10 +522,10 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
 
     private void autoModifyCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoModifyCheckboxActionPerformed
         if(autoModifyCheckbox.isSelected()) {
-            notifyAllTabs(firstEditor.getText());
+            notifyAllTabs(new SamlCodeEvent(this, firstEditor.getText()));
             Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
         } else {
-            notifyAllTabs(saml);
+            notifyAllTabs(new SamlCodeEvent(this, saml));
             Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
         }
     }//GEN-LAST:event_autoModifyCheckboxActionPerformed
@@ -567,7 +567,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         firstEditor.getDocument().addDocumentListener(new DocumentListener() {           
             private void notify(DocumentEvent de) {                                              
                 if(autoModifyCheckbox.isSelected()) {
-                    notifyAllTabs(firstEditor.getText());
+                    notifyAllTabs(new SamlCodeEvent(this, firstEditor.getText()));
                     Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
                 }
             }
@@ -655,36 +655,41 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
 
     /**
      * Notify all registered listeners with the new code.
-     * @param code The new source code.
+     * @param evt The new source code.
      */
     @Override
-    public void notifyAllTabs(String code) {
-        if(listeners != null){
-            // Encode dtd vector if needed
-            switch(EncodingType.fromString(encodingButtonGroup.getSelection().getActionCommand())) {
-                case UTF_7:
-                    Charset charset = new CharsetProvider().charsetForName("UTF-7");
-                    ByteBuffer byteBuffer = charset.encode(code);
-                    code = new String(byteBuffer.array()).substring(0, byteBuffer.limit());
-                    break;
-                case UTF_8:
-                    try {
-                        code = new String(code.getBytes("UTF-8"), "UTF-8");
-                    } catch (UnsupportedEncodingException ex) {
-                        Logging.getInstance().log(getClass(), ex);
-                    }
-                    break;
-                case UTF_16:
-                    try {
-                        code = new String(code.getBytes("UTF-8"), "UTF-16");
-                    } catch (UnsupportedEncodingException ex) {
-                        Logging.getInstance().log(getClass(), ex);
-                    }
-                    break;
-                default:
-                    break;
-            }            
-            listeners.notifyAll(new SamlCodeEvent(this, code));
+    public void notifyAllTabs(AbstractCodeEvent evt) {
+        if(evt instanceof SamlCodeEvent) { 
+            String code = evt.getCode();
+            if(listeners != null){
+                // Encode dtd vector if needed
+                switch(EncodingType.fromString(encodingButtonGroup.getSelection().getActionCommand())) {
+                    case UTF_7:
+                        Charset charset = new CharsetProvider().charsetForName("UTF-7");
+                        ByteBuffer byteBuffer = charset.encode(code);
+                        code = new String(byteBuffer.array()).substring(0, byteBuffer.limit());
+                        break;
+                    case UTF_8:
+                        try {
+                            code = new String(code.getBytes("UTF-8"), "UTF-8");
+                        } catch (UnsupportedEncodingException ex) {
+                            Logging.getInstance().log(getClass(), ex);
+                        }
+                        break;
+                    case UTF_16:
+                        try {
+                            code = new String(code.getBytes("UTF-8"), "UTF-16");
+                        } catch (UnsupportedEncodingException ex) {
+                            Logging.getInstance().log(getClass(), ex);
+                        }
+                        break;
+                    default:
+                        break;
+                }            
+                listeners.notifyAll(new SamlCodeEvent(this, code));
+            }
+        } else {
+            listeners.notifyAll(evt);
         }
     }
 
@@ -722,7 +727,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
       @Override
       public void actionPerformed(ActionEvent ev) {
         if(autoModifyCheckbox.isSelected()) {
-            notifyAllTabs(firstEditor.getText());
+            notifyAllTabs(new SamlCodeEvent(this, firstEditor.getText()));
             Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
         }
       }
