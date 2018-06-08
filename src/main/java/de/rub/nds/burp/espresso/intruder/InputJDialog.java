@@ -18,18 +18,14 @@
  */
 package de.rub.nds.burp.espresso.intruder;
 
-import de.rub.nds.burp.espresso.gui.attacker.saml.UIDTDAttack;
-import de.rub.nds.burp.utilities.XMLHelper;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.swing.JFrame;
-import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import org.w3c.dom.Element;
 
 /**
  * @author Nurullah Erinola
