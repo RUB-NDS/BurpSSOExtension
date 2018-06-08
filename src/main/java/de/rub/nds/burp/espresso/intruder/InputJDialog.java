@@ -18,12 +18,18 @@
  */
 package de.rub.nds.burp.espresso.intruder;
 
+import de.rub.nds.burp.espresso.gui.attacker.saml.UIDTDAttack;
+import de.rub.nds.burp.utilities.XMLHelper;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.swing.JFrame;
+import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import org.w3c.dom.Element;
 
 /**
  * @author Nurullah Erinola
@@ -31,6 +37,7 @@ import javax.swing.event.DocumentListener;
 public class InputJDialog extends javax.swing.JDialog {
 
     private int dtdVectorCount;
+    
     /**
      * Creates new form InputJDialog
      */
@@ -38,11 +45,12 @@ public class InputJDialog extends javax.swing.JDialog {
         super(new JFrame(), true);
         this.dtdVectorCount = vectorCount;
         initComponents();
-        setListenersChangedListener();
+        jTextFieldProtocols.getDocument().addDocumentListener(new ListenerProtocolChangedListener());
+        jTextAreaListeners.getDocument().addDocumentListener(new ListenerProtocolChangedListener());
+        jRadioButtonSingleListener.addActionListener(new SingleMultRadioButtonGroupListener());
+        jRadioButtonMutlipleListener.addActionListener(new SingleMultRadioButtonGroupListener());
         setLocationRelativeTo(null);
         setVisible(true);
-        // add hint to listeners pane
-        checkListenerCount();
     }
 
     /**
@@ -54,82 +62,71 @@ public class InputJDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroupListenerSelection = new javax.swing.ButtonGroup();
         jLabel1 = new javax.swing.JLabel();
+        jRadioButtonSingleListener = new javax.swing.JRadioButton();
+        jRadioButtonMutlipleListener = new javax.swing.JRadioButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextAreaListeners = new javax.swing.JTextArea();
+        jCheckBoxPathEnum = new javax.swing.JCheckBox();
         jLabel2 = new javax.swing.JLabel();
-        jButtonOk = new javax.swing.JButton();
-        deflateCheckBox = new javax.swing.JCheckBox();
-        jLabel3 = new javax.swing.JLabel();
-        jCheckBox2 = new javax.swing.JCheckBox();
-        jCheckBox3 = new javax.swing.JCheckBox();
-        jCheckBox4 = new javax.swing.JCheckBox();
-        jCheckBox5 = new javax.swing.JCheckBox();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        listenerInputTextArea = new javax.swing.JTextArea();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        hintListenersTextPane = new javax.swing.JTextPane();
+        jCheckBoxSubdomainEnum = new javax.swing.JCheckBox();
         jSeparator1 = new javax.swing.JSeparator();
+        jLabel3 = new javax.swing.JLabel();
+        jTextFieldProtocols = new javax.swing.JTextField();
+        jLabelInfo = new javax.swing.JLabel();
+        jSeparator2 = new javax.swing.JSeparator();
+        jLabel4 = new javax.swing.JLabel();
+        jCheckBoxEnflate = new javax.swing.JCheckBox();
+        jCheckBoxBase64 = new javax.swing.JCheckBox();
+        jCheckBoxUrl = new javax.swing.JCheckBox();
+        jSeparator3 = new javax.swing.JSeparator();
+        jButtonOk = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jLabel1.setText("Attacker Listener:");
+        jLabel1.setText("Attack Listener:");
 
-        jLabel2.setText("Protocol Handler:");
+        buttonGroupListenerSelection.add(jRadioButtonSingleListener);
+        jRadioButtonSingleListener.setSelected(true);
+        jRadioButtonSingleListener.setText("Single Input");
 
-        jButtonOk.setText("Ok");
-        jButtonOk.setEnabled(false);
+        buttonGroupListenerSelection.add(jRadioButtonMutlipleListener);
+        jRadioButtonMutlipleListener.setText("Multiple Input");
+
+        jTextAreaListeners.setColumns(20);
+        jTextAreaListeners.setRows(5);
+        jTextAreaListeners.setText("attackerListener.org");
+        jScrollPane1.setViewportView(jTextAreaListeners);
+
+        jCheckBoxPathEnum.setSelected(true);
+        jCheckBoxPathEnum.setText("Enable Path Enum");
+
+        jLabel2.setText("Options:");
+
+        jCheckBoxSubdomainEnum.setText("Enbale Subdomain Enum");
+
+        jLabel3.setText("Protocol Handler:");
+
+        jTextFieldProtocols.setText("http, https, ftp, smp");
+
+        jLabelInfo.setForeground(new java.awt.Color(255, 0, 51));
+        jLabelInfo.setText("   ");
+
+        jLabel4.setText("Enoding:");
+
+        jCheckBoxEnflate.setText("Enlfate");
+
+        jCheckBoxBase64.setText("Base64");
+
+        jCheckBoxUrl.setText("URL");
+
+        jButtonOk.setText("OK");
         jButtonOk.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonOkActionPerformed(evt);
             }
         });
-
-        deflateCheckBox.setText("Enable deflate compression");
-        deflateCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deflateCheckBoxActionPerformed(evt);
-            }
-        });
-
-        jCheckBox2.setSelected(true);
-        jCheckBox2.setText("HTTP");
-        jCheckBox2.setName("http://"); // NOI18N
-        jCheckBox2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                protocolCheckBoxActionPerformed(evt);
-            }
-        });
-
-        jCheckBox3.setText("HTTPS");
-        jCheckBox3.setName("https://"); // NOI18N
-        jCheckBox3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                protocolCheckBoxActionPerformed(evt);
-            }
-        });
-
-        jCheckBox4.setText("FTP");
-        jCheckBox4.setName("ftp://"); // NOI18N
-        jCheckBox4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                protocolCheckBoxActionPerformed(evt);
-            }
-        });
-
-        jCheckBox5.setText("SMB");
-        jCheckBox5.setName("smb://"); // NOI18N
-        jCheckBox5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                protocolCheckBoxActionPerformed(evt);
-            }
-        });
-
-        listenerInputTextArea.setColumns(20);
-        listenerInputTextArea.setRows(5);
-        jScrollPane2.setViewportView(listenerInputTextArea);
-
-        hintListenersTextPane.setEditable(false);
-        hintListenersTextPane.setText("Add one or more listeners (URLs w/o scheme)");
-        jScrollPane3.setViewportView(hintListenersTextPane);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -138,67 +135,77 @@ public class InputJDialog extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSeparator1)
+                    .addComponent(jTextFieldProtocols)
+                    .addComponent(jScrollPane1)
+                    .addComponent(jButtonOk, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jSeparator2)
+                    .addComponent(jSeparator3)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(deflateCheckBox)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jSeparator1)
-                                .addGap(19, 19, 19))
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jRadioButtonSingleListener)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jRadioButtonMutlipleListener))
                             .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButtonOk, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(6, 6, 6)
-                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel1)
-                                            .addComponent(jLabel2)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jCheckBox2)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jCheckBox3)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jCheckBox4)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jCheckBox5)))
-                                        .addGap(0, 216, Short.MAX_VALUE)))
-                                .addContainerGap())))))
+                                    .addComponent(jCheckBoxSubdomainEnum)
+                                    .addComponent(jCheckBoxPathEnum)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jCheckBoxBase64)
+                                    .addComponent(jCheckBoxEnflate)
+                                    .addComponent(jCheckBoxUrl))))
+                        .addGap(0, 230, Short.MAX_VALUE))
+                    .addComponent(jLabelInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jRadioButtonSingleListener)
+                    .addComponent(jRadioButtonMutlipleListener))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 72, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel2)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jCheckBox2)
-                    .addComponent(jCheckBox3)
-                    .addComponent(jCheckBox4)
-                    .addComponent(jCheckBox5))
+                    .addComponent(jCheckBoxPathEnum)
+                    .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addGap(12, 12, 12)
-                        .addComponent(deflateCheckBox)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonOk))
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(11, Short.MAX_VALUE))
+                .addComponent(jCheckBoxSubdomainEnum)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextFieldProtocols, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jCheckBoxEnflate))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jCheckBoxBase64)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jCheckBoxUrl)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButtonOk)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabelInfo)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -207,115 +214,137 @@ public class InputJDialog extends javax.swing.JDialog {
     private void jButtonOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOkActionPerformed
         this.dispose();
     }//GEN-LAST:event_jButtonOkActionPerformed
-
-    private void protocolCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_protocolCheckBoxActionPerformed
-        // TODO add your handling code here:
-        checkListenerCount();
-    }//GEN-LAST:event_protocolCheckBoxActionPerformed
-
-    private void deflateCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deflateCheckBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_deflateCheckBoxActionPerformed
-
-    private void setListenersChangedListener() {
-        listenerInputTextArea.getDocument().addDocumentListener(new DocumentListener() {
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                checkListenerCount();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                checkListenerCount();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                checkListenerCount();
-            }
-        });
-
+       
+    private List<String> getUserListeners() {
+        // split on comma or whitespace (incl. newline)
+        List<String> listeners = Arrays.asList(jTextAreaListeners.getText().split("\\s*,?\\s+"));
+        return listeners;
     }
-
-
-    public Boolean getCompressionChoice() {
-        return deflateCheckBox.isSelected();
-    }
-
-    // TODO: allow custom protoclhandler to be entered (add textfield...)
-    public ArrayList<String> getProtocols() {
-        ArrayList<String> protocols = new ArrayList<>();
-        if (jCheckBox2.isSelected()) protocols.add(jCheckBox2.getName());
-        if (jCheckBox3.isSelected()) protocols.add(jCheckBox3.getName());
-        if (jCheckBox4.isSelected()) protocols.add(jCheckBox4.getName());
-        if (jCheckBox5.isSelected()) protocols.add(jCheckBox5.getName());
-
-        return protocols;
-    }
-
+    
     public ArrayList<String> getListeners() {
         // returns exact number of required listener URLs
-        int required = dtdVectorCount * getProtocols().size();
+        int required = getProtocols().size() * dtdVectorCount;
         List<String> list = getUserListeners();
-        ArrayList<String> listeners = new ArrayList<>(required);
-        if (list.size() == 1) {
-            for (int i=0; i<required; i++) {
-                listeners.add(list.get(0));
+        ArrayList<String> listeners = new ArrayList<>();
+        if(jRadioButtonSingleListener.isSelected()) {
+            String url = list.get(0);
+            // without Path Enum and without Subdomain Enum
+            if(!jCheckBoxPathEnum.isSelected()&& !jCheckBoxSubdomainEnum.isSelected()) {
+                for(int i = 0; i < required; i++) {
+                    listeners.add(url);
+                }
+            }
+            // with Path Enum and without Subdomain Enum
+            if(jCheckBoxPathEnum.isSelected() && !jCheckBoxSubdomainEnum.isSelected()) {
+                for(int i = 0; i < required; i++) {
+                    listeners.add(url + "/" + (i+1));
+                }                
+            }
+            // without Path Enum and with Subdomain Enum
+            if(!jCheckBoxPathEnum.isSelected() && jCheckBoxSubdomainEnum.isSelected()) {
+                for(int i = 0; i < required; i++) {
+                    listeners.add((i+1) + "." + url);
+                }                
+            }
+            // with Path Enum and with Subdomain Enum
+            if(jCheckBoxPathEnum.isSelected() && jCheckBoxSubdomainEnum.isSelected()) {
+                for(int i = 0; i < required; i++) {
+                    listeners.add((i+1) + "." + url + "/" + (i+1));
+                }                
             }
         } else {
             listeners.addAll(list);
         }
-
         return listeners;
     }
-
-        public List<String> getUserListeners() {
+        
+    public ArrayList<String> getProtocols() {
         // split on comma or whitespace (incl. newline)
-        List<String> listeners = Arrays.asList(listenerInputTextArea.getText().split("\\s*,?\\s+"));
-
-        return listeners;
+        List<String> rawProtocols = Arrays.asList(jTextFieldProtocols.getText().split("\\s*,?\\s+"));
+        ArrayList<String> protocols = new ArrayList<>();
+        for(String protocol: rawProtocols) {
+            protocols.add(protocol + "://");
+        }
+        return protocols;
     }
-
-    private void checkListenerCount() {
-        int listenerCount = getUserListeners().size();
-        int protocolCount = getProtocols().size();
-        int required = protocolCount * dtdVectorCount;
-        String hint = "Enter exactly one or >=" + required + " listeners (URLs w/o scheme)";
-
-        // we need at least a single listener URL and a protocol handler
-        if (listenerCount == 0 || protocolCount == 0) {
+        
+    public boolean getEnflateChoice() {
+        return jCheckBoxEnflate.isSelected();
+    }
+    
+    public boolean getBase64Choice() {
+        return jCheckBoxBase64.isSelected();
+    }
+    
+    public boolean getUrlChoice() {
+        return jCheckBoxUrl.isSelected();
+    }
+    
+    private void updateInfoLabel() {
+        int required = getProtocols().size() * dtdVectorCount;
+        if(jTextFieldProtocols.getText().equals("") || jTextAreaListeners.getText().equals("")) {
+            jLabelInfo.setText("ERROR: One or both inputs are empty!");
             jButtonOk.setEnabled(false);
-            hintListenersTextPane.setText(hint);
+        } else if(jRadioButtonMutlipleListener.isSelected() && getUserListeners().size() < required) {
+            jLabelInfo.setText("ERROR: Enter >=" + required + " listeners.");
+            jButtonOk.setEnabled(true);
         } else {
-            // if multiple listeners are given, we need at least
-            // number(selected protocols) times number(dtdVectors)
-            if (listenerCount == 1 || listenerCount >= required){
-                jButtonOk.setEnabled(true);
-                hintListenersTextPane.setText("About to send " + required + " requests.");
-            } else {
-                // add label hint
-                hintListenersTextPane.setText(hint);
-                jButtonOk.setEnabled(false);
-            }
+            jLabelInfo.setText("");
+            jButtonOk.setEnabled(true);
         }
     }
+    
+    private class ListenerProtocolChangedListener implements DocumentListener {
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+            updateInfoLabel();
+        }
 
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+            updateInfoLabel();
+        }
+
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+            updateInfoLabel();
+        } 
+    }
+    
+    private class SingleMultRadioButtonGroupListener implements ActionListener {
+      @Override
+      public void actionPerformed(ActionEvent ev) {
+        if(jRadioButtonSingleListener.isSelected()) {
+            jCheckBoxPathEnum.setEnabled(true);
+            jCheckBoxSubdomainEnum.setEnabled(true);
+        } else {
+            jCheckBoxPathEnum.setEnabled(false);
+            jCheckBoxSubdomainEnum.setEnabled(false);
+        }
+        updateInfoLabel();
+      }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JCheckBox deflateCheckBox;
-    private javax.swing.JTextPane hintListenersTextPane;
+    private javax.swing.ButtonGroup buttonGroupListenerSelection;
     private javax.swing.JButton jButtonOk;
-    private javax.swing.JCheckBox jCheckBox2;
-    private javax.swing.JCheckBox jCheckBox3;
-    private javax.swing.JCheckBox jCheckBox4;
-    private javax.swing.JCheckBox jCheckBox5;
+    private javax.swing.JCheckBox jCheckBoxBase64;
+    private javax.swing.JCheckBox jCheckBoxEnflate;
+    private javax.swing.JCheckBox jCheckBoxPathEnum;
+    private javax.swing.JCheckBox jCheckBoxSubdomainEnum;
+    private javax.swing.JCheckBox jCheckBoxUrl;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabelInfo;
+    private javax.swing.JRadioButton jRadioButtonMutlipleListener;
+    private javax.swing.JRadioButton jRadioButtonSingleListener;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTextArea listenerInputTextArea;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JTextArea jTextAreaListeners;
+    private javax.swing.JTextField jTextFieldProtocols;
     // End of variables declaration//GEN-END:variables
 }

