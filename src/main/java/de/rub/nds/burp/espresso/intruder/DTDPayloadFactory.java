@@ -28,14 +28,12 @@ import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.XMLHelper;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import org.w3c.dom.Node;
+import wsattacker.library.xmlutilities.dom.DomUtilities;
 
 /**
  * DTD Payload Generator.
@@ -103,19 +101,12 @@ public class DTDPayloadFactory implements IIntruderPayloadGeneratorFactory {
             try {
                 rawDtds = new ArrayList<>();
                 Document doc = XMLHelper.stringToDom(IOUtils.toString(getClass().getClassLoader().getResource("dtd_configs.xml"), "UTF-8"));
-
-                XPathFactory xPathfactory = XPathFactory.newInstance();
-                XPath xpath = xPathfactory.newXPath();
-                try {
-                    NodeList vectors = (NodeList) xpath.evaluate("//attackvectors[@intruderVector='true']/attackvector/directMessage", doc, XPathConstants.NODESET);
-                    for (int j = 0; j < vectors.getLength(); j++) {
-                        String vector = vectors.item(j).getTextContent();
-                        rawDtds.add(vector);
-                    }
-                } catch (XPathExpressionException ex) {
-                    Logging.getInstance().log(getClass(), ex);
+                List<Node> vectors =  (List<Node>) DomUtilities.evaluateXPath(doc, "//attackvectors[@intruderVector='true']/attackvector/directMessage");
+                for (int j = 0; j < vectors.size(); j++) {
+                    String vector = vectors.get(j).getTextContent();
+                    rawDtds.add(vector);
                 }
-            } catch (IOException ex) {
+            } catch (IOException | XPathExpressionException ex) {
                 Logging.getInstance().log(getClass(), ex);
             }
         }
