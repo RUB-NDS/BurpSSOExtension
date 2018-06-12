@@ -150,7 +150,7 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="jCheckBoxSubdomainEnum">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Enbale Subdomain Enum"/>
+        <Property name="text" type="java.lang.String" value="Enable Subdomain Enum"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JSeparator" name="jSeparator1">
@@ -162,7 +162,7 @@
     </Component>
     <Component class="javax.swing.JTextField" name="jTextFieldProtocols">
       <Properties>
-        <Property name="text" type="java.lang.String" value="http, https, ftp, smp"/>
+        <Property name="text" type="java.lang.String" value="http, https, ftp, smb"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabelInfo">
@@ -182,7 +182,7 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="jCheckBoxEnflate">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Enflate"/>
+        <Property name="text" type="java.lang.String" value="Deflate"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JCheckBox" name="jCheckBoxBase64">

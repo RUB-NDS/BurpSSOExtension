@@ -18,8 +18,6 @@
  */
 package de.rub.nds.burp.espresso.intruder;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -90,18 +88,18 @@ public class InputJDialog extends javax.swing.JDialog {
 
         jLabel2.setText("Options:");
 
-        jCheckBoxSubdomainEnum.setText("Enbale Subdomain Enum");
+        jCheckBoxSubdomainEnum.setText("Enable Subdomain Enum");
 
         jLabel3.setText("Protocol Handler:");
 
-        jTextFieldProtocols.setText("http, https, ftp, smp");
+        jTextFieldProtocols.setText("http, https, ftp, smb");
 
         jLabelInfo.setForeground(new java.awt.Color(255, 0, 51));
         jLabelInfo.setText("   ");
 
         jLabel4.setText("Encoding:");
 
-        jCheckBoxEnflate.setText("Enflate");
+        jCheckBoxEnflate.setText("Deflate");
 
         jCheckBoxBase64.setText("Base64");
 
