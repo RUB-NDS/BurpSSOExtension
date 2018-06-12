@@ -43,8 +43,6 @@ public class InputJDialog extends javax.swing.JDialog {
         initComponents();
         jTextFieldProtocols.getDocument().addDocumentListener(new ListenerProtocolChangedListener());
         jTextAreaListeners.getDocument().addDocumentListener(new ListenerProtocolChangedListener());
-        jRadioButtonSingleListener.addActionListener(new SingleMultRadioButtonGroupListener());
-        jRadioButtonMutlipleListener.addActionListener(new SingleMultRadioButtonGroupListener());
         setLocationRelativeTo(null);
         setVisible(true);
     }
@@ -60,8 +58,6 @@ public class InputJDialog extends javax.swing.JDialog {
 
         buttonGroupListenerSelection = new javax.swing.ButtonGroup();
         jLabel1 = new javax.swing.JLabel();
-        jRadioButtonSingleListener = new javax.swing.JRadioButton();
-        jRadioButtonMutlipleListener = new javax.swing.JRadioButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextAreaListeners = new javax.swing.JTextArea();
         jCheckBoxPathEnum = new javax.swing.JCheckBox();
@@ -78,17 +74,11 @@ public class InputJDialog extends javax.swing.JDialog {
         jCheckBoxUrl = new javax.swing.JCheckBox();
         jSeparator3 = new javax.swing.JSeparator();
         jButtonOk = new javax.swing.JButton();
+        jCheckboxMutlipleListener = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jLabel1.setText("Attack Listener:");
-
-        buttonGroupListenerSelection.add(jRadioButtonSingleListener);
-        jRadioButtonSingleListener.setSelected(true);
-        jRadioButtonSingleListener.setText("Single Input");
-
-        buttonGroupListenerSelection.add(jRadioButtonMutlipleListener);
-        jRadioButtonMutlipleListener.setText("Multiple Input");
+        jLabel1.setText("Listener:");
 
         jTextAreaListeners.setColumns(20);
         jTextAreaListeners.setRows(5);
@@ -109,9 +99,9 @@ public class InputJDialog extends javax.swing.JDialog {
         jLabelInfo.setForeground(new java.awt.Color(255, 0, 51));
         jLabelInfo.setText("   ");
 
-        jLabel4.setText("Enoding:");
+        jLabel4.setText("Encoding:");
 
-        jCheckBoxEnflate.setText("Enlfate");
+        jCheckBoxEnflate.setText("Enflate");
 
         jCheckBoxBase64.setText("Base64");
 
@@ -121,6 +111,13 @@ public class InputJDialog extends javax.swing.JDialog {
         jButtonOk.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonOkActionPerformed(evt);
+            }
+        });
+
+        jCheckboxMutlipleListener.setText("Multiple Input");
+        jCheckboxMutlipleListener.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckboxMutlipleListenerActionPerformed(evt);
             }
         });
 
@@ -143,9 +140,7 @@ public class InputJDialog extends javax.swing.JDialog {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jRadioButtonSingleListener)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jRadioButtonMutlipleListener))
+                                .addComponent(jCheckboxMutlipleListener))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -159,7 +154,7 @@ public class InputJDialog extends javax.swing.JDialog {
                                     .addComponent(jCheckBoxBase64)
                                     .addComponent(jCheckBoxEnflate)
                                     .addComponent(jCheckBoxUrl))))
-                        .addGap(0, 230, Short.MAX_VALUE))
+                        .addGap(0, 317, Short.MAX_VALUE))
                     .addComponent(jLabelInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -169,8 +164,7 @@ public class InputJDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jRadioButtonSingleListener)
-                    .addComponent(jRadioButtonMutlipleListener))
+                    .addComponent(jCheckboxMutlipleListener))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -210,6 +204,17 @@ public class InputJDialog extends javax.swing.JDialog {
     private void jButtonOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOkActionPerformed
         this.dispose();
     }//GEN-LAST:event_jButtonOkActionPerformed
+
+    private void jCheckboxMutlipleListenerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckboxMutlipleListenerActionPerformed
+        if(jCheckboxMutlipleListener.isSelected()) {
+            jCheckBoxPathEnum.setEnabled(false);
+            jCheckBoxSubdomainEnum.setEnabled(false);
+        } else {
+            jCheckBoxPathEnum.setEnabled(true);
+            jCheckBoxSubdomainEnum.setEnabled(true);
+        }
+        updateInfoLabel();
+    }//GEN-LAST:event_jCheckboxMutlipleListenerActionPerformed
        
     private List<String> getUserListeners() {
         // split on comma or whitespace (incl. newline)
@@ -222,7 +227,7 @@ public class InputJDialog extends javax.swing.JDialog {
         int required = getProtocols().size() * dtdVectorCount;
         List<String> list = getUserListeners();
         ArrayList<String> listeners = new ArrayList<>();
-        if(jRadioButtonSingleListener.isSelected()) {
+        if(!jCheckboxMutlipleListener.isSelected()) {
             String url = list.get(0);
             // without Path Enum and without Subdomain Enum
             if(!jCheckBoxPathEnum.isSelected()&& !jCheckBoxSubdomainEnum.isSelected()) {
@@ -281,9 +286,9 @@ public class InputJDialog extends javax.swing.JDialog {
         if(jTextFieldProtocols.getText().equals("") || jTextAreaListeners.getText().equals("")) {
             jLabelInfo.setText("ERROR: One or both inputs are empty!");
             jButtonOk.setEnabled(false);
-        } else if(jRadioButtonMutlipleListener.isSelected() && getUserListeners().size() < required) {
+        } else if(jCheckboxMutlipleListener.isSelected() && getUserListeners().size() < required) {
             jLabelInfo.setText("ERROR: Enter >=" + required + " listeners.");
-            jButtonOk.setEnabled(true);
+            jButtonOk.setEnabled(false);
         } else {
             jLabelInfo.setText("");
             jButtonOk.setEnabled(true);
@@ -306,20 +311,6 @@ public class InputJDialog extends javax.swing.JDialog {
             updateInfoLabel();
         } 
     }
-    
-    private class SingleMultRadioButtonGroupListener implements ActionListener {
-      @Override
-      public void actionPerformed(ActionEvent ev) {
-        if(jRadioButtonSingleListener.isSelected()) {
-            jCheckBoxPathEnum.setEnabled(true);
-            jCheckBoxSubdomainEnum.setEnabled(true);
-        } else {
-            jCheckBoxPathEnum.setEnabled(false);
-            jCheckBoxSubdomainEnum.setEnabled(false);
-        }
-        updateInfoLabel();
-      }
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroupListenerSelection;
@@ -329,13 +320,12 @@ public class InputJDialog extends javax.swing.JDialog {
     private javax.swing.JCheckBox jCheckBoxPathEnum;
     private javax.swing.JCheckBox jCheckBoxSubdomainEnum;
     private javax.swing.JCheckBox jCheckBoxUrl;
+    private javax.swing.JCheckBox jCheckboxMutlipleListener;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabelInfo;
-    private javax.swing.JRadioButton jRadioButtonMutlipleListener;
-    private javax.swing.JRadioButton jRadioButtonSingleListener;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;

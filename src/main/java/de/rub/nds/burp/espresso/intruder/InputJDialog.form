@@ -42,9 +42,7 @@
                           <Group type="102" attributes="0">
                               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jRadioButtonSingleListener" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jRadioButtonMutlipleListener" min="-2" max="-2" attributes="0"/>
+                              <Component id="jCheckboxMutlipleListener" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
@@ -64,7 +62,7 @@
                               </Group>
                           </Group>
                       </Group>
-                      <EmptySpace min="0" pref="230" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="317" max="32767" attributes="0"/>
                   </Group>
                   <Component id="jLabelInfo" alignment="0" max="32767" attributes="0"/>
               </Group>
@@ -78,8 +76,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jRadioButtonSingleListener" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jRadioButtonMutlipleListener" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jCheckboxMutlipleListener" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jScrollPane1" min="-2" pref="107" max="-2" attributes="0"/>
@@ -121,24 +118,7 @@
   <SubComponents>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Attack Listener:"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JRadioButton" name="jRadioButtonSingleListener">
-      <Properties>
-        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-          <ComponentRef name="buttonGroupListenerSelection"/>
-        </Property>
-        <Property name="selected" type="boolean" value="true"/>
-        <Property name="text" type="java.lang.String" value="Single Input"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JRadioButton" name="jRadioButtonMutlipleListener">
-      <Properties>
-        <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-          <ComponentRef name="buttonGroupListenerSelection"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Multiple Input"/>
+        <Property name="text" type="java.lang.String" value="Listener:"/>
       </Properties>
     </Component>
     <Container class="javax.swing.JScrollPane" name="jScrollPane1">
@@ -197,12 +177,12 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Enoding:"/>
+        <Property name="text" type="java.lang.String" value="Encoding:"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JCheckBox" name="jCheckBoxEnflate">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Enlfate"/>
+        <Property name="text" type="java.lang.String" value="Enflate"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JCheckBox" name="jCheckBoxBase64">
@@ -223,6 +203,14 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonOkActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="jCheckboxMutlipleListener">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Multiple Input"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jCheckboxMutlipleListenerActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
