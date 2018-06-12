@@ -26,12 +26,16 @@ import burp.IIntruderPayloadGeneratorFactory;
 import de.rub.nds.burp.utilities.Compression;
 import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.XMLHelper;
-import java.io.IOException;
-import java.util.ArrayList;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * DTD Payload Generator.
@@ -62,7 +66,6 @@ public class DTDPayloadFactory implements IIntruderPayloadGeneratorFactory {
 
         private final String listenURL = "§tf_listenURL§";
         private final String helperURL = "§tf_helperURL§";
-        private final String targetFILE = "§tf_targetFILE§";
 
         private InputJDialog dialog;
         private IIntruderAttack attack;
@@ -100,18 +103,17 @@ public class DTDPayloadFactory implements IIntruderPayloadGeneratorFactory {
             try {
                 rawDtds = new ArrayList<>();
                 Document doc = XMLHelper.stringToDom(IOUtils.toString(getClass().getClassLoader().getResource("dtd_configs.xml"), "UTF-8"));
-                NodeList configs = doc.getElementsByTagName("config");
-                for (int i = 0; i < configs.getLength(); i++) {
-                    Element config = (Element) configs.item(i);
-                    if (config.getElementsByTagName("helperURL").item(0).getTextContent().equalsIgnoreCase("TRUE")
-                            || config.getElementsByTagName("attackListenerURL").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
-                        NodeList vectors = config.getElementsByTagName("directMessage");
 
-                        for (int j = 0; j < vectors.getLength(); j++) {
-                            String vector = vectors.item(j).getTextContent();
-                            rawDtds.add(vector);
-                        }
+                XPathFactory xPathfactory = XPathFactory.newInstance();
+                XPath xpath = xPathfactory.newXPath();
+                try {
+                    NodeList vectors = (NodeList) xpath.evaluate("//attackvectors[@intruderVector='true']/attackvector/directMessage", doc, XPathConstants.NODESET);
+                    for (int j = 0; j < vectors.getLength(); j++) {
+                        String vector = vectors.item(j).getTextContent();
+                        rawDtds.add(vector);
                     }
+                } catch (XPathExpressionException ex) {
+                    Logging.getInstance().log(getClass(), ex);
                 }
             } catch (IOException ex) {
                 Logging.getInstance().log(getClass(), ex);
@@ -123,11 +125,9 @@ public class DTDPayloadFactory implements IIntruderPayloadGeneratorFactory {
             ArrayList<String> listeners = dialog.getListeners();
             ArrayList<String> protocols = dialog.getProtocols();
             int listenerIndex = 0;
-            for (int i = 0; i < rawDtds.size(); i++) {
+            for (String rawDtd : rawDtds) {
                 for (String protocol : protocols) {
-                    String vector = rawDtds.get(i);
-                    // TODO: do not use targetFiles, perhaps add specific config 
-                    vector = vector.replace(targetFILE, "file:///etc/hostname");
+                    String vector = rawDtd;
                     vector = vector.replace(helperURL, protocol + listeners.get(listenerIndex));
                     vector = vector.replace(listenURL, protocol + listeners.get(listenerIndex));
                     dtds.add(encode(vector));
