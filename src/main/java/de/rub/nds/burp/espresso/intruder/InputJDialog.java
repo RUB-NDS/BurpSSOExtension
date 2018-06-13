@@ -80,7 +80,7 @@ public class InputJDialog extends javax.swing.JDialog {
 
         jTextAreaListeners.setColumns(20);
         jTextAreaListeners.setRows(5);
-        jTextAreaListeners.setText("attackerListener.org");
+        jTextAreaListeners.setText("example.org");
         jScrollPane1.setViewportView(jTextAreaListeners);
 
         jCheckBoxPathEnum.setSelected(true);
@@ -232,21 +232,18 @@ public class InputJDialog extends javax.swing.JDialog {
                 for(int i = 0; i < required; i++) {
                     listeners.add(url);
                 }
-            }
             // with Path Enum and without Subdomain Enum
-            if(jCheckBoxPathEnum.isSelected() && !jCheckBoxSubdomainEnum.isSelected()) {
+            } else if(jCheckBoxPathEnum.isSelected() && !jCheckBoxSubdomainEnum.isSelected()) {
                 for(int i = 0; i < required; i++) {
                     listeners.add(url + "/" + (i+1));
-                }                
-            }
+                } 
             // without Path Enum and with Subdomain Enum
-            if(!jCheckBoxPathEnum.isSelected() && jCheckBoxSubdomainEnum.isSelected()) {
+            } else if(!jCheckBoxPathEnum.isSelected() && jCheckBoxSubdomainEnum.isSelected()) {
                 for(int i = 0; i < required; i++) {
                     listeners.add((i+1) + "." + url);
                 }                
-            }
             // with Path Enum and with Subdomain Enum
-            if(jCheckBoxPathEnum.isSelected() && jCheckBoxSubdomainEnum.isSelected()) {
+            } else if(jCheckBoxPathEnum.isSelected() && jCheckBoxSubdomainEnum.isSelected()) {
                 for(int i = 0; i < required; i++) {
                     listeners.add((i+1) + "." + url + "/" + (i+1));
                 }                

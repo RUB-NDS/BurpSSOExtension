@@ -132,7 +132,7 @@
           <Properties>
             <Property name="columns" type="int" value="20"/>
             <Property name="rows" type="int" value="5"/>
-            <Property name="text" type="java.lang.String" value="attackerListener.org"/>
+            <Property name="text" type="java.lang.String" value="example.org"/>
           </Properties>
         </Component>
       </SubComponents>
