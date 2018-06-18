@@ -85,10 +85,12 @@ public class InputJDialog extends javax.swing.JDialog {
 
         jCheckBoxPathEnum.setSelected(true);
         jCheckBoxPathEnum.setText("Enable Path Enum");
+        jCheckBoxPathEnum.setToolTipText("By activating this option, a unique path Identitfier is added to each attack vector, e.g. http://example.org/1, http://example.org/2. ");
 
         jLabel2.setText("Options:");
 
         jCheckBoxSubdomainEnum.setText("Enable Subdomain Enum");
+        jCheckBoxSubdomainEnum.setToolTipText("By activating this option, a unique subdomain Identitfier is added to each attack vector, e.g. http://1.example.org, http://2.example.org. ");
 
         jLabel3.setText("Protocol Handler:");
 
@@ -98,6 +100,7 @@ public class InputJDialog extends javax.swing.JDialog {
         jLabelInfo.setText("   ");
 
         jLabel4.setText("Encoding:");
+        jLabel4.setToolTipText("To enable the usage of the Intruder for SAML services, you can activate the encoding of the attack vectors.");
 
         jCheckBoxEnflate.setText("Deflate");
 
@@ -113,6 +116,7 @@ public class InputJDialog extends javax.swing.JDialog {
         });
 
         jCheckboxMutlipleListener.setText("Multiple Input");
+        jCheckboxMutlipleListener.setToolTipText("By activating this option, the Intruder uses an unique Listener URL for each attack vector.");
         jCheckboxMutlipleListener.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckboxMutlipleListenerActionPerformed(evt);

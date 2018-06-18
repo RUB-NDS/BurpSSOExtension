@@ -141,6 +141,7 @@
       <Properties>
         <Property name="selected" type="boolean" value="true"/>
         <Property name="text" type="java.lang.String" value="Enable Path Enum"/>
+        <Property name="toolTipText" type="java.lang.String" value="By activating this option, a unique path Identitfier is added to each attack vector, e.g. http://example.org/1, http://example.org/2. "/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
@@ -151,6 +152,7 @@
     <Component class="javax.swing.JCheckBox" name="jCheckBoxSubdomainEnum">
       <Properties>
         <Property name="text" type="java.lang.String" value="Enable Subdomain Enum"/>
+        <Property name="toolTipText" type="java.lang.String" value="By activating this option, a unique subdomain Identitfier is added to each attack vector, e.g. http://1.example.org, http://2.example.org. "/>
       </Properties>
     </Component>
     <Component class="javax.swing.JSeparator" name="jSeparator1">
@@ -178,6 +180,7 @@
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>
         <Property name="text" type="java.lang.String" value="Encoding:"/>
+        <Property name="toolTipText" type="java.lang.String" value="To enable the usage of the Intruder for SAML services, you can activate the encoding of the attack vectors."/>
       </Properties>
     </Component>
     <Component class="javax.swing.JCheckBox" name="jCheckBoxEnflate">
@@ -208,6 +211,7 @@
     <Component class="javax.swing.JCheckBox" name="jCheckboxMutlipleListener">
       <Properties>
         <Property name="text" type="java.lang.String" value="Multiple Input"/>
+        <Property name="toolTipText" type="java.lang.String" value="By activating this option, the Intruder uses an unique Listener URL for each attack vector."/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jCheckboxMutlipleListenerActionPerformed"/>
