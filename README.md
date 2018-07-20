@@ -1,7 +1,7 @@
 # EsPReSSO
 [![Build Status](https://travis-ci.org/RUB-NDS/BurpSSOExtension.svg?branch=master)](https://travis-ci.org/RUB-NDS/BurpSSOExtension)
 ![licence](https://img.shields.io/badge/License-GPLv2-brightgreen.svg)
-[![release](https://img.shields.io/badge/Release-v3.0-blue.svg)](https://github.com/RUB-NDS/BurpSSOExtension/releases)
+[![release](https://img.shields.io/badge/Release-v3.1-blue.svg)](https://github.com/RUB-NDS/BurpSSOExtension/releases)
 ![status](https://img.shields.io/badge/Status-beta-yellow.svg)
 
 ## Extension for Processing and Recognition of Single Sign-On Protocols
