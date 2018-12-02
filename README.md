@@ -52,7 +52,7 @@ $ mvn clean package
 
 ## Dependencies and Licences
 
- Dependencie     | Licence                         | Access Date | Link                                                              | Copyright (c) Date, Name                                             |
+ Dependency       | Licence                         | Access Date | Link                                                              | Copyright (c) Date, Name                                             |
 |-----------------|---------------------------------|-------------|-------------------------------------------------------------------|----------------------------------------------------------------------|
 | RSyntaxTextArea | modified BSD license            | 20.09.2015  | https://github.com/bobbylight/RSyntaxTextArea                     | 2012, Robert Futrell                                                 |
 | json-simple     | Apache License 2.0              | 20.09.2015  | https://code.google.com/p/json-simple/                            | Unkown, Yidong Fang                                                  |
