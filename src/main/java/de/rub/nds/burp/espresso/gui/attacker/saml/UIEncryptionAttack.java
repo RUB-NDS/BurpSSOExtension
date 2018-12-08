@@ -25,7 +25,6 @@ import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.XMLHelper;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
-import de.rub.nds.burp.utilities.listeners.saml.SamlCodeEvent;
 import de.rub.nds.burp.utilities.protocols.xmlenc.AsymmetricAlgorithm;
 import de.rub.nds.burp.utilities.protocols.xmlenc.SymmetricAlgorithm;
 import de.rub.nds.burp.utilities.protocols.xmlenc.XmlEncryptionHelper;
@@ -417,9 +416,9 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
      * @param code The new source code.
      */
     @Override
-    public void notifyAllTabs(String code) {
-        if (listeners != null) {
-            listeners.notifyAll(new SamlCodeEvent(this, code));
+    public void notifyAllTabs(AbstractCodeEvent evt) {
+        if(listeners != null){
+            listeners.notifyAll(evt);
         }
     }
 }

@@ -22,7 +22,7 @@ import de.rub.nds.burp.espresso.gui.attacker.IAttack;
 import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
-import de.rub.nds.burp.utilities.listeners.saml.SamlCodeEvent;
+import de.rub.nds.burp.utilities.listeners.events.SamlCodeEvent;
 import de.rub.nds.burp.utilities.XMLHelper;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
@@ -256,7 +256,7 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
 
         private void modifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyButtonActionPerformed
             Logging.getInstance().log(getClass(), "Wrapping Signature...", Logging.INFO);
-            notifyAllTabs(finalPayload.getText());
+            notifyAllTabs(new SamlCodeEvent(this, finalPayload.getText()));
         }//GEN-LAST:event_modifyButtonActionPerformed
 
         private void payloadComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_payloadComboBoxItemStateChanged
@@ -381,10 +381,10 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
     public void setCode(AbstractCodeEvent evt) {
         this.code = evt.getCode();
         initXsw();
-        
+
         // Disable the ui for further editing after modification.
         if(evt.getSource().equals(this)){
-            
+
             String[] payloadError = {""};
             payloadComboBox.setModel(new DefaultComboBoxModel(payloadError));
             payloadValue.setText("");
@@ -392,22 +392,21 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
             attackSlider.setMaximum(0);
             attackDescriptionTextArea.setText("");
             finalPayload.setText("Modifications successfully transmitted.\nSee the Source code or SAMLResponse/Request tab.");
-            
+
             updateOracle.setEnabled(false);
             modifyButton.setEnabled(false);
-            
+
         }
     }
 
     /**
      * Notify all registered listeners with the new code.
-     * @param code The new source code.
+     * @param evt The new source code.
      */
     @Override
-    public void notifyAllTabs(String code) {
+    public void notifyAllTabs(AbstractCodeEvent evt) {
         if(listeners != null){
-            listeners.notifyAll(new SamlCodeEvent(this, code));
-             Logging.getInstance().log(getClass(), "Notify all Listeners.", Logging.DEBUG);
+            listeners.notifyAll(evt);
         }
     }
 

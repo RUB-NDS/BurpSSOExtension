@@ -16,20 +16,34 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package de.rub.nds.burp.espresso.gui.attacker;
-
-import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
-import de.rub.nds.burp.utilities.listeners.ICodeListener;
+package de.rub.nds.burp.utilities;
 
 /**
- * The IAttack interface.
- * This interface must be implemented by every attack in the Attacker.
- * @author Tim Guenther
+ * @author Nurullah Erinola
  */
-public interface IAttack extends ICodeListener{
-    /**
-     * Notify all registered listeners with the new code.
-     * @param evt The new source code.
-     */
-    public void notifyAllTabs(AbstractCodeEvent evt);
+public enum EncodingType {
+    
+    UTF_7("UTF-7"),
+    UTF_8("UTF-8"),
+    UTF_16("UTF-16");
+
+    EncodingType(String encoding) {
+        this.encoding = encoding;
+    }
+            
+    private final String encoding;        
+    
+    public String getEncoding() {
+        return encoding;
+    }
+    
+    public static EncodingType fromString(String encoding) {
+        for(EncodingType type: EncodingType.values()) {
+            if(type.encoding.equalsIgnoreCase(encoding)) {
+                return type;
+            }
+        }
+        return null;
+    }
+    
 }

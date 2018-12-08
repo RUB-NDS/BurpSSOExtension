@@ -33,6 +33,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.*;
 import javax.xml.XMLConstants;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -60,6 +61,12 @@ public abstract class XMLHelper {
     */
 
     public static String format(String input, int indent) {
+        // javax.xml.transform.Transformer does not keep DTDs and always expands
+        // entity references defined in inline DTDs - so we do not pretty-print those
+        if (input.toUpperCase().contains("DOCTYPE")) {
+            Logging.getInstance().log(XMLHelper.class,"XML contains inline DTD, skip pretty printing", Logging.DEBUG);
+            return input;
+        }
         try {
             Source xmlInput = new StreamSource(new StringReader(input));
             StringWriter stringWriter = new StringWriter();
@@ -68,10 +75,9 @@ public abstract class XMLHelper {
             transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
             transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET,"");
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
             Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, input.startsWith("<?xml") ? "yes" : "no");
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", String.valueOf(indent));
             transformer.transform(xmlInput, xmlOutput);
@@ -82,6 +88,25 @@ public abstract class XMLHelper {
         }
     }
 
+    public static String docToString(Document doc) {
+        try {
+            Source docInput = new DOMSource(doc);
+            StringWriter stringWriter = new StringWriter();
+            StreamResult xmlOutput = new StreamResult(stringWriter);
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET,"");
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.transform(docInput, xmlOutput);
+            return xmlOutput.getWriter().toString();
+        } catch (IllegalArgumentException | TransformerException e) {
+            Logging.getInstance().log(XMLHelper.class, e);
+            return "<error>Failed to transform document</error>";
+        }
+    }    
+    
     public static Document stringToDom (String xmlString) {
         try {
             InputSource input = new InputSource(new StringReader(xmlString));
@@ -93,7 +118,7 @@ public abstract class XMLHelper {
             return dom;
         } catch (ParserConfigurationException | SAXException | IOException e) {
             Logging.getInstance().log(XMLHelper.class, e);
-            return null;
+            return stringToDom("<error>Failed to parse input XML</error>");
         }
     }
     

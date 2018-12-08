@@ -18,11 +18,12 @@
  */
 package de.rub.nds.burp.espresso.editor.saml;
 
-import de.rub.nds.burp.utilities.Logging;
+import burp.IBurpExtenderCallbacks;
 import de.rub.nds.burp.utilities.XMLHelper;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.ICodeListener;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
+import de.rub.nds.burp.utilities.listeners.events.SamlCodeEvent;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,13 +47,16 @@ public class UISourceViewer extends JPanel implements ICodeListener{
     private JCheckBox checkBox;
     private RTextScrollPane sp;
 
+    private IBurpExtenderCallbacks callbacks;
+    private boolean wrapLines;
     /**
      * Create a new Source Code Viewer.
      * @param sourceCode The Code that should be highlighted.
      * @param codeStyle The kind of highlighting.
      */
-    public UISourceViewer(String sourceCode, String codeStyle) {
+    public UISourceViewer(IBurpExtenderCallbacks callbacks, String sourceCode, String codeStyle) {
         super(new BorderLayout());
+        this.callbacks = callbacks;
         this.sourceCode = sourceCode;
         this.codeStyle = codeStyle;
         initComponent();
@@ -61,16 +65,22 @@ public class UISourceViewer extends JPanel implements ICodeListener{
     /**
      * Create a new Source Code Viewer.
      */
-    public UISourceViewer(){
+    public UISourceViewer(IBurpExtenderCallbacks callbacks){
+        this.callbacks = callbacks;
         initComponent();
     }
     
-    private void initComponent(){        
+    private void initComponent(){
         textArea = new RSyntaxTextArea(20, 60);
         textArea.setSyntaxEditingStyle(codeStyle);
         textArea.setText(sourceCode);
         textArea.setCodeFoldingEnabled(true);
-        textArea.setLineWrap(false);
+        wrapLines = Boolean.valueOf(callbacks.loadExtensionSetting("wrapLinesInSourceViewer"));
+        if (wrapLines) {
+            textArea.setLineWrap(true);
+        } else {
+            textArea.setLineWrap(false);
+        }
         sp = new RTextScrollPane(textArea);
         sp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);        
         checkBox = new JCheckBox("Softwraps for long lines");
@@ -85,16 +95,14 @@ public class UISourceViewer extends JPanel implements ICodeListener{
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(sp)        
             .addGroup(layout.createSequentialGroup()
-                .addComponent(checkBox)
-                .addGap(0, 247, Short.MAX_VALUE))
-            .addComponent(sp)
+                .addComponent(checkBox))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(sp, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            layout.createSequentialGroup()
+            .addComponent(sp)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                 .addComponent(checkBox))
         );
     }
@@ -103,9 +111,11 @@ public class UISourceViewer extends JPanel implements ICodeListener{
         if(checkBox.isSelected()) {
             textArea.setLineWrap(true);
             sp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            callbacks.saveExtensionSetting("wrapLinesInSourceViewer", "true");
         } else {
             textArea.setLineWrap(false);
             sp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED); 
+            callbacks.saveExtensionSetting("wrapLinesInSourceViewer", "false");
         }
     }
     

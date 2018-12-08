@@ -21,34 +21,41 @@ package de.rub.nds.burp.espresso.gui.attacker.saml;
 import de.rub.nds.burp.espresso.gui.attacker.IAttack;
 import de.rub.nds.burp.utilities.Logging;
 import de.rub.nds.burp.utilities.XMLHelper;
-import de.rub.nds.burp.utilities.attacks.signatureFaking.SignatureFakingOracle;
-import de.rub.nds.burp.utilities.attacks.signatureFaking.exceptions.CertificateHandlerException;
-import de.rub.nds.burp.utilities.attacks.signatureFaking.exceptions.SignatureFakingException;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
+import de.rub.nds.burp.utilities.listeners.CodeListenerControllerType;
 import de.rub.nds.burp.utilities.listeners.events.SamlCodeEvent;
+import de.rub.nds.burp.utilities.listeners.events.SigAlgoCodeEvent;
+import de.rub.nds.burp.utilities.listeners.events.SignatureCodeEvent;
+import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import wsattacker.library.xmlutilities.dom.DomUtilities;
-import wsattacker.library.xmlutilities.namespace.NamespaceConstants;
 
 /**
  * The Signature Exlusion Attack
  * @author Nurullah Erinola
  * @version 1.0
  */
-public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
+public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
     
+    private String getParamSignature = null;
+    private String getParamSigAlgo = null;
     private String saml = null;
     private Document doc = null;
     private CodeListenerController listeners = null;
+    private CodeListenerController listenersSig = null;
     private DefaultListModel signaturePaths;
+    private ArrayList<Element> signatures;
+    private boolean sigInGetParam = false;
+    private String sigPathGetPost = "Signature as GET/POST parameter";
     
     /**
      * Creates new form UISigExcAttack
      */
-    public UISigFakeAttack() {
+    public UISigExcAttack() {
         initComponents();
     }
 
@@ -64,31 +71,28 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
         jLabel1 = new javax.swing.JLabel();
         jScrollPaneSignatures = new javax.swing.JScrollPane();
         jListSignatures = new javax.swing.JList<>();
-        jButtonFakeSelected = new javax.swing.JButton();
-        jButtonFakeAll = new javax.swing.JButton();
-        jCheckBoxReplaceAll = new javax.swing.JCheckBox();
+        jButtonDeleteSelected = new javax.swing.JButton();
+        jButtonDeleteAll = new javax.swing.JButton();
 
-        jLabel1.setText("Select to be faked signature:");
+        jLabel1.setText("Select signature to be faked:");
 
         jScrollPaneSignatures.setViewportView(jListSignatures);
 
-        jButtonFakeSelected.setText("Fake");
-        jButtonFakeSelected.setToolTipText("Fake selected signatures.");
-        jButtonFakeSelected.addActionListener(new java.awt.event.ActionListener() {
+        jButtonDeleteSelected.setText("Delete");
+        jButtonDeleteSelected.setToolTipText("Delete selected signatures.");
+        jButtonDeleteSelected.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonFakeSelectedActionPerformed(evt);
+                jButtonDeleteSelectedActionPerformed(evt);
             }
         });
 
-        jButtonFakeAll.setText("Fake all");
-        jButtonFakeAll.setToolTipText("Fake all signatures.");
-        jButtonFakeAll.addActionListener(new java.awt.event.ActionListener() {
+        jButtonDeleteAll.setText("Delete all");
+        jButtonDeleteAll.setToolTipText("Delete all signatures.");
+        jButtonDeleteAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonFakeAllActionPerformed(evt);
+                jButtonDeleteAllActionPerformed(evt);
             }
         });
-
-        jCheckBoxReplaceAll.setText("Replace all certificates");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -100,14 +104,11 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
                     .addComponent(jScrollPaneSignatures, javax.swing.GroupLayout.DEFAULT_SIZE, 559, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButtonFakeSelected)
+                                .addComponent(jButtonDeleteSelected)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButtonFakeAll))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jCheckBoxReplaceAll)))
+                                .addComponent(jButtonDeleteAll)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -115,63 +116,76 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jCheckBoxReplaceAll))
+                .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPaneSignatures, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButtonFakeAll)
-                    .addComponent(jButtonFakeSelected))
+                    .addComponent(jButtonDeleteAll)
+                    .addComponent(jButtonDeleteSelected))
                 .addContainerGap(104, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButtonFakeAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonFakeAllActionPerformed
-        if(doc != null) {
-            Logging.getInstance().log(getClass(), "Start signature faking.", Logging.INFO);
-            try {
-                SignatureFakingOracle oracle = new SignatureFakingOracle(doc, jCheckBoxReplaceAll.isSelected());
-                oracle.fakeSignatures();
-                doc = oracle.getDocument();
-            } catch (SignatureFakingException ex) {
-                Logging.getInstance().log(UISigFakeAttack.class, ex);
-            }
-            saml = XMLHelper.docToString(doc);
-            notifyAllTabs(new SamlCodeEvent(this, saml)); 
-            Logging.getInstance().log(getClass(), "Signature faking successfull.", Logging.INFO);
-        }
-    }//GEN-LAST:event_jButtonFakeAllActionPerformed
-
-    private void jButtonFakeSelectedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonFakeSelectedActionPerformed
-        if(doc != null && !jListSignatures.isSelectionEmpty()) {
+    private void jButtonDeleteAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteAllActionPerformed
+        if(!signatures.isEmpty()) {
             Logging.getInstance().log(getClass(), "Start signature exclusion.", Logging.INFO);
-            try {
-                SignatureFakingOracle oracle = new SignatureFakingOracle(doc, jCheckBoxReplaceAll.isSelected());
-                for(int i : jListSignatures.getSelectedIndices()) {
-                    oracle.fakeSignature(i);
-                }
-                doc = oracle.getDocument();
-            } catch (CertificateHandlerException | SignatureFakingException ex) {
-                Logging.getInstance().log(UISigFakeAttack.class, ex);
+            for(Element element: signatures) {
+                removeElement(element);
             }
             saml = XMLHelper.docToString(doc);
             notifyAllTabs(new SamlCodeEvent(this, saml));
             Logging.getInstance().log(getClass(), "Signature exclusion successfull.", Logging.INFO);
         }
-    }//GEN-LAST:event_jButtonFakeSelectedActionPerformed
+        if(sigInGetParam == true) {
+            notifyAllTabs(new SigAlgoCodeEvent(this, ""));
+            notifyAllTabs(new SignatureCodeEvent(this, ""));
+        }
+    }//GEN-LAST:event_jButtonDeleteAllActionPerformed
+
+    private void jButtonDeleteSelectedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteSelectedActionPerformed
+        if(!jListSignatures.isSelectionEmpty()) {
+            Logging.getInstance().log(getClass(), "Start signature exclusion.", Logging.INFO);
+            for(int i : jListSignatures.getSelectedIndices()) {
+                if(signaturePaths.get(i).equals(sigPathGetPost)) {
+                    notifyAllTabs(new SigAlgoCodeEvent(this, ""));
+                    notifyAllTabs(new SignatureCodeEvent(this, ""));
+                } else {
+                    removeElement(signatures.get(i));
+                }
+            }
+            saml = XMLHelper.docToString(doc);
+            notifyAllTabs(new SamlCodeEvent(this, saml));
+            Logging.getInstance().log(getClass(), "Signature exclusion successfull.", Logging.INFO);
+        }
+    }//GEN-LAST:event_jButtonDeleteSelectedActionPerformed
  
+    /**
+     * Remove given node
+     */
+    private void removeElement(Element element) {
+        if (element.getParentNode() != null)
+        {
+            element.getParentNode().removeChild( element );
+        }
+    }    
+    
     /**
      * Update JList with signature paths
      */
     private void update() {
+        signatures = new ArrayList<>();
         signaturePaths = new DefaultListModel();
         doc = XMLHelper.stringToDom(saml);
         // Search signatures in SAML message
-        NodeList list = doc.getElementsByTagNameNS(NamespaceConstants.URI_NS_DS, "Signature");
+        NodeList list = doc.getElementsByTagNameNS("*", "Signature");
         for(int i = 0; i < list.getLength(); i++) {
+            signatures.add((Element) list.item(i));
             signaturePaths.addElement(DomUtilities.getFastXPath(list.item(i)));
+        }
+        // Seach signature in GET parameters
+        if (sigInGetParam == true) {
+            signaturePaths.addElement(sigPathGetPost);
         }
         jListSignatures.setModel(signaturePaths);
     }
@@ -182,18 +196,36 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        this.saml = evt.getCode();
+        if(evt instanceof SamlCodeEvent) {
+            this.saml = evt.getCode();
+        } else if(evt instanceof SignatureCodeEvent) {
+            this.getParamSignature = evt.getCode();           
+            sigInGetParam = !"".equals(getParamSigAlgo) && !"".equals(getParamSignature)
+                    && getParamSigAlgo != null && getParamSignature != null;
+        } else if(evt instanceof SigAlgoCodeEvent) {
+            this.getParamSigAlgo = evt.getCode();
+            sigInGetParam = !"".equals(getParamSigAlgo) && !"".equals(getParamSignature)
+                    && getParamSigAlgo != null && getParamSignature != null;
+        }
         update();
     }
 
     /**
      * Notify all registered listeners with the new code.
-     * @param evt The new source code.
+     * @param evt The event with the new code.
      */
     @Override
     public void notifyAllTabs(AbstractCodeEvent evt) {
-        if(listeners != null){
-            listeners.notifyAll(evt);
+        if(evt instanceof SamlCodeEvent) {
+            if(listeners != null) {
+                listeners.notifyAll(evt);
+                Logging.getInstance().log(getClass(), "Notify all Listeners (SamlCodeEvent).", Logging.DEBUG);
+            }
+        } else if(evt instanceof SigAlgoCodeEvent || evt instanceof SignatureCodeEvent) {
+            if(listenersSig != null) {
+                listenersSig.notifyAll(evt);
+                Logging.getInstance().log(getClass(), "Notify all Listeners (SigAlgoCodeEvent/SignatureCodeEvent).", Logging.DEBUG);
+            }
         }
     }
 
@@ -203,14 +235,18 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
      */
     @Override
     public void setListener(CodeListenerController listeners) {
-        this.listeners = listeners;
-        this.listeners.addCodeListener(this);
+        if(listeners.getType() == CodeListenerControllerType.SAML) {
+            this.listeners = listeners;
+            this.listeners.addCodeListener(this);
+        } else if(listeners.getType() == CodeListenerControllerType.SIGNATURE) {
+            this.listenersSig = listeners;
+            this.listenersSig.addCodeListener(this);
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonFakeAll;
-    private javax.swing.JButton jButtonFakeSelected;
-    private javax.swing.JCheckBox jCheckBoxReplaceAll;
+    private javax.swing.JButton jButtonDeleteAll;
+    private javax.swing.JButton jButtonDeleteSelected;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JList<String> jListSignatures;
     private javax.swing.JScrollPane jScrollPaneSignatures;
