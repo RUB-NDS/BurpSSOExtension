@@ -26,23 +26,26 @@ import java.util.Arrays;
  */
 public enum SymmetricAlgorithm {
     
-    AES128_CBC("AES/CBC/NoPadding", "http://www.w3.org/2001/04/xmlenc#aes128-cbc"),
-    AES192_CBC("AES/CBC/NoPadding", "http://www.w3.org/2001/04/xmlenc#aes192-cbc"),
-    AES256_CBC("AES/CBC/NoPadding", "http://www.w3.org/2001/04/xmlenc#aes256-cbc"),
-    AES128_GCM("AES/GCM/NoPadding", "http://www.w3.org/2009/xmlenc11#aes128-gcm"),
-    AES192_GCM("AES/GCM/NoPadding", "http://www.w3.org/2009/xmlenc11#aes192-gcm"),
-    AES256_GCM("AES/GCM/NoPadding", "http://www.w3.org/2009/xmlenc11#aes256-gcm"),
-    TRIPLEDES_CBC("DESede/CBC/NoPadding", "http://www.w3.org/2001/04/xmlenc#tripledes-cbc");
+    AES128_CBC("AES/CBC/NoPadding", "http://www.w3.org/2001/04/xmlenc#aes128-cbc", 128),
+    AES192_CBC("AES/CBC/NoPadding", "http://www.w3.org/2001/04/xmlenc#aes192-cbc", 192),
+    AES256_CBC("AES/CBC/NoPadding", "http://www.w3.org/2001/04/xmlenc#aes256-cbc", 256),
+    AES128_GCM("AES/GCM/NoPadding", "http://www.w3.org/2009/xmlenc11#aes128-gcm", 128),
+    AES192_GCM("AES/GCM/NoPadding", "http://www.w3.org/2009/xmlenc11#aes192-gcm", 192),
+    AES256_GCM("AES/GCM/NoPadding", "http://www.w3.org/2009/xmlenc11#aes256-gcm", 256),
+    TRIPLEDES_CBC("DESede/CBC/NoPadding", "http://www.w3.org/2001/04/xmlenc#tripledes-cbc", 192);
     
     private String javaName;
 
     private String uri;
+    
+    private int keyLength;
 
-    SymmetricAlgorithm(String javaName, String uri) {
+    SymmetricAlgorithm(String javaName, String uri, int keyLength) {
         this.javaName = javaName;
         this.uri = uri;
+        this.keyLength = keyLength;
     }
-    
+        
     public static String[] getURIs() {
         return Arrays.stream(SymmetricAlgorithm.values()).map(SymmetricAlgorithm::getUri).toArray(String[]::new);
     }
@@ -66,6 +69,10 @@ public enum SymmetricAlgorithm {
 
     public String getUri() {
         return uri;
+    }
+    
+    public int getKeyLength() {
+        return keyLength;
     }
 
     public void setUri(String uri) {

@@ -57,7 +57,7 @@ public class ByteArrayHelper {
         if (array == null) {
             array = new byte[0];
         }
-        return bytesToHexString(array, usePrettyPrinting, true);
+        return bytesToHexString(array, usePrettyPrinting, false);
     }
 
     public static String bytesToHexString(byte[] array, boolean usePrettyPrinting, boolean initialNewLine) {
