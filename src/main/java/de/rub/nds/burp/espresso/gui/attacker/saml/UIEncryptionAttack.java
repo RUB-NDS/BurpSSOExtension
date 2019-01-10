@@ -32,17 +32,15 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import wsattacker.library.xmlutilities.dom.DomUtilities;
 
@@ -104,6 +102,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         jScrollPane6 = new javax.swing.JScrollPane();
         jTextAreaXmlHex = new javax.swing.JTextArea();
         jLabelWarningKeySize = new javax.swing.JLabel();
+        jLabelWarningBlockSize = new javax.swing.JLabel();
 
         jLabel3.setText("Certificate:");
 
@@ -179,6 +178,9 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         jLabelWarningKeySize.setForeground(new java.awt.Color(255, 0, 51));
         jLabelWarningKeySize.setText("Need x byte for encryption!");
 
+        jLabelWarningBlockSize.setForeground(new java.awt.Color(255, 0, 51));
+        jLabelWarningBlockSize.setText("Blocksize");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -186,46 +188,48 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addGap(8, 8, 8)
-                                .addComponent(jLabelWarningKeySize, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel1)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 610, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGap(2, 2, 2)
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 610, Short.MAX_VALUE)))
-                        .addGap(2, 2, 2))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel8))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel10)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBoxSymmetricAlgo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonEncryptXML))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jComboBoxPublicAlgo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonEncryptSymmetricKey))
-                    .addComponent(jScrollPane6)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(jScrollPane3)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel10)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jComboBoxSymmetricAlgo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonEncryptXML))
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addGap(8, 8, 8)
+                                .addComponent(jLabelWarningKeySize, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel1)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 612, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 606, Short.MAX_VALUE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 610, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane6))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabelWarningBlockSize))
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel8))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -233,8 +237,8 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
                 .addGap(8, 8, 8)
@@ -255,21 +259,23 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel7)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(jLabelWarningBlockSize))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10)
                     .addComponent(jComboBoxSymmetricAlgo, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButtonEncryptXML))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -331,7 +337,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
     }//GEN-LAST:event_jButtonEncryptXMLActionPerformed
 
     private void jComboBoxSymmetricAlgoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxSymmetricAlgoActionPerformed
-        updateWarningLabel();
+        checkKeyLength();
         updateHexData();
     }//GEN-LAST:event_jComboBoxSymmetricAlgoActionPerformed
 
@@ -367,6 +373,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabelWarningBlockSize;
     private javax.swing.JLabel jLabelWarningKeySize;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -409,25 +416,41 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         jTextAreaSymmetricKey.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void removeUpdate(DocumentEvent e) {
-                updateWarningLabel();
+                checkKeyLength();
             }
 
             @Override
             public void insertUpdate(DocumentEvent e) {
-                updateWarningLabel();
+                checkKeyLength();
             }
 
             @Override
             public void changedUpdate(DocumentEvent arg0) {
-                updateWarningLabel();
+                checkKeyLength();
+            }
+        });
+        jTextAreaXmlHex.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                checkBlocksize();
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                checkBlocksize();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent arg0) {
+                checkBlocksize();
             }
         });
         // Update jLabels and jTextareas
-        updateWarningLabel();
+        checkKeyLength();
         updateHexData();
     }
 
-    private void updateWarningLabel() {
+    private void checkKeyLength() {
         int requiredSize = SymmetricAlgorithm.getByURI(jComboBoxSymmetricAlgo.getItemAt(jComboBoxSymmetricAlgo.getSelectedIndex())).getKeyLength();
         int size = requiredSize - jTextAreaSymmetricKey.getText().replaceAll("\\s", "").length()*4; 
         if (size != 0) {
@@ -439,15 +462,27 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         }
     }
     
+    private void checkBlocksize() {
+        int blocksize = SymmetricAlgorithm.getByURI(jComboBoxSymmetricAlgo.getItemAt(jComboBoxSymmetricAlgo.getSelectedIndex())).getBlockSize();
+        int length = jTextAreaXmlHex.getText().replaceAll("\\s", "").length();
+        if(length % blocksize != 0) {
+            jLabelWarningBlockSize.setText("Note that the block size is "+ blocksize +" bytes!");
+            jButtonEncryptXML.setEnabled(false);
+        } else {
+            jLabelWarningBlockSize.setText("");
+            jButtonEncryptXML.setEnabled(true);
+        }
+    }
+    
     private void updateHexData() {
         String algorithmURI = jComboBoxSymmetricAlgo.getItemAt(jComboBoxSymmetricAlgo.getSelectedIndex());
         SymmetricAlgorithm algorithm = SymmetricAlgorithm.getByURI(algorithmURI);
         byte[] xml = jTextAreaXmlData.getText().getBytes();
         byte[] padding = xmlEncryptionHelper.computePadding(xml, algorithm);
         byte[] data = ByteArrayHelper.concatenate(xml, padding);
-        jTextAreaXmlHex.setText(ByteArrayHelper.bytesToHexString(data));
+        jTextAreaXmlHex.setText(ByteArrayHelper.bytesToHexString(data));        
     }
-
+    
     /**
      * Set the listener for the editor.
      *
