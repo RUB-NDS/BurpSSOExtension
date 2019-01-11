@@ -463,14 +463,17 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
     }
     
     private void checkBlocksize() {
-        int blocksize = SymmetricAlgorithm.getByURI(jComboBoxSymmetricAlgo.getItemAt(jComboBoxSymmetricAlgo.getSelectedIndex())).getBlockSize();
-        int length = jTextAreaXmlHex.getText().replaceAll("\\s", "").length();
-        if(length % blocksize != 0) {
-            jLabelWarningBlockSize.setText("Note that the block size is "+ blocksize +" bytes!");
-            jButtonEncryptXML.setEnabled(false);
-        } else {
-            jLabelWarningBlockSize.setText("");
-            jButtonEncryptXML.setEnabled(true);
+        SymmetricAlgorithm algorithm = SymmetricAlgorithm.getByURI(jComboBoxSymmetricAlgo.getItemAt(jComboBoxSymmetricAlgo.getSelectedIndex()));
+        if(!algorithm.isUsingGCMMode()) {
+            int blocksize = algorithm.getBlockSize();
+            int length = jTextAreaXmlHex.getText().replaceAll("\\s", "").length();
+            if(length % blocksize != 0) {
+                jLabelWarningBlockSize.setText("Input length not multiple of "+ blocksize +" bytes!");
+                jButtonEncryptXML.setEnabled(false);
+            } else {
+                jLabelWarningBlockSize.setText("");
+                jButtonEncryptXML.setEnabled(true);
+            }
         }
     }
     

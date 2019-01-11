@@ -78,7 +78,11 @@ public enum SymmetricAlgorithm {
     public void setUri(String uri) {
         this.uri = uri;
     }
-    
+
+    public boolean isUsingGCMMode() {
+        return (this == AES128_GCM || this == AES192_GCM || this == AES256_GCM);
+    }
+        
     public boolean isUsingPadding() {
         return (this == AES128_CBC || this == AES192_CBC || this == AES256_CBC || this == TRIPLEDES_CBC);
     }

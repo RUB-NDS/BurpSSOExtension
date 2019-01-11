@@ -24,7 +24,6 @@ import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -38,6 +37,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -88,9 +88,16 @@ public class XmlEncryptionHelper {
             InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
         Cipher cipher = Cipher.getInstance(algorithm.getJavaName());
         SecretKey secretKey = new SecretKeySpec(symmetricKey, algorithm.getSecretKeyAlgorithm());
-        IvParameterSpec ivParameterSpec = new IvParameterSpec(new byte[algorithm.getIvLength()]);
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec);
-        byte[] result = ByteArrayHelper.concatenate(ivParameterSpec.getIV(), cipher.doFinal(data));
+        byte[] result;
+        if(!algorithm.isUsingGCMMode()) {          
+            IvParameterSpec ivParameterSpec = new IvParameterSpec(new byte[algorithm.getIvLength()]);
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec);
+            result = ByteArrayHelper.concatenate(ivParameterSpec.getIV(), cipher.doFinal(data));
+        } else {
+            GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, new byte[algorithm.getIvLength()]);
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, gcmParameterSpec);
+            result = ByteArrayHelper.concatenate(gcmParameterSpec.getIV(), cipher.doFinal(data));        
+        }     
         return Base64.getEncoder().encodeToString(result);
     }
 
