@@ -130,6 +130,8 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         descriptionTextArea = new javax.swing.JTextArea();
+        utf16BERadioButton = new javax.swing.JRadioButton();
+        utf16LERadioButton = new javax.swing.JRadioButton();
 
         modifyButton.setText("Modify");
         modifyButton.addActionListener(new java.awt.event.ActionListener() {
@@ -256,6 +258,12 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         descriptionTextArea.setBorder(null);
         jScrollPane1.setViewportView(descriptionTextArea);
 
+        encodingButtonGroup.add(utf16BERadioButton);
+        utf16BERadioButton.setText("UTF-16BE");
+
+        encodingButtonGroup.add(utf16LERadioButton);
+        utf16LERadioButton.setText("UTF-16LE");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -263,10 +271,6 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(modifyButton))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3)
@@ -294,14 +298,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                                     .addComponent(targetFileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(helperURLTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(55, 55, 55)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(utf16RadioButton)
-                            .addComponent(jLabel1)
-                            .addComponent(utf7RadioButton)
-                            .addComponent(utf8RadioButton))
-                        .addGap(0, 102, Short.MAX_VALUE))
+                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel8)
@@ -317,12 +314,28 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                                 .addComponent(publicRadioButton))
                             .addComponent(dtdComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 666, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(jScrollPane1))))
-                .addContainerGap())
+                        .addComponent(jLabel2)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(utf16LERadioButton)
+                    .addComponent(utf16BERadioButton)
+                    .addComponent(utf16RadioButton)
+                    .addComponent(utf8RadioButton)
+                    .addComponent(utf7RadioButton)
+                    .addComponent(jLabel1))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(modifyButton)
+                .addGap(12, 12, 12))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(696, 696, 696)
+                .addComponent(jScrollPane1)
+                .addGap(12, 12, 12))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -336,7 +349,14 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(utf8RadioButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(utf16RadioButton))
+                        .addComponent(utf16RadioButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(utf16BERadioButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(utf16LERadioButton)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel8)))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -357,11 +377,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel7)
-                            .addComponent(attackeListenerTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(3, 3, 3)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel2))))
+                            .addComponent(attackeListenerTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -377,7 +393,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                             .addComponent(enableEditoringCheckbox)
                             .addComponent(autoModifyCheckbox))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(modifyButton)
                 .addContainerGap())
@@ -471,6 +487,12 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                 break;
             case UTF_16:
                 utf16RadioButton.setSelected(true);
+                break;
+            case UTF_16LE:
+                utf16LERadioButton.setSelected(true);
+                break;
+            case UTF_16BE:
+                utf16BERadioButton.setSelected(true);
                 break;
             default:
                 break;
@@ -605,6 +627,10 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         utf8RadioButton.setActionCommand(EncodingType.UTF_8.getEncoding());
         utf16RadioButton.addActionListener(encodingRadioButtonGroupListener);
         utf16RadioButton.setActionCommand(EncodingType.UTF_16.getEncoding());
+        utf16LERadioButton.addActionListener(encodingRadioButtonGroupListener);
+        utf16LERadioButton.setActionCommand(EncodingType.UTF_16LE.getEncoding());
+        utf16BERadioButton.addActionListener(encodingRadioButtonGroupListener);
+        utf16BERadioButton.setActionCommand(EncodingType.UTF_16BE.getEncoding());
         // Set dtd vectors sorted by name
         dtdComboBox.setModel(new DefaultComboBoxModel(dtdNames.toArray()));
         dtdComboBox.setRenderer(new BasicComboBoxRenderer() {
@@ -697,9 +723,28 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                         } catch (UnsupportedEncodingException ex) {
                             Logging.getInstance().log(getClass(), ex);
                         }
-//                        charset = new CharsetProvider().charsetForName("UTF-16");
-//                        byteBuffer = charset.encode(code);
-//                        code = new String(byteBuffer.array()).substring(0, byteBuffer.limit());
+                        break;
+                    case UTF_16BE:
+                        if (! new String(code).startsWith("<?xml")) {
+                            String tmp = "<?xml version=\"1.0\" encoding=\"UTF-16BE\"?>" + new String(code);
+                            code = tmp.getBytes();
+                        }
+                        try {
+                            code = new String(code, "UTF-8").getBytes("UTF-16BE");
+                        } catch (UnsupportedEncodingException ex) {
+                            Logging.getInstance().log(getClass(), ex);
+                        }
+                        break;
+                    case UTF_16LE:
+                        if (! new String(code).startsWith("<?xml")) {
+                            String tmp = "<?xml version=\"1.0\" encoding=\"UTF-16LE\"?>" + new String(code);
+                            code = tmp.getBytes();
+                        }
+                        try {
+                            code = new String(code, "UTF-8").getBytes("UTF-16LE");
+                        } catch (UnsupportedEncodingException ex) {
+                            Logging.getInstance().log(getClass(), ex);
+                        }
                         break;
                     default:
                         break;
@@ -827,6 +872,8 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     private javax.swing.JRadioButton systemRadioButton;
     private javax.swing.JList<String> targetFileList;
     private javax.swing.JTextField targetFileTextField;
+    private javax.swing.JRadioButton utf16BERadioButton;
+    private javax.swing.JRadioButton utf16LERadioButton;
     private javax.swing.JRadioButton utf16RadioButton;
     private javax.swing.JRadioButton utf7RadioButton;
     private javax.swing.JRadioButton utf8RadioButton;
