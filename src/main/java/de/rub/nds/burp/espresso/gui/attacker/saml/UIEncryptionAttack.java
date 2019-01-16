@@ -126,10 +126,10 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
             }
         });
 
-        jLabel4.setText("Symmetric key:");
+        jLabel4.setText("Symmetric key (in hexadecimal):");
         jLabel4.setToolTipText("Will be encrypted with the server public key.");
 
-        jLabel5.setText("EncryptedKey:");
+        jLabel5.setText("Encrypted key:");
 
         jTextAreaEncryptedKey.setEditable(false);
         jTextAreaEncryptedKey.setColumns(20);
@@ -145,7 +145,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         jTextAreaXmlData.setText("<saml:Assertion xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\" Version=\"2.0\" ID=\"_009df3b376b737bdb3fd890f6740543e9ca17c4e71\" IssueInstant=\"2018-03-04T12:46:12Z\">\n</saml:Assertion>");
         jScrollPane4.setViewportView(jTextAreaXmlData);
 
-        jLabel8.setText("CipherData:");
+        jLabel8.setText("Encrypted message:");
 
         jTextAreaCipherData.setEditable(false);
         jTextAreaCipherData.setColumns(20);
@@ -202,34 +202,32 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonEncryptXML))
                     .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel1)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 612, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel4)
-                                .addGap(8, 8, 8)
-                                .addComponent(jLabelWarningKeySize, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel1)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 612, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabelWarningKeySize, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel5)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 606, Short.MAX_VALUE)))
+                                .addGap(61, 61, 61))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)))
+                    .addComponent(jLabel3)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabelWarningBlockSize))
+                    .addComponent(jLabel6)
+                    .addComponent(jLabel8)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 610, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jScrollPane6))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel7)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabelWarningBlockSize))
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel8))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(jScrollPane6)
+                        .addGap(2, 2, 2)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -338,6 +336,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
 
     private void jComboBoxSymmetricAlgoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxSymmetricAlgoActionPerformed
         checkKeyLength();
+        checkBlocksize();
         updateHexData();
     }//GEN-LAST:event_jComboBoxSymmetricAlgoActionPerformed
 
@@ -447,6 +446,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         });
         // Update jLabels and jTextareas
         checkKeyLength();
+        checkBlocksize();
         updateHexData();
     }
 
@@ -455,25 +455,19 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         int size = requiredSize - jTextAreaSymmetricKey.getText().replaceAll("\\s", "").length()*4; 
         if (size != 0) {
             jLabelWarningKeySize.setText("Need " + requiredSize/8 + " byte for encryption!");
-            jButtonEncryptXML.setEnabled(false);
         } else {
             jLabelWarningKeySize.setText("");
-            jButtonEncryptXML.setEnabled(true);
         }
     }
     
     private void checkBlocksize() {
         SymmetricAlgorithm algorithm = SymmetricAlgorithm.getByURI(jComboBoxSymmetricAlgo.getItemAt(jComboBoxSymmetricAlgo.getSelectedIndex()));
-        if(!algorithm.isUsingGCMMode()) {
-            int blocksize = algorithm.getBlockSize();
-            int length = jTextAreaXmlHex.getText().replaceAll("\\s", "").length();
-            if(length % blocksize != 0) {
+        int blocksize = algorithm.getBlockSize();
+        int length = jTextAreaXmlHex.getText().replaceAll("\\s", "").length();
+        if(!algorithm.isUsingGCMMode() && length % blocksize != 0) {
                 jLabelWarningBlockSize.setText("Input length not multiple of "+ blocksize +" bytes!");
-                jButtonEncryptXML.setEnabled(false);
-            } else {
+        } else {
                 jLabelWarningBlockSize.setText("");
-                jButtonEncryptXML.setEnabled(true);
-            }
         }
     }
     

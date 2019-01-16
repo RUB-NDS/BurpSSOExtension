@@ -42,7 +42,7 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
     private final String SIGNATURE_EXCLUSION = "Signature Exclusion";
     private final String SIGNATURE_FAKING = "Signature Faking";
     private final String DTD = "DTD";
-    private final String ENCRYPTION = "ENCRYPTION";
+    private final String ENCRYPTION = "Encryption";
 
     private JComboBox attackComboBox;
     private JLabel descriptionLabel;
