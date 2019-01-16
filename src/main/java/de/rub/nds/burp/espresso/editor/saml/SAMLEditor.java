@@ -52,17 +52,17 @@ import javax.swing.event.ChangeListener;
 public class SAMLEditor implements IMessageEditorTabFactory{
     private final IBurpExtenderCallbacks callbacks;
     private final IExtensionHelpers helpers;
-    
+
     private final String samlRequest = "SAMLRequest";
     private final String samlResponse = "SAMLResponse";
     private final String signature = "Signature";
     private final String signatureAlgorithm = "SigAlg";
-    
+
     /**
      * SAML Editor.
      * Create a new SAMLEditor factory.
      * @param callbacks {@link burp.IBurpExtenderCallbacks}
-     * 
+     *
      */
     public SAMLEditor(IBurpExtenderCallbacks callbacks) {
             this.callbacks = callbacks;
@@ -90,21 +90,21 @@ public class SAMLEditor implements IMessageEditorTabFactory{
         private final UIRawEditor rawEditor;
         private final UICertificateViewer certificateViewer;
         private final UISAMLAttacker samlAttacker;
-        
+
         private boolean rawEditorSelected = false;
         private boolean decDeflateActive;
         private boolean decURLActive;
         private boolean decBase64Active;
         private boolean sigAlgoChanged;
         private boolean sigChanged;
-        
+
         private byte[] currentMessage;
         private byte[] unmodifiedMessage;
         private String encodedSAML;
         private IParameter samlContent = null;
         private IParameter sigAlgoContent = null;
         private IParameter sigContent = null;
-        
+
         private CodeListenerController listeners = new CodeListenerController(CodeListenerControllerType.SAML);
         private CodeListenerController listenersSignature = new CodeListenerController(CodeListenerControllerType.SIGNATURE);
 
@@ -116,12 +116,12 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             this.editable = editable;
             this.setListener(listenersSignature);
             guiContainer = new JTabbedPane();
-            
+
             // create a source code viewer
             sourceViewer = new UISourceViewer(callbacks);
             sourceViewer.setListener(listeners);
             guiContainer.addTab("Source Code", sourceViewer);
-            
+
             // create a raw tab, its an instance of Burp's text editor, to display our deserialized data
             rawEditor = new UIRawEditor(callbacks, editable);
             rawEditor.setListener(listeners);
@@ -131,18 +131,18 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             certificateViewer = new UICertificateViewer(callbacks);
             certificateViewer.setListener(listeners);
             guiContainer.addTab("Certificates", certificateViewer);
-            
+
             // create the attacker
             samlAttacker = new UISAMLAttacker();
             samlAttacker.setListeners(listeners);
             samlAttacker.setListenersSignature(listenersSignature);
             guiContainer.addTab("Attacker", samlAttacker);
-            
+
             guiContainer.addChangeListener(new ChangeListener() {
                @Override
                 public void stateChanged(ChangeEvent ce) {
                     if(rawEditorSelected == true && rawEditor.isTextModified()) {
-                        listeners.notifyAll(new SamlCodeEvent(rawEditor, new String(rawEditor.getText())));
+                        listeners.notifyAll(new SamlCodeEvent(rawEditor, rawEditor.getText()));
                         Logging.getInstance().log(rawEditor.getClass(), "Notify all Listeners.", Logging.DEBUG);
                         rawEditorSelected = false;
                     }
@@ -150,9 +150,9 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 }
             });
         }
-        
+
         /**
-         * 
+         *
          * @return Name of the new tab.
          */
         @Override
@@ -161,17 +161,17 @@ public class SAMLEditor implements IMessageEditorTabFactory{
         }
 
         /**
-         * 
+         *
          * @return The UI component to attach.
          */
         @Override
         public Component getUiComponent() {
             return guiContainer;
         }
-        
+
         /**
-         * 
-         * @param content The http message as bytes. 
+         *
+         * @param content The http message as bytes.
          * @param isRequest True if request, false if response.
          * @return True if the tab should be attached, false otherwise.
          */
@@ -185,8 +185,8 @@ public class SAMLEditor implements IMessageEditorTabFactory{
         }
 
         /**
-         * 
-         * @param content The http message as bytes. 
+         *
+         * @param content The http message as bytes.
          * @return True if SAML is found in the message.
          */
         private boolean isSAML(byte[] content) {
@@ -200,7 +200,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             }
             return false;
         }
-        
+
         /**
          * Set the message to display in the tab.
          * @param content The http message as bytes.
@@ -240,16 +240,16 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 certificateViewer.setEnabled(true);
                 samlAttacker.setEnabled(true);
                 guiContainer.setEnabled(true);
-                
+
                 // change the name of the rawEditor to the Parametername
-                guiContainer.setTitleAt(1, samlContent.getName());   
-                
+                guiContainer.setTitleAt(1, samlContent.getName());
+
                 // disable checkbox to change HTTP-method
                 // only enable if message is GET oder POST
-                if(!helpers.analyzeRequest(content).getMethod().equalsIgnoreCase("GET") 
+                if(!helpers.analyzeRequest(content).getMethod().equalsIgnoreCase("GET")
                         && !helpers.analyzeRequest(content).getMethod().equalsIgnoreCase("POST")) {
                     rawEditor.getChangeHttpMethodCheckBox().setEnabled(false);
-                }                   
+                }
                 Logging.getInstance().log(getClass(), "Begin XML deserialization.", Logging.DEBUG);
 
                 // deserialize the parameter value
@@ -265,20 +265,20 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                 //Notify all tabs with the new saml code.
                 if(xml != null){
                     encodedSAML = xml;
-                    listeners.notifyAll(new SamlCodeEvent(this, xml));
+                    listeners.notifyAll(new SamlCodeEvent(this, xml.getBytes()));
                     Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
                 }
                 // Save SigAlgo and Signature GET parameter. Notify all tabs.
                 sigAlgoContent = helpers.getRequestParameter(content, signatureAlgorithm);
                 if(sigAlgoContent != null) {
                     if(sigAlgoContent.getType() == IParameter.PARAM_URL || sigAlgoContent.getType() == IParameter.PARAM_BODY) {
-                        listenersSignature.notifyAll(new SigAlgoCodeEvent(this, sigAlgoContent.getValue()));
+                        listenersSignature.notifyAll(new SigAlgoCodeEvent(this, sigAlgoContent.getValue().getBytes()));
                     }
-                }                
+                }
                 sigContent = helpers.getRequestParameter(content, signature);
                 if(sigContent != null) {
                     if(sigContent.getType() == IParameter.PARAM_URL || sigContent.getType() == IParameter.PARAM_BODY){
-                        listenersSignature.notifyAll(new SignatureCodeEvent(this, sigContent.getValue()));
+                        listenersSignature.notifyAll(new SignatureCodeEvent(this, sigContent.getValue().getBytes()));
                     }
                 }
             } else {
@@ -286,9 +286,9 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             }
             Logging.getInstance().log(getClass(), "End setMessage().", Logging.DEBUG);
         }
-        
+
         /**
-         * 
+         *
          * @return Get the current message.
          */
         @Override
@@ -303,10 +303,10 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             } catch (IOException ex) {
                 input = new String(samlContent.getValue().getBytes());
                 Logging.getInstance().log(getClass(), "failed to re-encode SAML param", Logging.ERROR);
-            }          
+            }
             // update the message
             // only update the saml parameter with new value
-            if (!rawEditor.getChangeHttpMethodCheckBox().isSelected()) {   
+            if (!rawEditor.getChangeHttpMethodCheckBox().isSelected()) {
                 currentMessage = helpers.updateParameter(currentMessage, helpers.buildParameter(samlContent.getName(), input, samlContent.getType()));
             // update the saml parameter with new value and switch all parameters from url to body or body from url
             } else if (rawEditor.getChangeAllParameters().isSelected()) {
@@ -329,16 +329,16 @@ public class SAMLEditor implements IMessageEditorTabFactory{
                             break;
                         case IParameter.PARAM_BODY:
                             currentMessage = helpers.addParameter(currentMessage, helpers.buildParameter(samlContent.getName(), input, IParameter.PARAM_URL));
-                            break;                        
+                            break;
                         }
                     } else {
                         currentMessage = helpers.addParameter(currentMessage,param);
                     }
-                }  
+                }
             }
             return currentMessage;
         }
-        
+
         /**
          * Indicator for the proxy to show the original and edited tab.
          * @return True if message is modified by the user.
@@ -347,25 +347,25 @@ public class SAMLEditor implements IMessageEditorTabFactory{
         public boolean isModified() {
             return !encodedSAML.equals(new String(rawEditor.getText()))
                     || rawEditor.getChangeHttpMethodCheckBox().isSelected()
-                    || rawEditor.getChangeAllParameters().isSelected() 
+                    || rawEditor.getChangeAllParameters().isSelected()
                     || decBase64Active != rawEditor.getBase64CheckBox().isSelected()
                     || decURLActive != rawEditor.getUrlCheckBox().isSelected()
                     || decDeflateActive != rawEditor.getDeflateCheckBox().isSelected()
                     || sigAlgoChanged
                     || sigChanged;
         }
-        
+
         /**
-         * 
+         *
          * @return Data selected by the user.
          */
         @Override
         public byte[] getSelectedData() {
                 return rawEditor.getSelectedText();
         }
-        
+
         /**
-         * 
+         *
          * @param input The plain string.
          * @return Encoded SAML message.
          */
@@ -379,11 +379,11 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             if (rawEditor.getUrlCheckBox().isSelected()) {
                 input = helpers.urlEncode(input);
             }
-            return new String(input);    
+            return new String(input);
         }
 
         /**
-         * 
+         *
          * @param samlParam The encoded SAML parameter.
          * @param parameterType If set to IParameter.PARAM_URL, Deflate (de-)compression is used
          * @return Decoded SAML message as XML string.
@@ -398,7 +398,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             rawEditor.clearCheckBoxes();
             if(Encoding.isURLEncoded(samlParam)) {
                 samlParam = helpers.urlDecode(samlParam);
-                rawEditor.getUrlCheckBox().setSelected(true);        
+                rawEditor.getUrlCheckBox().setSelected(true);
                 decURLActive = true;
             }
             if(Encoding.isBase64Encoded(samlParam)) {
@@ -423,17 +423,17 @@ public class SAMLEditor implements IMessageEditorTabFactory{
         @Override
         public void setCode(AbstractCodeEvent evt) {
             if(evt instanceof SigAlgoCodeEvent) {
-                sigAlgoChanged = !sigAlgoContent.getValue().equals(evt.getCode());
-                if(!evt.getCode().equals("")) {
-                    currentMessage = helpers.updateParameter(currentMessage, helpers.buildParameter(sigAlgoContent.getName(), evt.getCode(), sigAlgoContent.getType()));
+                sigAlgoChanged = !sigAlgoContent.getValue().equals(new String(evt.getCode()));
+                if(!evt.getCode().equals(null)) {
+                    currentMessage = helpers.updateParameter(currentMessage, helpers.buildParameter(sigAlgoContent.getName(), new String(evt.getCode()), sigAlgoContent.getType()));
                 } else {
                     // If empty delete SigAlgo parameter
                     currentMessage = helpers.removeParameter(currentMessage, sigAlgoContent);
                 }
             } else if(evt instanceof SignatureCodeEvent) {
-                sigChanged = !sigContent.getValue().equals(evt.getCode());
-                if(!evt.getCode().equals("")) {
-                    currentMessage = helpers.updateParameter(currentMessage, helpers.buildParameter(sigContent.getName(), evt.getCode(), sigContent.getType()));
+                sigChanged = !sigContent.getValue().equals(new String(evt.getCode()));
+                if(!evt.getCode().equals(null)) {
+                    currentMessage = helpers.updateParameter(currentMessage, helpers.buildParameter(sigContent.getName(), new String(evt.getCode()), sigContent.getType()));
                 } else {
                     // If empty delete Signature parameter
                     currentMessage = helpers.removeParameter(currentMessage, sigContent);

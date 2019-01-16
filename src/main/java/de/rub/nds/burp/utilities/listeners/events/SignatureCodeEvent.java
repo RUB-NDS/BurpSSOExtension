@@ -30,8 +30,8 @@ public class SignatureCodeEvent extends AbstractCodeEvent{
      * @param source The origin of the event.
      * @param code The data (source code) to submit.
      */
-    public SignatureCodeEvent(Object source, String code) {
+    public SignatureCodeEvent(Object source, byte[] code) {
         super(source, code);
     }
-    
+
 }

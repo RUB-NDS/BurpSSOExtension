@@ -256,7 +256,7 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
 
         private void modifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyButtonActionPerformed
             Logging.getInstance().log(getClass(), "Wrapping Signature...", Logging.INFO);
-            notifyAllTabs(new SamlCodeEvent(this, finalPayload.getText()));
+            notifyAllTabs(new SamlCodeEvent(this, finalPayload.getText().getBytes()));
         }//GEN-LAST:event_modifyButtonActionPerformed
 
         private void payloadComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_payloadComboBoxItemStateChanged
@@ -268,7 +268,7 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
         private void updateOracleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateOracleActionPerformed
             //A workaround for issue #19
             payloadValueKeyReleased(null);
-            
+
             Document samlDoc = signatureManager.getDocument();
             List<Payload> payloadList = signatureManager.getPayloads();
             wrappingOracle = new WrappingOracle(samlDoc, payloadList, samlSchemaAnalyser);
@@ -327,12 +327,12 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
      */
     private void initXsw() {
         payloadValue.setText(code);
-        
+
         Document doc;
         doc = XMLHelper.stringToDom(code);
         signatureManager = new SignatureManager();
         signatureManager.setDocument(doc);
-        
+
         //Initialize the Payload JCombobox
         List<Payload> payloadList = signatureManager.getPayloads();
         if(payloadList.size() > 0){
@@ -340,46 +340,46 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
 
             //Initialize the Payload Value
             payloadValue.setText(signatureManager.getPayloads().get(0).getValue());
-            
+
             updateOracle.setEnabled(true);
             modifyButton.setEnabled(true);
-            
+
             // init. first payload
             try{
                 payloadBean.setPayload(payloadList.get(0));
             } catch(IndexOutOfBoundsException e){
                 Logging.getInstance().log(getClass(), e);
             }
-            
+
             finalPayload.setText("Modify the Payload (1.) and press Update Oracle (2.).");
         } else {
             attackSlider.setMaximum(0);
             attackDescriptionTextArea.setText("No Attack.");
             finalPayload.setText("No Payload.");
-            
+
             String[] payloadError = {"No Payload found!"};
             payloadComboBox.setModel(new DefaultComboBoxModel(payloadError));
             payloadValue.setText(payloadError[0]);
-            
+
             updateOracle.setEnabled(false);
             modifyButton.setEnabled(false);
         }
-        
+
         //Update the Attack Slider
         attackSlider.setValue(0);
-        
+
         //Update the Attack Number
         attackNumber.setText("0");
-        
+
     }
-       
+
     /**
      * Is called every time new Code is available.
      * @param evt {@link de.rub.nds.burp.utilities.listeners.AbstractCodeEvent} The new source code.
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        this.code = evt.getCode();
+        this.code = new String(evt.getCode());
         initXsw();
 
         // Disable the ui for further editing after modification.

@@ -58,11 +58,11 @@ import org.w3c.dom.NodeList;
  * @version 1.0
  */
 public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
-    
+
     private final String listenURL = "§tf_listenURL§";
     private final String helperURL = "§tf_helperURL§";
     private final String targetFILE = "§tf_targetFILE§";
-    
+
     private String saml = "";
     private String selectedDtdServer = "";
     private String selectedDtdHelper = "";
@@ -73,17 +73,17 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     private static ArrayList<String> dtdNames;
     private static ArrayList<String> dtdDescriptions;
     private boolean needEditor = false;
-    
+
     private JTextArea firstEditor;
     private JTextArea secondEditor;
     private JScrollPane firstScrollPane;
     private JScrollPane secondScrollPane;
-    
+
     /**
      * Creates new form UIDTDAttack
      */
     public UIDTDAttack() {
-        initComponents();       
+        initComponents();
         if (dtds == null && dtdNames == null) {
             readDTDs();
         }
@@ -383,12 +383,12 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
-    
+
     private void modifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyButtonActionPerformed
-        notifyAllTabs(new SamlCodeEvent(this, firstEditor.getText()));
+        notifyAllTabs(new SamlCodeEvent(this, firstEditor.getText().getBytes()));
         Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
     }//GEN-LAST:event_modifyButtonActionPerformed
-       
+
     private void targetFileListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_targetFileListValueChanged
         if(targetFileList.getSelectedValue() != null) {
         targetFileTextField.setText(targetFileList.getSelectedValue());
@@ -403,15 +403,15 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                     int rec = Integer.parseInt(recursiveEntitieTextField.getText());
                     int entity = Integer.parseInt(entityReferencesTextField.getText());
                     for (int i = 1; i <= rec; i++) {
-                        tmp += "<!ENTITY a" + i + " \"";		
+                        tmp += "<!ENTITY a" + i + " \"";
                         for (int j = 1; j <= entity; j++) {
                             tmp += "&a" + (i-1) + ";";
                         }
                         tmp += "\">\n";
                     }
                     tmp += "]>\n" + "<data>&a" + rec + ";</data>";
-                    currentDtdServer = selectedDtdServer.substring(0, selectedDtdServer.lastIndexOf("\"dos\" >")+7).concat(tmp); 
-                }    
+                    currentDtdServer = selectedDtdServer.substring(0, selectedDtdServer.lastIndexOf("\"dos\" >")+7).concat(tmp);
+                }
                 break;
             case "Billion Laughs Attack with Parameter Entities":
                 if (Pattern.matches("[0-9]+", recursiveEntitieTextField.getText()) && Pattern.matches("[0-9]+", entityReferencesTextField.getText())) {
@@ -419,15 +419,15 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                     int rec = Integer.parseInt(recursiveEntitieTextField.getText());
                     int entity = Integer.parseInt(entityReferencesTextField.getText());
                     for (int i = 1; i <= rec; i++) {
-                        tmp += "<!ENTITY % a" + i + " \"";		
+                        tmp += "<!ENTITY % a" + i + " \"";
                         for (int j = 1; j <= entity; j++) {
                             tmp += "%a" + (i-1) + ";";
                         }
                         tmp += "\">\n";
                     }
                     tmp += "<!ENTITY g  \"%a" + rec + ";\">";
-                    currentDtdHelper = selectedDtdHelper.substring(0, selectedDtdHelper.lastIndexOf("\"dos\" >")+7).concat(tmp); 
-                } 
+                    currentDtdHelper = selectedDtdHelper.substring(0, selectedDtdHelper.lastIndexOf("\"dos\" >")+7).concat(tmp);
+                }
                 break;
             case "Quadratic Blowup Attack":
                 if (Pattern.matches("[0-9]+", entityReferencesTextField.getText())) {
@@ -437,8 +437,8 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                         tmp += "&a0;";
                     }
                     tmp += "</data>";
-                    currentDtdServer = selectedDtdServer.substring(0, selectedDtdServer.lastIndexOf("<data>")+6).concat(tmp); 
-                } 
+                    currentDtdServer = selectedDtdServer.substring(0, selectedDtdServer.lastIndexOf("<data>")+6).concat(tmp);
+                }
                 break;
         }
         setDTD();
@@ -452,7 +452,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         } else {
             dtdComboBox.setSelectedItem(dtdComboBox.getSelectedItem());
             firstEditor.setEditable(false);
-            secondEditor.setEditable(false);           
+            secondEditor.setEditable(false);
         }
     }//GEN-LAST:event_enableEditoringCheckboxActionPerformed
 
@@ -488,7 +488,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         }
         if (selectedDTD.getElementsByTagName("helperURL").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
             helperURLTextField.setEnabled(true);
-        }            
+        }
         if (selectedDTD.getElementsByTagName("attackListenerURL").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
             attackeListenerTextField.setEnabled(true);
         }
@@ -499,7 +499,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             publicRadioButton.setEnabled(true);
             attackvector = (Element) XMLHelper.getElementByXPath(dtds,"//config[name='"+dtdComboBox.getSelectedItem()+"']/attackvectors/attackvector[@type='system']");
         } else {
-            attackvector = (Element) selectedDTD.getElementsByTagName("attackvector").item(0);           
+            attackvector = (Element) selectedDTD.getElementsByTagName("attackvector").item(0);
         }
         // Read vectors
         selectedDtdServer = attackvector.getElementsByTagName("directMessage").item(0).getTextContent();
@@ -522,27 +522,27 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
 
     private void autoModifyCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoModifyCheckboxActionPerformed
         if(autoModifyCheckbox.isSelected()) {
-            notifyAllTabs(new SamlCodeEvent(this, firstEditor.getText()));
+            notifyAllTabs(new SamlCodeEvent(this, firstEditor.getText().getBytes()));
             Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
         } else {
-            notifyAllTabs(new SamlCodeEvent(this, saml));
+            notifyAllTabs(new SamlCodeEvent(this, saml.getBytes()));
             Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
         }
     }//GEN-LAST:event_autoModifyCheckboxActionPerformed
- 
+
     /**
      * Set DTDs in textfields.
-     */  
+     */
     private void setDTD() {
         firstEditor.setText(currentDtdServer);
         if(needEditor) {
             secondEditor.setText(currentDtdHelper);
         }
     }
-    
+
     /**
      * Read all DTDs from resources and save it.
-     */    
+     */
     private void readDTDs() {
         try {
             dtds = XMLHelper.stringToDom(IOUtils.toString(getClass().getClassLoader().getResource("dtd_configs.xml"),"UTF-8"));
@@ -560,14 +560,14 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             Logging.getInstance().log(getClass(), ex);
         }
     }
-    
+
     private void initEditorsAndListener() {
         firstEditor = new JTextArea();
         firstEditor.setEditable(false);
-        firstEditor.getDocument().addDocumentListener(new DocumentListener() {           
-            private void notify(DocumentEvent de) {                                              
+        firstEditor.getDocument().addDocumentListener(new DocumentListener() {
+            private void notify(DocumentEvent de) {
                 if(autoModifyCheckbox.isSelected()) {
-                    notifyAllTabs(new SamlCodeEvent(this, firstEditor.getText()));
+                    notifyAllTabs(new SamlCodeEvent(this, firstEditor.getText().getBytes()));
                     Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
                 }
             }
@@ -582,7 +582,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             @Override
             public void changedUpdate(DocumentEvent de) {
                 notify(de);
-            }  
+            }
         });
         secondEditor = new JTextArea();
         secondEditor.setEditable(false);
@@ -607,7 +607,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         utf16RadioButton.setActionCommand(EncodingType.UTF_16.getEncoding());
         // Set dtd vectors sorted by name
         dtdComboBox.setModel(new DefaultComboBoxModel(dtdNames.toArray()));
-        dtdComboBox.setRenderer(new BasicComboBoxRenderer() {            
+        dtdComboBox.setRenderer(new BasicComboBoxRenderer() {
             @Override
             public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 JComponent comp = (JComponent) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
@@ -615,9 +615,9 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                     descriptionTextArea.setText(dtdDescriptions.get(index));
                 }
                 return comp;
-            }       
-        });  
-        dtdComboBox.setSelectedIndex(0);          
+            }
+        });
+        dtdComboBox.setSelectedIndex(0);
     }
 
      /**
@@ -642,15 +642,15 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
      */
     private void setValues() {
         targetFileTextField.setText(targetFileTextField.getText());
-    }  
-    
+    }
+
     /**
      * Is called every time new Code is available.
      * @param evt {@link de.rub.nds.burp.utilities.listeners.AbstractCodeEvent} The new source code.
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        this.saml = evt.getCode();
+        this.saml = new String(evt.getCode());
     }
 
     /**
@@ -659,33 +659,51 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
      */
     @Override
     public void notifyAllTabs(AbstractCodeEvent evt) {
-        if(evt instanceof SamlCodeEvent) { 
-            String code = evt.getCode();
+        if(evt instanceof SamlCodeEvent) {
+            byte [] code = evt.getCode();
             if(listeners != null){
                 // Encode dtd vector if needed
                 switch(EncodingType.fromString(encodingButtonGroup.getSelection().getActionCommand())) {
                     case UTF_7:
                         Charset charset = new CharsetProvider().charsetForName("UTF-7");
-                        ByteBuffer byteBuffer = charset.encode(code);
-                        code = new String(byteBuffer.array()).substring(0, byteBuffer.limit());
+                        try {
+                            if (! new String(code, "UTF-8").startsWith("<?xml")) {
+                                String tmp = "<?xml version=\"1.0\" encoding=\"UTF-7\"?>" + new String(code, "UTF-8");
+                                code = tmp.getBytes();
+                            }
+                            ByteBuffer byteBuffer = charset.encode(new String(code, "UTF-8"));
+                            byte[] ba = new byte[byteBuffer.remaining()];
+                            byteBuffer.get(ba,0,ba.length);
+                            code = ba;
+                        } catch (UnsupportedEncodingException ex) {
+                            Logging.getInstance().log(getClass(), ex);
+                        }
+//                        code = new String(byteBuffer.array()).substring(0, byteBuffer.limit());
                         break;
                     case UTF_8:
                         try {
-                            code = new String(code.getBytes("UTF-8"), "UTF-8");
+                            code = new String(code, "UTF-8").getBytes();
                         } catch (UnsupportedEncodingException ex) {
                             Logging.getInstance().log(getClass(), ex);
                         }
                         break;
                     case UTF_16:
+                        if (! new String(code).startsWith("<?xml")) {
+                            String tmp = "<?xml version=\"1.0\" encoding=\"UTF-16\"?>" + new String(code);
+                            code = tmp.getBytes();
+                        }
                         try {
-                            code = new String(code.getBytes("UTF-8"), "UTF-16");
+                            code = new String(code, "UTF-8").getBytes("UTF-16");
                         } catch (UnsupportedEncodingException ex) {
                             Logging.getInstance().log(getClass(), ex);
                         }
+//                        charset = new CharsetProvider().charsetForName("UTF-16");
+//                        byteBuffer = charset.encode(code);
+//                        code = new String(byteBuffer.array()).substring(0, byteBuffer.limit());
                         break;
                     default:
                         break;
-                }            
+                }
                 listeners.notifyAll(new SamlCodeEvent(this, code));
             }
         } else {
@@ -702,7 +720,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         this.listeners = listeners;
         this.listeners.addCodeListener(this);
     }
-    
+
     class SysPubRadioButtonGroupListener implements ActionListener {
       @Override
       public void actionPerformed(ActionEvent ev) {
@@ -727,17 +745,17 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
       @Override
       public void actionPerformed(ActionEvent ev) {
         if(autoModifyCheckbox.isSelected()) {
-            notifyAllTabs(new SamlCodeEvent(this, firstEditor.getText()));
-            Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
+            notifyAllTabs(new SamlCodeEvent(this, firstEditor.getText().getBytes()));
+            Logging.getInstance().log(getClass(), "Notify all tabs about encoding event.", Logging.DEBUG);
         }
       }
     }
-    
+
     /**
      * Listener for textfields.
      */
-    class TextfieldListener implements DocumentListener {      
-        
+    class TextfieldListener implements DocumentListener {
+
         private void update(DocumentEvent de) {
             currentDtdServer = selectedDtdServer;
             if(selectedDtdServer.contains(listenURL)) {
@@ -759,16 +777,16 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                 }
                 if(selectedDtdHelper.contains(targetFILE)) {
                     currentDtdHelper = currentDtdHelper.replace(targetFILE, targetFileTextField.getText());
-                }                
+                }
             }
             setDTD();
         }
-        
+
         @Override
         public void insertUpdate(DocumentEvent de) {
             update(de);
         }
-        
+
         @Override
         public void removeUpdate(DocumentEvent de) {
             update(de);
@@ -777,9 +795,9 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         @Override
         public void changedUpdate(DocumentEvent de) {
             update(de);
-        }        
+        }
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton adjustDTDButton;
     private javax.swing.JTextField attackeListenerTextField;

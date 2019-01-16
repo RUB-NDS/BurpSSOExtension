@@ -40,7 +40,7 @@ import wsattacker.library.xmlutilities.dom.DomUtilities;
  * @version 1.0
  */
 public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
-    
+
     private String getParamSignature = null;
     private String getParamSigAlgo = null;
     private String saml = null;
@@ -51,7 +51,7 @@ public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
     private ArrayList<Element> signatures;
     private boolean sigInGetParam = false;
     private String sigPathGetPost = "Signature as GET/POST parameter";
-    
+
     /**
      * Creates new form UISigExcAttack
      */
@@ -134,12 +134,12 @@ public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
                 removeElement(element);
             }
             saml = XMLHelper.docToString(doc);
-            notifyAllTabs(new SamlCodeEvent(this, saml));
+            notifyAllTabs(new SamlCodeEvent(this, saml.getBytes()));
             Logging.getInstance().log(getClass(), "Signature exclusion successfull.", Logging.INFO);
         }
         if(sigInGetParam == true) {
-            notifyAllTabs(new SigAlgoCodeEvent(this, ""));
-            notifyAllTabs(new SignatureCodeEvent(this, ""));
+            notifyAllTabs(new SigAlgoCodeEvent(this, null));
+            notifyAllTabs(new SignatureCodeEvent(this, null));
         }
     }//GEN-LAST:event_jButtonDeleteAllActionPerformed
 
@@ -148,18 +148,18 @@ public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
             Logging.getInstance().log(getClass(), "Start signature exclusion.", Logging.INFO);
             for(int i : jListSignatures.getSelectedIndices()) {
                 if(signaturePaths.get(i).equals(sigPathGetPost)) {
-                    notifyAllTabs(new SigAlgoCodeEvent(this, ""));
-                    notifyAllTabs(new SignatureCodeEvent(this, ""));
+                    notifyAllTabs(new SigAlgoCodeEvent(this, null));
+                    notifyAllTabs(new SignatureCodeEvent(this, null));
                 } else {
                     removeElement(signatures.get(i));
                 }
             }
             saml = XMLHelper.docToString(doc);
-            notifyAllTabs(new SamlCodeEvent(this, saml));
+            notifyAllTabs(new SamlCodeEvent(this, saml.getBytes()));
             Logging.getInstance().log(getClass(), "Signature exclusion successfull.", Logging.INFO);
         }
     }//GEN-LAST:event_jButtonDeleteSelectedActionPerformed
- 
+
     /**
      * Remove given node
      */
@@ -168,8 +168,8 @@ public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
         {
             element.getParentNode().removeChild( element );
         }
-    }    
-    
+    }
+
     /**
      * Update JList with signature paths
      */
@@ -189,7 +189,7 @@ public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
         }
         jListSignatures.setModel(signaturePaths);
     }
- 
+
     /**
      * Is called every time new Code is available.
      * @param evt {@link de.rub.nds.burp.utilities.listeners.AbstractCodeEvent} The new source code.
@@ -197,15 +197,13 @@ public class UISigExcAttack extends javax.swing.JPanel implements IAttack {
     @Override
     public void setCode(AbstractCodeEvent evt) {
         if(evt instanceof SamlCodeEvent) {
-            this.saml = evt.getCode();
+            this.saml = new String(evt.getCode());
         } else if(evt instanceof SignatureCodeEvent) {
-            this.getParamSignature = evt.getCode();           
-            sigInGetParam = !"".equals(getParamSigAlgo) && !"".equals(getParamSignature)
-                    && getParamSigAlgo != null && getParamSignature != null;
+            this.getParamSignature = new String(evt.getCode());
+            sigInGetParam = getParamSigAlgo != null && getParamSignature != null;
         } else if(evt instanceof SigAlgoCodeEvent) {
-            this.getParamSigAlgo = evt.getCode();
-            sigInGetParam = !"".equals(getParamSigAlgo) && !"".equals(getParamSignature)
-                    && getParamSigAlgo != null && getParamSignature != null;
+            this.getParamSigAlgo = new String(evt.getCode());
+            sigInGetParam = getParamSigAlgo != null && getParamSignature != null;
         }
         update();
     }
