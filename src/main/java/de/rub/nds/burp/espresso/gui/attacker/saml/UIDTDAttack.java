@@ -687,67 +687,34 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     public void notifyAllTabs(AbstractCodeEvent evt) {
         if(evt instanceof SamlCodeEvent) {
             byte [] code = evt.getCode();
-            if(listeners != null){
-                // Encode dtd vector if needed
-                switch(EncodingType.fromString(encodingButtonGroup.getSelection().getActionCommand())) {
-                    case UTF_7:
-                        Charset charset = new CharsetProvider().charsetForName("UTF-7");
-                        try {
-                            if (! new String(code, "UTF-8").startsWith("<?xml")) {
-                                String tmp = "<?xml version=\"1.0\" encoding=\"UTF-7\"?>" + new String(code, "UTF-8");
-                                code = tmp.getBytes();
-                            }
-                            ByteBuffer byteBuffer = charset.encode(new String(code, "UTF-8"));
-                            byte[] ba = new byte[byteBuffer.remaining()];
-                            byteBuffer.get(ba,0,ba.length);
-                            code = ba;
-                        } catch (UnsupportedEncodingException ex) {
-                            Logging.getInstance().log(getClass(), ex);
-                        }
-//                        code = new String(byteBuffer.array()).substring(0, byteBuffer.limit());
-                        break;
-                    case UTF_8:
-                        try {
-                            code = new String(code, "UTF-8").getBytes();
-                        } catch (UnsupportedEncodingException ex) {
-                            Logging.getInstance().log(getClass(), ex);
-                        }
-                        break;
-                    case UTF_16:
-                        if (! new String(code).startsWith("<?xml")) {
-                            String tmp = "<?xml version=\"1.0\" encoding=\"UTF-16\"?>" + new String(code);
-                            code = tmp.getBytes();
-                        }
-                        try {
-                            code = new String(code, "UTF-8").getBytes("UTF-16");
-                        } catch (UnsupportedEncodingException ex) {
-                            Logging.getInstance().log(getClass(), ex);
-                        }
-                        break;
-                    case UTF_16BE:
-                        if (! new String(code).startsWith("<?xml")) {
-                            String tmp = "<?xml version=\"1.0\" encoding=\"UTF-16BE\"?>" + new String(code);
-                            code = tmp.getBytes();
-                        }
-                        try {
-                            code = new String(code, "UTF-8").getBytes("UTF-16BE");
-                        } catch (UnsupportedEncodingException ex) {
-                            Logging.getInstance().log(getClass(), ex);
-                        }
-                        break;
-                    case UTF_16LE:
-                        if (! new String(code).startsWith("<?xml")) {
-                            String tmp = "<?xml version=\"1.0\" encoding=\"UTF-16LE\"?>" + new String(code);
-                            code = tmp.getBytes();
-                        }
-                        try {
-                            code = new String(code, "UTF-8").getBytes("UTF-16LE");
-                        } catch (UnsupportedEncodingException ex) {
-                            Logging.getInstance().log(getClass(), ex);
-                        }
-                        break;
-                    default:
-                        break;
+            if(listeners != null) {
+                try {
+                    // Encode dtd vector if needed
+                    switch(EncodingType.fromString(encodingButtonGroup.getSelection().getActionCommand())) {
+                        case UTF_7:
+                            Charset charset = new CharsetProvider().charsetForName("UTF-7");
+                                ByteBuffer byteBuffer = charset.encode(new String(code, "UTF-8"));
+                                byte[] ba = new byte[byteBuffer.remaining()];
+                                byteBuffer.get(ba,0,ba.length);
+                                code = ba;
+                            break;
+                        case UTF_8:
+                                code = new String(code, "UTF-8").getBytes();
+                            break;
+                        case UTF_16:
+                                code = new String(code, "UTF-8").getBytes("UTF-16");
+                            break;
+                        case UTF_16BE:
+                                code = new String(code, "UTF-8").getBytes("UTF-16BE");
+                            break;
+                        case UTF_16LE:
+                                code = new String(code, "UTF-8").getBytes("UTF-16LE");
+                            break;
+                        default:
+                            break;
+                   }
+                } catch (UnsupportedEncodingException ex) {
+                    Logging.getInstance().log(getClass(), ex);
                 }
                 listeners.notifyAll(new SamlCodeEvent(this, code));
             }
