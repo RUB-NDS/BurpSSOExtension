@@ -32,7 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-        
+
 /**
  * Show the text without syntax highlight.
  * The Editor is based on Burps ITextEditor.
@@ -40,7 +40,7 @@ import javax.swing.event.ChangeListener;
  * @version 1.0
  */
 public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
-    
+
     private ITextEditor burpEditor = null;
     private CodeListenerController listeners = null;
     private JScrollPane rawEditor;
@@ -49,7 +49,7 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
     private JCheckBox deflateCheckBox;
     private JCheckBox changeHttpMethodCheckbox;
     private JCheckBox changeAllParameters;
-    
+
     /**
      * Create a new {@link burp.ITextEditor} to implement a new Burp like text area.
      * This includes the bottom search and regex input fields.
@@ -61,12 +61,12 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
         burpEditor.setEditable(editable);
         initComponents();
     }
-    
+
     private void initComponents() {
 
         rawEditor = new JScrollPane();
         rawEditor.setViewportView(burpEditor.getComponent());
-        
+
         base64CheckBox = new JCheckBox("Base64");
         urlCheckBox = new JCheckBox("URL Enc");
         deflateCheckBox = new JCheckBox("Deflate");
@@ -82,7 +82,7 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
         changeAllParameters = new JCheckBox("Switch all parameters");
         changeAllParameters.setToolTipText("Change GET <-> POST with all paramater.");
         changeAllParameters.setEnabled(false);
-                
+
         GroupLayout layout = new GroupLayout(this);
         layout.setVerticalGroup(layout.createParallelGroup()
             .addComponent(rawEditor)
@@ -105,7 +105,7 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
 
     /**
      * Enable/Disable "changeAllParameters" checkbox
-     */   
+     */
     private void clickedChangeHttpMethodCheckbox() {
         if(changeHttpMethodCheckbox.isSelected()) {
             changeAllParameters.setEnabled(true);
@@ -116,7 +116,7 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
 
     /**
      * Disable checkboxes in the history.
-     */   
+     */
     public void disableModifyFeatures() {
         this.removeAll();
         this.setLayout(new GridLayout(1,1));
@@ -134,7 +134,7 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
 
     /**
      * Set if the text area should allow modifications.
-     * @param editable True, the text area is editable, false, the text 
+     * @param editable True, the text area is editable, false, the text
      * area is not editable.
      */
     @Override
@@ -195,7 +195,7 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
     public void setSearchExpression(String expression) {
        burpEditor.setSearchExpression(expression);
     }
-    
+
     /**
      * Set enable or disable this component.
      * @param enabled True to enable, false to disable the component.
@@ -214,7 +214,7 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        burpEditor.setText(evt.getCode().getBytes());
+        burpEditor.setText(evt.getCode());
     }
 
     /**
@@ -230,12 +230,12 @@ public class UIRawEditor extends JPanel implements ITextEditor, ICodeListener{
     public JCheckBox getBase64CheckBox() {
         return base64CheckBox;
     }
-        
+
     public JCheckBox getDeflateCheckBox() {
         return deflateCheckBox;
     }
-    
-    
+
+
     public JCheckBox getUrlCheckBox() {
         return urlCheckBox;
     }

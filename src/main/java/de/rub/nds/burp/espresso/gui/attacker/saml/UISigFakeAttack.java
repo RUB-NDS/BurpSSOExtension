@@ -39,12 +39,12 @@ import wsattacker.library.xmlutilities.namespace.NamespaceConstants;
  * @version 1.0
  */
 public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
-    
+
     private String saml = null;
     private Document doc = null;
     private CodeListenerController listeners = null;
     private DefaultListModel signaturePaths;
-    
+
     /**
      * Creates new form UISigExcAttack
      */
@@ -139,7 +139,7 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
                 Logging.getInstance().log(UISigFakeAttack.class, ex);
             }
             saml = XMLHelper.docToString(doc);
-            notifyAllTabs(new SamlCodeEvent(this, saml)); 
+            notifyAllTabs(new SamlCodeEvent(this, saml.getBytes()));
             Logging.getInstance().log(getClass(), "Signature faking successfull.", Logging.INFO);
         }
     }//GEN-LAST:event_jButtonFakeAllActionPerformed
@@ -157,11 +157,11 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
                 Logging.getInstance().log(UISigFakeAttack.class, ex);
             }
             saml = XMLHelper.docToString(doc);
-            notifyAllTabs(new SamlCodeEvent(this, saml));
+            notifyAllTabs(new SamlCodeEvent(this, saml.getBytes()));
             Logging.getInstance().log(getClass(), "Signature exclusion successfull.", Logging.INFO);
         }
     }//GEN-LAST:event_jButtonFakeSelectedActionPerformed
- 
+
     /**
      * Update JList with signature paths
      */
@@ -175,14 +175,14 @@ public class UISigFakeAttack extends javax.swing.JPanel implements IAttack {
         }
         jListSignatures.setModel(signaturePaths);
     }
- 
+
     /**
      * Is called every time new Code is available.
      * @param evt {@link de.rub.nds.burp.utilities.listeners.AbstractCodeEvent} The new source code.
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        this.saml = evt.getCode();
+        this.saml = new String(evt.getCode());
         update();
     }
 

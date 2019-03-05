@@ -30,8 +30,8 @@ public class SigAlgoCodeEvent extends AbstractCodeEvent{
      * @param source The origin of the event.
      * @param code The data (source code) to submit.
      */
-    public SigAlgoCodeEvent(Object source, String code) {
+    public SigAlgoCodeEvent(Object source, byte[] code) {
         super(source, code);
     }
-    
+
 }

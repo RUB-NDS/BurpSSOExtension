@@ -30,8 +30,8 @@ public class SamlCodeEvent extends AbstractCodeEvent{
      * @param source The origin of the event.
      * @param code The data (source code) to submit.
      */
-    public SamlCodeEvent(Object source, String code) {
+    public SamlCodeEvent(Object source, byte [] code) {
         super(source, code);
     }
-    
+
 }
