@@ -36,7 +36,6 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.xml.xpath.XPathExpressionException;
@@ -377,7 +376,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
             Document doc = XMLHelper.stringToDom(saml);
             DomUtilities.evaluateXPath(doc, "//xenc:EncryptedKey//xenc:CipherValue").get(0).setTextContent(jTextAreaEncryptedKey.getText());
             saml = XMLHelper.docToString(doc);      
-            notifyAllTabs(new SamlCodeEvent(this, saml));
+            notifyAllTabs(new SamlCodeEvent(this, saml.getBytes()));
             Logging.getInstance().log(getClass(), "Setting new encrypted symmetric key was successfull.", Logging.INFO);
         } catch (XPathExpressionException ex) {
             Logging.getInstance().log(getClass(), ex);
@@ -406,7 +405,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
             Document doc = XMLHelper.stringToDom(saml);
             DomUtilities.evaluateXPath(doc, "//xenc:EncryptedData/xenc:CipherData/xenc:CipherValue").get(0).setTextContent(jTextAreaCipherData.getText());
             saml = XMLHelper.docToString(doc);      
-            notifyAllTabs(new SamlCodeEvent(this, saml));
+            notifyAllTabs(new SamlCodeEvent(this, saml.getBytes()));
             Logging.getInstance().log(getClass(), "Setting new ciphertext was successfull.", Logging.INFO);
         } catch (XPathExpressionException ex) {
             Logging.getInstance().log(getClass(), ex);
@@ -427,7 +426,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        this.saml = evt.getCode();
+        this.saml = new String(evt.getCode());
         // Set certificate if available
         NodeList list = XMLHelper.stringToDom(saml).getElementsByTagNameNS("*", "X509Certificate");
         if(list.getLength() > 0) {
