@@ -103,9 +103,9 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(attackComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(descriptionLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
-                    .addComponent(settingsContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(attackComboBox, 10, 100, Short.MAX_VALUE)
+                    .addComponent(descriptionLabel, 10, 376, Short.MAX_VALUE)
+                    .addComponent(settingsContainer, 10, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -118,7 +118,7 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
                 .addGap(18, 18, 18)
                 .addComponent(settingsContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-    }
+}
     
     /**
      * Set enable or disable this component.
