@@ -151,6 +151,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         jLabel2.setText("Algorithm:");
 
         jButtonEncryptSymmetricKey.setText("Encrypt");
+        jButtonEncryptSymmetricKey.setToolTipText("Encrypt and update SAML message automatically.");
         jButtonEncryptSymmetricKey.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonEncryptSymmetricKeyActionPerformed(evt);
@@ -282,6 +283,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         jLabel10.setText("Algorithm:");
 
         jButtonEncryptXML.setText("Encrypt");
+        jButtonEncryptXML.setToolTipText("Encrypt and update SAML message automatically.");
         jButtonEncryptXML.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonEncryptXMLActionPerformed(evt);
@@ -413,7 +415,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
     }//GEN-LAST:event_jButtonEncryptXMLActionPerformed
 
     private void jComboBoxSymmetricAlgoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxSymmetricAlgoActionPerformed
-        checkKeyLength();
+        checkKeyLengthAndFormat();
         checkBlocksize();
         updateHexData();
     }//GEN-LAST:event_jComboBoxSymmetricAlgoActionPerformed
@@ -497,17 +499,17 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         jTextAreaSymmetricKey.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void removeUpdate(DocumentEvent e) {
-                checkKeyLength();
+                checkKeyLengthAndFormat();
             }
 
             @Override
             public void insertUpdate(DocumentEvent e) {
-                checkKeyLength();
+                checkKeyLengthAndFormat();
             }
 
             @Override
             public void changedUpdate(DocumentEvent arg0) {
-                checkKeyLength();
+                checkKeyLengthAndFormat();
             }
         });
         jTextAreaXmlHex.getDocument().addDocumentListener(new DocumentListener() {
@@ -527,16 +529,21 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
             }
         });
         // Update jLabels and jTextareas
-        checkKeyLength();
+        checkKeyLengthAndFormat();
         checkBlocksize();
         updateHexData();
     }
 
-    private void checkKeyLength() {
+    private void checkKeyLengthAndFormat() {
         int requiredSize = SymmetricAlgorithm.getByURI(jComboBoxSymmetricAlgo.getItemAt(jComboBoxSymmetricAlgo.getSelectedIndex())).getKeyLength();
-        int size = requiredSize - jTextAreaSymmetricKey.getText().replaceAll("\\s", "").length()*4; 
-        if (size != 0) {
+        String key = jTextAreaSymmetricKey.getText().replaceAll("\\s", "");
+        int size = requiredSize - key.length()*4; 
+        if (size != 0 && !key.matches("[0-9A-Fa-f]+")) {
+            jLabelWarningKeySize.setText("Need " + requiredSize/8 + " byte for encryption and in hexadecimal!");
+        } else if(size != 0) {
             jLabelWarningKeySize.setText("Need " + requiredSize/8 + " byte for encryption!");
+        } else if(!key.matches("[0-9A-Fa-f]+")) {
+            jLabelWarningKeySize.setText("Need key in hexadecimal!");
         } else {
             jLabelWarningKeySize.setText("");
         }

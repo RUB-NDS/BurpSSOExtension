@@ -199,6 +199,7 @@
         <Component class="javax.swing.JButton" name="jButtonEncryptSymmetricKey">
           <Properties>
             <Property name="text" type="java.lang.String" value="Encrypt"/>
+            <Property name="toolTipText" type="java.lang.String" value="Encrypt and update SAML message automatically."/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonEncryptSymmetricKeyActionPerformed"/>
@@ -393,6 +394,7 @@
         <Component class="javax.swing.JButton" name="jButtonEncryptXML">
           <Properties>
             <Property name="text" type="java.lang.String" value="Encrypt"/>
+            <Property name="toolTipText" type="java.lang.String" value="Encrypt and update SAML message automatically."/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonEncryptXMLActionPerformed"/>
