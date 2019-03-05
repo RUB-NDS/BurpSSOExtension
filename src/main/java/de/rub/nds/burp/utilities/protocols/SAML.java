@@ -24,7 +24,7 @@ import burp.IParameter;
 import de.rub.nds.burp.utilities.Compression;
 import de.rub.nds.burp.utilities.Encoding;
 import de.rub.nds.burp.utilities.Logging;
-import de.rub.nds.burp.utilities.table.Table;
+import de.rub.nds.burp.utilities.table.ssoHistory.Table;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;

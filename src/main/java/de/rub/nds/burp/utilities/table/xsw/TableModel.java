@@ -16,28 +16,26 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package de.rub.nds.burp.utilities.table;
+package de.rub.nds.burp.utilities.table.xsw;
 
-import de.rub.nds.burp.utilities.Logging;
 import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
 /**
  * Helper class for the class Table.
- * @author Tim Guenther
- * @version 1.0
+ * 
+ * @author Nurullah Erinola
  */
-public class TableHelper extends AbstractTableModel{
+public class TableModel extends AbstractTableModel{
     
     private ArrayList<TableEntry> list;
-    private String[] colName = {"#","SSO Protocol","Host","Method","URL","Token","Time","Length","Comment"};
+    private String[] columnNames = {"#", "xPath", "Current value", "New value"};
 
     /**
      * Construct a new Table Helper
-     * @param list A list of table entries.
      */
-    public TableHelper(ArrayList<TableEntry> list) {
-        this.list = list;
+    public TableModel() {
+        list = new ArrayList<>();
     }
 
     /**
@@ -48,34 +46,36 @@ public class TableHelper extends AbstractTableModel{
         return list;
     }
     
+    public TableEntry getTableEntry(int row) {
+        return list.get(row);
+    }
+    
     /**
      * Add a row to the list and the table.
      * @param entry The new row.
-     * @return True if successfully, false otherwise.
      */
-    public boolean addRow(TableEntry entry){
-        try{
-            int row = list.size();
-            list.add(entry);
-            fireTableRowsInserted(row,row);
-        } catch(Exception e) {
-            return false;
-        }
-        return true;
+    public void addRow(TableEntry entry){
+        list.add(entry);
+        int tmp = list.size()-1;
+        fireTableRowsInserted(tmp, tmp);
     }
     
     /**
      * Remove all entries from the table list.
-     * @return True if all entries removed, false otherwise.
      */
-    public boolean clear(){
-        try{
-            list.clear();
-            fireTableDataChanged();
-        } catch(Exception e) {
-            return false;
-        }
-        return true;
+    public void clearAll(){
+        list.clear();
+        fireTableDataChanged();
+    }
+    
+    /**
+     * Remove one entrie from the table list.
+     * @param row The removed row.
+     */
+    public void remove(int row){
+        list.remove(row);
+        int tmp = list.size()-1;
+        fireTableRowsDeleted(tmp, tmp);
     }
     
     /**
@@ -90,12 +90,12 @@ public class TableHelper extends AbstractTableModel{
 
     /**
      * 
-     * @return Number of columns. (9)
+     * @return Number of columns.
      */
     @Override
     public int getColumnCount()
     {
-        return 9;
+        return columnNames.length;
     }
 
     /**
@@ -106,12 +106,7 @@ public class TableHelper extends AbstractTableModel{
     @Override
     public String getColumnName(int columnIndex)
     {
-        try {
-            return colName[columnIndex];
-        } catch (Exception e) {
-            Logging.getInstance().log(getClass(), e);
-            return "";
-        }
+        return columnNames[columnIndex];
     }
 
     /**
@@ -141,23 +136,18 @@ public class TableHelper extends AbstractTableModel{
             case 0:
                 return entry.getCounter();
             case 1:
-                return entry.getProtocol();
+                return entry.getXPath();
             case 2:
-                return entry.getHost();
+                return entry.getCurrentValue();
             case 3:
-                return entry.getMethod();
-            case 4:
-                return entry.getUrl();
-            case 5:
-                return entry.getToken() ;   
-            case 6:
-                return entry.getTime();
-            case 7:
-                return entry.getLength();
-            case 8:
-                return entry.getComment();
+                return entry.getNewValue();
             default:
                 return null;
         }
+    }
+    
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        return false;
     }
 }

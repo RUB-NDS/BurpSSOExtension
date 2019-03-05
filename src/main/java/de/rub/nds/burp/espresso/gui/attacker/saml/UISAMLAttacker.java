@@ -47,7 +47,7 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
     private JLabel descriptionLabel;
     private JPanel settingsContainer;
     
-    private UISigWrapAttack uiSigWrapAttack = null;
+    private UISigWrapAttackOld uiSigWrapAttack = null;
     private UISigFakeAttack uiSigFakeAttack = null;
     private UISigExcAttack uiSigExcAttack = null;
     private UIDTDAttack uiDTDAttack = null;
@@ -87,7 +87,7 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
         settingsContainer.add(uiSigExcAttack, SIGNATURE_EXCLUSION);
         uiSigFakeAttack = new UISigFakeAttack();
         settingsContainer.add(uiSigFakeAttack, SIGNATURE_FAKING);
-        uiSigWrapAttack = new UISigWrapAttack();
+        uiSigWrapAttack = new UISigWrapAttackOld();
 	settingsContainer.add(uiSigWrapAttack, SIGNATURE_WRAPPING);
         uiDTDAttack = new UIDTDAttack();
 	settingsContainer.add(uiDTDAttack, DTD);

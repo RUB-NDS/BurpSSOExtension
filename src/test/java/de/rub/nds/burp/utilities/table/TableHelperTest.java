@@ -18,6 +18,8 @@
  */
 package de.rub.nds.burp.utilities.table;
 
+import de.rub.nds.burp.utilities.table.ssoHistory.TableHelper;
+import de.rub.nds.burp.utilities.table.ssoHistory.TableEntry;
 import burp.IHttpRequestResponsePersisted;
 import java.util.ArrayList;
 import junit.framework.TestCase;

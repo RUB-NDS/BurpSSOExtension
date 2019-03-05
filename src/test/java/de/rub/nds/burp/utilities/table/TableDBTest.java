@@ -18,6 +18,9 @@
  */
 package de.rub.nds.burp.utilities.table;
 
+import de.rub.nds.burp.utilities.table.ssoHistory.TableHelper;
+import de.rub.nds.burp.utilities.table.ssoHistory.Table;
+import de.rub.nds.burp.utilities.table.ssoHistory.TableDB;
 import java.util.ArrayList;
 import junit.framework.TestCase;
 
