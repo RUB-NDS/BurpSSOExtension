@@ -256,7 +256,7 @@ public class UISigWrapAttackOld extends javax.swing.JPanel implements IAttack {
 
         private void modifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyButtonActionPerformed
             Logging.getInstance().log(getClass(), "Wrapping Signature...", Logging.INFO);
-            notifyAllTabs(new SamlCodeEvent(this, finalPayload.getText()));
+            notifyAllTabs(new SamlCodeEvent(this, finalPayload.getText().getBytes()));
         }//GEN-LAST:event_modifyButtonActionPerformed
 
         private void payloadComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_payloadComboBoxItemStateChanged
@@ -379,7 +379,7 @@ public class UISigWrapAttackOld extends javax.swing.JPanel implements IAttack {
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        this.code = evt.getCode();
+        this.code = new String(evt.getCode());
         initXsw();
 
         // Disable the ui for further editing after modification.

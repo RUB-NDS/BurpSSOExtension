@@ -61,7 +61,7 @@ public class UISourceViewer extends JPanel implements ICodeListener{
         this.codeStyle = codeStyle;
         initComponent();
     }
-    
+
     /**
      * Create a new Source Code Viewer.
      */
@@ -69,7 +69,7 @@ public class UISourceViewer extends JPanel implements ICodeListener{
         this.callbacks = callbacks;
         initComponent();
     }
-    
+
     private void initComponent(){
         textArea = new RSyntaxTextArea(20, 60);
         textArea.setSyntaxEditingStyle(codeStyle);
@@ -82,7 +82,7 @@ public class UISourceViewer extends JPanel implements ICodeListener{
             textArea.setLineWrap(false);
         }
         sp = new RTextScrollPane(textArea);
-        sp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);        
+        sp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         checkBox = new JCheckBox("Softwraps for long lines");
         checkBox.setSelected(false);
         checkBox.addActionListener(new ActionListener() {
@@ -90,12 +90,12 @@ public class UISourceViewer extends JPanel implements ICodeListener{
                 checkBoxActionPerformed(ae);
             }
         });
-        
+
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(sp)        
+            .addComponent(sp)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(checkBox))
         );
@@ -106,7 +106,7 @@ public class UISourceViewer extends JPanel implements ICodeListener{
                 .addComponent(checkBox))
         );
     }
-    
+
     private void checkBoxActionPerformed(ActionEvent evt) {
         if(checkBox.isSelected()) {
             textArea.setLineWrap(true);
@@ -114,11 +114,11 @@ public class UISourceViewer extends JPanel implements ICodeListener{
             callbacks.saveExtensionSetting("wrapLinesInSourceViewer", "true");
         } else {
             textArea.setLineWrap(false);
-            sp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED); 
+            sp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             callbacks.saveExtensionSetting("wrapLinesInSourceViewer", "false");
         }
     }
-    
+
     /**
      * Set the source code and highlighting.
      * @param sourceCode The Code that should be highlighted.
@@ -132,7 +132,7 @@ public class UISourceViewer extends JPanel implements ICodeListener{
         textArea.setText(sourceCode);
         this.updateUI();
     }
-    
+
     /**
      * Set the source code and highlighting.
      * @param sourceCode The Code that should be highlighted.
@@ -156,14 +156,14 @@ public class UISourceViewer extends JPanel implements ICodeListener{
            textArea.setText("");
         }
     }
-    
+
     /**
      * Is called every time new Code is available.
      * @param evt {@link de.rub.nds.burp.utilities.listeners.AbstractCodeEvent} The new source code.
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        setPrettyXML(evt.getCode(), 2);
+        setPrettyXML(new String(evt.getCode()), 2);
     }
 
     /**

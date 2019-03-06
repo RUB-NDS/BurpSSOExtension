@@ -227,7 +227,7 @@ public class UIHelp extends javax.swing.JPanel {
         jLabel1.setText("© 2015, Tim Guenther, Christian Mainka");
 
         jLabel2.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        jLabel2.setText("EsPReSSO v3.1");
+        jLabel2.setText("EsPReSSO v3.2");
 
         jLabel3.setText("Extension for Processing and Recognition of Single Sign-On");
 

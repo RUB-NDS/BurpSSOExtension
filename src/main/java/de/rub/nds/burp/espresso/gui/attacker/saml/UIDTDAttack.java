@@ -58,11 +58,11 @@ import org.w3c.dom.NodeList;
  * @version 1.0
  */
 public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
-    
+
     private final String listenURL = "§tf_listenURL§";
     private final String helperURL = "§tf_helperURL§";
     private final String targetFILE = "§tf_targetFILE§";
-    
+
     private String saml = "";
     private String selectedDtdServer = "";
     private String selectedDtdHelper = "";
@@ -73,17 +73,17 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     private static ArrayList<String> dtdNames;
     private static ArrayList<String> dtdDescriptions;
     private boolean needEditor = false;
-    
+
     private JTextArea firstEditor;
     private JTextArea secondEditor;
     private JScrollPane firstScrollPane;
     private JScrollPane secondScrollPane;
-    
+
     /**
      * Creates new form UIDTDAttack
      */
     public UIDTDAttack() {
-        initComponents();       
+        initComponents();
         if (dtds == null && dtdNames == null) {
             readDTDs();
         }
@@ -130,8 +130,11 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         descriptionTextArea = new javax.swing.JTextArea();
+        utf16BERadioButton = new javax.swing.JRadioButton();
+        utf16LERadioButton = new javax.swing.JRadioButton();
 
         modifyButton.setText("Modify");
+        modifyButton.setToolTipText("Update of SAML message with DTD vector.");
         modifyButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 modifyButtonActionPerformed(evt);
@@ -208,7 +211,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 270, Short.MAX_VALUE)
+            .addGap(0, 326, Short.MAX_VALUE)
         );
 
         enableEditoringCheckbox.setText("Enable editing");
@@ -254,7 +257,14 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         descriptionTextArea.setRows(3);
         descriptionTextArea.setWrapStyleWord(true);
         descriptionTextArea.setBorder(null);
+        descriptionTextArea.setMinimumSize(new java.awt.Dimension(15, 15));
         jScrollPane1.setViewportView(descriptionTextArea);
+
+        encodingButtonGroup.add(utf16BERadioButton);
+        utf16BERadioButton.setText("UTF-16BE");
+
+        encodingButtonGroup.add(utf16LERadioButton);
+        utf16LERadioButton.setText("UTF-16LE");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -264,64 +274,69 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(modifyButton))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4))
-                        .addGap(1, 1, 1)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(adjustDTDButton)
-                            .addComponent(entityReferencesTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(recursiveEntitieTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(55, 55, 55)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGap(44, 44, 44)
-                                    .addComponent(jLabel6))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGap(47, 47, 47)
-                                    .addComponent(jLabel5)))
-                            .addComponent(jLabel7))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(attackeListenerTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(targetFileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(helperURLTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(55, 55, 55)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(utf16RadioButton)
-                            .addComponent(jLabel1)
-                            .addComponent(utf7RadioButton)
-                            .addComponent(utf8RadioButton))
-                        .addGap(0, 102, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel8)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel9)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(enableEditoringCheckbox)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(autoModifyCheckbox))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(systemRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(publicRadioButton))
                             .addComponent(dtdComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 666, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1))
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(jScrollPane1))))
+                                .addComponent(jLabel9)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(enableEditoringCheckbox)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(autoModifyCheckbox)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(modifyButton))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel8)
+                                .addGap(591, 591, 591)
+                                .addComponent(jLabel2))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel4))
+                                .addGap(1, 1, 1)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(adjustDTDButton)
+                                    .addComponent(entityReferencesTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(recursiveEntitieTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(29, 29, 29)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addGap(44, 44, 44)
+                                            .addComponent(jLabel6))
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addGap(47, 47, 47)
+                                            .addComponent(jLabel5)))
+                                    .addComponent(jLabel7)
+                                    .addComponent(jLabel1))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(utf16LERadioButton)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(utf16BERadioButton))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(utf7RadioButton)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(utf8RadioButton)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(utf16RadioButton))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(attackeListenerTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(targetFileTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(helperURLTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 319, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addGap(0, 22, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -330,65 +345,69 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(recursiveEntitieTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(utf7RadioButton)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(entityReferencesTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(utf8RadioButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(utf16RadioButton))
+                        .addComponent(adjustDTDButton))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel3)
-                                    .addComponent(recursiveEntitieTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel5)
                                     .addComponent(targetFileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGap(31, 31, 31)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel4)
-                                    .addComponent(entityReferencesTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(adjustDTDButton)
                                     .addComponent(jLabel6)
                                     .addComponent(helperURLTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel7)
                             .addComponent(attackeListenerTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(3, 3, 3)
+                        .addGap(6, 6, 6)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel2))))
+                            .addComponent(jLabel1)
+                            .addComponent(utf7RadioButton)
+                            .addComponent(utf8RadioButton)
+                            .addComponent(utf16RadioButton))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(utf16LERadioButton)
+                            .addComponent(utf16BERadioButton))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel8))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(dtdComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(publicRadioButton)
-                            .addComponent(systemRadioButton))
-                        .addGap(1, 1, 1)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel9)
-                            .addComponent(enableEditoringCheckbox)
-                            .addComponent(autoModifyCheckbox))))
+                            .addComponent(systemRadioButton)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(enableEditoringCheckbox)
+                    .addComponent(autoModifyCheckbox)
+                    .addComponent(modifyButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(modifyButton)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
-    
+
     private void modifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyButtonActionPerformed
-        notifyAllTabs(new SamlCodeEvent(this, firstEditor.getText()));
+        notifyAllTabs(new SamlCodeEvent(this, firstEditor.getText().getBytes()));
         Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
     }//GEN-LAST:event_modifyButtonActionPerformed
-       
+
     private void targetFileListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_targetFileListValueChanged
         if(targetFileList.getSelectedValue() != null) {
         targetFileTextField.setText(targetFileList.getSelectedValue());
@@ -403,15 +422,15 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                     int rec = Integer.parseInt(recursiveEntitieTextField.getText());
                     int entity = Integer.parseInt(entityReferencesTextField.getText());
                     for (int i = 1; i <= rec; i++) {
-                        tmp += "<!ENTITY a" + i + " \"";		
+                        tmp += "<!ENTITY a" + i + " \"";
                         for (int j = 1; j <= entity; j++) {
                             tmp += "&a" + (i-1) + ";";
                         }
                         tmp += "\">\n";
                     }
                     tmp += "]>\n" + "<data>&a" + rec + ";</data>";
-                    currentDtdServer = selectedDtdServer.substring(0, selectedDtdServer.lastIndexOf("\"dos\" >")+7).concat(tmp); 
-                }    
+                    currentDtdServer = selectedDtdServer.substring(0, selectedDtdServer.lastIndexOf("\"dos\" >")+7).concat(tmp);
+                }
                 break;
             case "Billion Laughs Attack with Parameter Entities":
                 if (Pattern.matches("[0-9]+", recursiveEntitieTextField.getText()) && Pattern.matches("[0-9]+", entityReferencesTextField.getText())) {
@@ -419,15 +438,15 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                     int rec = Integer.parseInt(recursiveEntitieTextField.getText());
                     int entity = Integer.parseInt(entityReferencesTextField.getText());
                     for (int i = 1; i <= rec; i++) {
-                        tmp += "<!ENTITY % a" + i + " \"";		
+                        tmp += "<!ENTITY % a" + i + " \"";
                         for (int j = 1; j <= entity; j++) {
                             tmp += "%a" + (i-1) + ";";
                         }
                         tmp += "\">\n";
                     }
                     tmp += "<!ENTITY g  \"%a" + rec + ";\">";
-                    currentDtdHelper = selectedDtdHelper.substring(0, selectedDtdHelper.lastIndexOf("\"dos\" >")+7).concat(tmp); 
-                } 
+                    currentDtdHelper = selectedDtdHelper.substring(0, selectedDtdHelper.lastIndexOf("\"dos\" >")+7).concat(tmp);
+                }
                 break;
             case "Quadratic Blowup Attack":
                 if (Pattern.matches("[0-9]+", entityReferencesTextField.getText())) {
@@ -437,8 +456,8 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                         tmp += "&a0;";
                     }
                     tmp += "</data>";
-                    currentDtdServer = selectedDtdServer.substring(0, selectedDtdServer.lastIndexOf("<data>")+6).concat(tmp); 
-                } 
+                    currentDtdServer = selectedDtdServer.substring(0, selectedDtdServer.lastIndexOf("<data>")+6).concat(tmp);
+                }
                 break;
         }
         setDTD();
@@ -452,7 +471,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         } else {
             dtdComboBox.setSelectedItem(dtdComboBox.getSelectedItem());
             firstEditor.setEditable(false);
-            secondEditor.setEditable(false);           
+            secondEditor.setEditable(false);
         }
     }//GEN-LAST:event_enableEditoringCheckboxActionPerformed
 
@@ -472,6 +491,12 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             case UTF_16:
                 utf16RadioButton.setSelected(true);
                 break;
+            case UTF_16LE:
+                utf16LERadioButton.setSelected(true);
+                break;
+            case UTF_16BE:
+                utf16BERadioButton.setSelected(true);
+                break;
             default:
                 break;
         }
@@ -488,7 +513,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         }
         if (selectedDTD.getElementsByTagName("helperURL").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
             helperURLTextField.setEnabled(true);
-        }            
+        }
         if (selectedDTD.getElementsByTagName("attackListenerURL").item(0).getTextContent().equalsIgnoreCase("TRUE")) {
             attackeListenerTextField.setEnabled(true);
         }
@@ -499,7 +524,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             publicRadioButton.setEnabled(true);
             attackvector = (Element) XMLHelper.getElementByXPath(dtds,"//config[name='"+dtdComboBox.getSelectedItem()+"']/attackvectors/attackvector[@type='system']");
         } else {
-            attackvector = (Element) selectedDTD.getElementsByTagName("attackvector").item(0);           
+            attackvector = (Element) selectedDTD.getElementsByTagName("attackvector").item(0);
         }
         // Read vectors
         selectedDtdServer = attackvector.getElementsByTagName("directMessage").item(0).getTextContent();
@@ -522,27 +547,27 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
 
     private void autoModifyCheckboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoModifyCheckboxActionPerformed
         if(autoModifyCheckbox.isSelected()) {
-            notifyAllTabs(new SamlCodeEvent(this, firstEditor.getText()));
+            notifyAllTabs(new SamlCodeEvent(this, firstEditor.getText().getBytes()));
             Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
         } else {
-            notifyAllTabs(new SamlCodeEvent(this, saml));
+            notifyAllTabs(new SamlCodeEvent(this, saml.getBytes()));
             Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
         }
     }//GEN-LAST:event_autoModifyCheckboxActionPerformed
- 
+
     /**
      * Set DTDs in textfields.
-     */  
+     */
     private void setDTD() {
         firstEditor.setText(currentDtdServer);
         if(needEditor) {
             secondEditor.setText(currentDtdHelper);
         }
     }
-    
+
     /**
      * Read all DTDs from resources and save it.
-     */    
+     */
     private void readDTDs() {
         try {
             dtds = XMLHelper.stringToDom(IOUtils.toString(getClass().getClassLoader().getResource("dtd_configs.xml"),"UTF-8"));
@@ -560,14 +585,14 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             Logging.getInstance().log(getClass(), ex);
         }
     }
-    
+
     private void initEditorsAndListener() {
         firstEditor = new JTextArea();
         firstEditor.setEditable(false);
-        firstEditor.getDocument().addDocumentListener(new DocumentListener() {           
-            private void notify(DocumentEvent de) {                                              
+        firstEditor.getDocument().addDocumentListener(new DocumentListener() {
+            private void notify(DocumentEvent de) {
                 if(autoModifyCheckbox.isSelected()) {
-                    notifyAllTabs(new SamlCodeEvent(this, firstEditor.getText()));
+                    notifyAllTabs(new SamlCodeEvent(this, firstEditor.getText().getBytes()));
                     Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
                 }
             }
@@ -582,7 +607,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
             @Override
             public void changedUpdate(DocumentEvent de) {
                 notify(de);
-            }  
+            }
         });
         secondEditor = new JTextArea();
         secondEditor.setEditable(false);
@@ -605,9 +630,13 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         utf8RadioButton.setActionCommand(EncodingType.UTF_8.getEncoding());
         utf16RadioButton.addActionListener(encodingRadioButtonGroupListener);
         utf16RadioButton.setActionCommand(EncodingType.UTF_16.getEncoding());
+        utf16LERadioButton.addActionListener(encodingRadioButtonGroupListener);
+        utf16LERadioButton.setActionCommand(EncodingType.UTF_16LE.getEncoding());
+        utf16BERadioButton.addActionListener(encodingRadioButtonGroupListener);
+        utf16BERadioButton.setActionCommand(EncodingType.UTF_16BE.getEncoding());
         // Set dtd vectors sorted by name
         dtdComboBox.setModel(new DefaultComboBoxModel(dtdNames.toArray()));
-        dtdComboBox.setRenderer(new BasicComboBoxRenderer() {            
+        dtdComboBox.setRenderer(new BasicComboBoxRenderer() {
             @Override
             public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 JComponent comp = (JComponent) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
@@ -615,9 +644,9 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                     descriptionTextArea.setText(dtdDescriptions.get(index));
                 }
                 return comp;
-            }       
-        });  
-        dtdComboBox.setSelectedIndex(0);          
+            }
+        });
+        dtdComboBox.setSelectedIndex(0);
     }
 
      /**
@@ -642,15 +671,15 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
      */
     private void setValues() {
         targetFileTextField.setText(targetFileTextField.getText());
-    }  
-    
+    }
+
     /**
      * Is called every time new Code is available.
      * @param evt {@link de.rub.nds.burp.utilities.listeners.AbstractCodeEvent} The new source code.
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        this.saml = evt.getCode();
+        this.saml = new String(evt.getCode());
     }
 
     /**
@@ -659,33 +688,37 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
      */
     @Override
     public void notifyAllTabs(AbstractCodeEvent evt) {
-        if(evt instanceof SamlCodeEvent) { 
-            String code = evt.getCode();
-            if(listeners != null){
-                // Encode dtd vector if needed
-                switch(EncodingType.fromString(encodingButtonGroup.getSelection().getActionCommand())) {
-                    case UTF_7:
-                        Charset charset = new CharsetProvider().charsetForName("UTF-7");
-                        ByteBuffer byteBuffer = charset.encode(code);
-                        code = new String(byteBuffer.array()).substring(0, byteBuffer.limit());
-                        break;
-                    case UTF_8:
-                        try {
-                            code = new String(code.getBytes("UTF-8"), "UTF-8");
-                        } catch (UnsupportedEncodingException ex) {
-                            Logging.getInstance().log(getClass(), ex);
-                        }
-                        break;
-                    case UTF_16:
-                        try {
-                            code = new String(code.getBytes("UTF-8"), "UTF-16");
-                        } catch (UnsupportedEncodingException ex) {
-                            Logging.getInstance().log(getClass(), ex);
-                        }
-                        break;
-                    default:
-                        break;
-                }            
+        if(evt instanceof SamlCodeEvent) {
+            byte [] code = evt.getCode();
+            if(listeners != null) {
+                try {
+                    // Encode dtd vector if needed
+                    switch(EncodingType.fromString(encodingButtonGroup.getSelection().getActionCommand())) {
+                        case UTF_7:
+                            Charset charset = new CharsetProvider().charsetForName("UTF-7");
+                                ByteBuffer byteBuffer = charset.encode(new String(code, "UTF-8"));
+                                byte[] ba = new byte[byteBuffer.remaining()];
+                                byteBuffer.get(ba,0,ba.length);
+                                code = ba;
+                            break;
+                        case UTF_8:
+                                code = new String(code, "UTF-8").getBytes();
+                            break;
+                        case UTF_16:
+                                code = new String(code, "UTF-8").getBytes("UTF-16");
+                            break;
+                        case UTF_16BE:
+                                code = new String(code, "UTF-8").getBytes("UTF-16BE");
+                            break;
+                        case UTF_16LE:
+                                code = new String(code, "UTF-8").getBytes("UTF-16LE");
+                            break;
+                        default:
+                            break;
+                   }
+                } catch (UnsupportedEncodingException ex) {
+                    Logging.getInstance().log(getClass(), ex);
+                }
                 listeners.notifyAll(new SamlCodeEvent(this, code));
             }
         } else {
@@ -702,7 +735,7 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         this.listeners = listeners;
         this.listeners.addCodeListener(this);
     }
-    
+
     class SysPubRadioButtonGroupListener implements ActionListener {
       @Override
       public void actionPerformed(ActionEvent ev) {
@@ -727,17 +760,17 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
       @Override
       public void actionPerformed(ActionEvent ev) {
         if(autoModifyCheckbox.isSelected()) {
-            notifyAllTabs(new SamlCodeEvent(this, firstEditor.getText()));
-            Logging.getInstance().log(getClass(), "Notify all tabs.", Logging.DEBUG);
+            notifyAllTabs(new SamlCodeEvent(this, firstEditor.getText().getBytes()));
+            Logging.getInstance().log(getClass(), "Notify all tabs about encoding event.", Logging.DEBUG);
         }
       }
     }
-    
+
     /**
      * Listener for textfields.
      */
-    class TextfieldListener implements DocumentListener {      
-        
+    class TextfieldListener implements DocumentListener {
+
         private void update(DocumentEvent de) {
             currentDtdServer = selectedDtdServer;
             if(selectedDtdServer.contains(listenURL)) {
@@ -759,16 +792,16 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
                 }
                 if(selectedDtdHelper.contains(targetFILE)) {
                     currentDtdHelper = currentDtdHelper.replace(targetFILE, targetFileTextField.getText());
-                }                
+                }
             }
             setDTD();
         }
-        
+
         @Override
         public void insertUpdate(DocumentEvent de) {
             update(de);
         }
-        
+
         @Override
         public void removeUpdate(DocumentEvent de) {
             update(de);
@@ -777,9 +810,9 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
         @Override
         public void changedUpdate(DocumentEvent de) {
             update(de);
-        }        
+        }
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton adjustDTDButton;
     private javax.swing.JTextField attackeListenerTextField;
@@ -809,6 +842,8 @@ public class UIDTDAttack extends javax.swing.JPanel implements IAttack{
     private javax.swing.JRadioButton systemRadioButton;
     private javax.swing.JList<String> targetFileList;
     private javax.swing.JTextField targetFileTextField;
+    private javax.swing.JRadioButton utf16BERadioButton;
+    private javax.swing.JRadioButton utf16LERadioButton;
     private javax.swing.JRadioButton utf16RadioButton;
     private javax.swing.JRadioButton utf7RadioButton;
     private javax.swing.JRadioButton utf8RadioButton;

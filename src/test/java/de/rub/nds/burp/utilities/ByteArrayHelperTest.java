@@ -16,35 +16,24 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package de.rub.nds.burp.utilities.listeners;
+package de.rub.nds.burp.utilities;
 
-import java.util.EventObject;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
- * Abstract Code Event
- * @author Tim Guenther
- * @version 1.0
+ *
  */
-public abstract class AbstractCodeEvent extends EventObject{
-
-    private byte[] code;
-
+public class ByteArrayHelperTest {
+    
     /**
-     * Template to create a new CodeEvent.
-     * @param source The origin of the event.
-     * @param code The data (source code) to submit.
+     * Test of hexStringToByteArray method, of class ByteArrayHelper.
      */
-    public AbstractCodeEvent(Object source, byte[] code) {
-        super(source);
-        this.code = code;
+    @Test
+    public void testHexStringToByteArray() {
+        String input = "00 11 22 33 44 55\n11\n\r";
+        byte[] result = ByteArrayHelper.hexStringToByteArray(input);
+        assertArrayEquals(new byte[]{0, 17, 34, 51, 68, 85, 17}, result);
     }
-
-    /**
-     * Get the Source Code.
-     * @return The source code.
-     */
-    public byte[] getCode(){
-        return code;
-    }
-
+    
 }

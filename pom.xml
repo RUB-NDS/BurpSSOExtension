@@ -4,7 +4,7 @@
     <groupId>burp</groupId>
     <!-- formaly kown as BurpExtensionSSO -->
     <artifactId>EsPReSSO</artifactId>
-    <version>3.1</version>
+    <version>3.2</version>
     <packaging>jar</packaging>
     <inceptionYear>2015</inceptionYear>
     <dependencies>
@@ -129,9 +129,6 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
                 </configuration>
             </plugin>
             <plugin>

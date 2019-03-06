@@ -155,7 +155,7 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
 
     private void jButtonModifyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonModifyActionPerformed
         Logging.getInstance().log(getClass(), "Signature Wrapping successfull", Logging.INFO);
-        notifyAllTabs(new SamlCodeEvent(this, ""));
+        notifyAllTabs(new SamlCodeEvent(this, "".getBytes()));
     }//GEN-LAST:event_jButtonModifyActionPerformed
 
     private void jButtonGenerateVectorsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGenerateVectorsActionPerformed
@@ -190,10 +190,10 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
     @Override
     public void setCode(AbstractCodeEvent evt) {
         if (firstTime) {
-            this.code = evt.getCode();
+            this.code = new String(evt.getCode());
             firstTime = false;
         } else {
-            this.NewCode = evt.getCode();
+            this.NewCode = new String(evt.getCode());
         }
     }
         

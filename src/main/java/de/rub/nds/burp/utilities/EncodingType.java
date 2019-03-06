@@ -22,21 +22,23 @@ package de.rub.nds.burp.utilities;
  * @author Nurullah Erinola
  */
 public enum EncodingType {
-    
+
     UTF_7("UTF-7"),
     UTF_8("UTF-8"),
-    UTF_16("UTF-16");
+    UTF_16("UTF-16"),
+    UTF_16BE("UTF-16BE"),
+    UTF_16LE("UTF-16LE");
 
     EncodingType(String encoding) {
         this.encoding = encoding;
     }
-            
-    private final String encoding;        
-    
+
+    private final String encoding;
+
     public String getEncoding() {
         return encoding;
     }
-    
+
     public static EncodingType fromString(String encoding) {
         for(EncodingType type: EncodingType.values()) {
             if(type.encoding.equalsIgnoreCase(encoding)) {
@@ -45,5 +47,5 @@ public enum EncodingType {
         }
         return null;
     }
-    
+
 }

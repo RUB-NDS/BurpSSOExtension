@@ -16,35 +16,24 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package de.rub.nds.burp.utilities.listeners;
+package de.rub.nds.burp.utilities.protocols.xmlenc;
 
-import java.util.EventObject;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
- * Abstract Code Event
- * @author Tim Guenther
- * @version 1.0
+ *
  */
-public abstract class AbstractCodeEvent extends EventObject{
+public class AlgorithmTest {
 
-    private byte[] code;
-
-    /**
-     * Template to create a new CodeEvent.
-     * @param source The origin of the event.
-     * @param code The data (source code) to submit.
-     */
-    public AbstractCodeEvent(Object source, byte[] code) {
-        super(source);
-        this.code = code;
-    }
-
-    /**
-     * Get the Source Code.
-     * @return The source code.
-     */
-    public byte[] getCode(){
-        return code;
+    @Test
+    public void testList() {
+        String[] uris = SymmetricAlgorithm.getURIs();
+        assertNotNull(uris);
+        assertNotNull(SymmetricAlgorithm.getByURI(uris[0]));
+        uris = AsymmetricAlgorithm.getURIs();
+        assertNotNull(uris);
+        assertNotNull(AsymmetricAlgorithm.getByURI(uris[0]));
     }
 
 }

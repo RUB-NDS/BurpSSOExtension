@@ -49,15 +49,15 @@ public class UICertificateViewer extends javax.swing.JPanel implements ICodeList
 
     private final IBurpExtenderCallbacks callbacks;
     private final IExtensionHelpers helpers;
-    
+
     private CodeListenerController listeners = null;
     private JLabel jLabelNoCert;
     private boolean wrapLines;
     private String code;
     private ArrayList<X509Certificate> certificates;
     private ArrayList<String> certificatesBase64;
-    private DefaultListModel certificatePaths;    
-    
+    private DefaultListModel certificatePaths;
+
     /**
      * Creates new form UICertificateViewer
      * @param callbacks
@@ -68,7 +68,7 @@ public class UICertificateViewer extends javax.swing.JPanel implements ICodeList
         wrapLines = Boolean.valueOf(callbacks.loadExtensionSetting("wrapLinesInCertificateViewer"));
         jLabelNoCert = new JLabel("No certificates recognized.");
         jLabelNoCert.setFont(new Font("Dialog", 1, 15));
-        this.add(jLabelNoCert); 
+        this.add(jLabelNoCert);
     }
 
     /**
@@ -169,7 +169,7 @@ public class UICertificateViewer extends javax.swing.JPanel implements ICodeList
 
     private void jButtonCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCopyActionPerformed
         String toCopy = "-----BEGIN CERTIFICATE-----\n"
-                + certificatesBase64.get(jListCertificateNames.getSelectedIndex()) 
+                + certificatesBase64.get(jListCertificateNames.getSelectedIndex())
                 + "\n-----END CERTIFICATE-----";
         StringSelection stringSelection = new StringSelection(toCopy);
         Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -183,7 +183,7 @@ public class UICertificateViewer extends javax.swing.JPanel implements ICodeList
             callbacks.saveExtensionSetting("wrapLinesInCertificateViewer", "true");
         } else {
             wrapLines = false;
-            jTextareaOrgCert.setLineWrap(false); 
+            jTextareaOrgCert.setLineWrap(false);
             callbacks.saveExtensionSetting("wrapLinesInCertificateViewer", "false");
         }
     }//GEN-LAST:event_jCheckBoxSoftwrapsActionPerformed
@@ -226,14 +226,14 @@ public class UICertificateViewer extends javax.swing.JPanel implements ICodeList
         jListCertificateNames.setModel(certificatePaths);
         jListCertificateNames.setSelectedIndex(0);
     }
-    
+
     /**
      * Is called every time new Code is available.
      * @param evt {@link de.rub.nds.burp.utilities.listeners.AbstractCodeEvent} The new source code.
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        code = evt.getCode();
+        code = new String(evt.getCode());
         if(containsCertificate()) {
             this.removeAll();
             initComponents();
