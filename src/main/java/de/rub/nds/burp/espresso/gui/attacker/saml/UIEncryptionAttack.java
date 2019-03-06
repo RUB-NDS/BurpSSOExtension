@@ -32,6 +32,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.List;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -40,8 +41,11 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import wsattacker.library.xmlutilities.dom.DomUtilities;
+import wsattacker.library.xmlutilities.namespace.NamespaceConstants;
 
 /**
  * The Encryption Attack
@@ -79,6 +83,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         jLabel3 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTextAreaCertificate = new javax.swing.JTextArea();
+        jCheckBoxUpdateCertificate = new javax.swing.JCheckBox();
         jLayeredPane2 = new javax.swing.JLayeredPane();
         jLabel1 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -113,8 +118,11 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         jTextAreaCertificate.setText("-----BEGIN CERTIFICATE-----\n\n-----END CERTIFICATE-----");
         jScrollPane3.setViewportView(jTextAreaCertificate);
 
+        jCheckBoxUpdateCertificate.setText("Update certificate");
+
         jLayeredPane1.setLayer(jLabel3, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jLayeredPane1.setLayer(jScrollPane3, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        jLayeredPane1.setLayer(jCheckBoxUpdateCertificate, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout jLayeredPane1Layout = new javax.swing.GroupLayout(jLayeredPane1);
         jLayeredPane1.setLayout(jLayeredPane1Layout);
@@ -122,15 +130,19 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
             jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jLayeredPane1Layout.createSequentialGroup()
                 .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jCheckBoxUpdateCertificate)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(jScrollPane3)
         );
         jLayeredPane1Layout.setVerticalGroup(
             jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jLayeredPane1Layout.createSequentialGroup()
-                .addComponent(jLabel3)
+                .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jCheckBoxUpdateCertificate))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE))
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE))
         );
 
         jLabel1.setText("Public key encryption:");
@@ -269,7 +281,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jLayeredPane3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane6)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)))
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE)))
         );
 
         jLabel8.setText("Encrypted message:");
@@ -321,7 +333,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
             .addGroup(jLayeredPane4Layout.createSequentialGroup()
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jLayeredPane4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10)
@@ -373,10 +385,30 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
                 | IllegalBlockSizeException | NoSuchPaddingException ex) {
             Logging.getInstance().log(getClass(), ex);
         }
-        // Set key 
         try {
             Document doc = XMLHelper.stringToDom(saml);
-            DomUtilities.evaluateXPath(doc, "//xenc:EncryptedKey//xenc:CipherValue").get(0).setTextContent(jTextAreaEncryptedKey.getText());
+            // Set key
+            DomUtilities.evaluateXPath(doc, "//xenc:EncryptedData//xenc:EncryptedKey//xenc:CipherValue").get(0).setTextContent(jTextAreaEncryptedKey.getText());
+            // Set cerificate
+            if (jCheckBoxUpdateCertificate.isSelected()) {
+                String cert = jTextAreaCertificate.getText();
+                cert = cert.replaceAll("-----BEGIN CERTIFICATE-----\n", "").replaceAll("-----BEGIN CERTIFICATE-----", "");
+                cert = cert.replaceAll("\n-----END CERTIFICATE-----", "").replaceAll("-----END CERTIFICATE-----", "");
+                if (!DomUtilities.evaluateXPath(doc, "//xenc:EncryptedData/ds:KeyInfo/ds:X509Data/ds:X509Certificate").isEmpty()) {
+                    // Replace existing certificate
+                    DomUtilities.evaluateXPath(doc, "//xenc:EncryptedData/ds:KeyInfo/ds:X509Data/ds:X509Certificate").get(0).setTextContent(cert);
+                } else {
+                    // No certificate was aviable, create nodes to add certificate
+                    Node encDataElement = DomUtilities.evaluateXPath(doc, "//xenc:EncryptedData").get(0);
+                    Node keyInfoElement = doc.createElementNS(NamespaceConstants.URI_NS_DS, "ds:KeyInfo");
+                    Node dataElement = doc.createElement("ds:X509Data");
+                    Node certElement = doc.createElement("ds:X509Certificate");
+                    encDataElement.appendChild(keyInfoElement);
+                    keyInfoElement.appendChild(dataElement);
+                    dataElement.appendChild(certElement);
+                    certElement.setTextContent(cert);
+                }
+            }           
             saml = XMLHelper.docToString(doc);      
             notifyAllTabs(new SamlCodeEvent(this, saml.getBytes()));
             Logging.getInstance().log(getClass(), "Setting new encrypted symmetric key was successfull.", Logging.INFO);
@@ -430,17 +462,24 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
     public void setCode(AbstractCodeEvent evt) {
         this.saml = new String(evt.getCode());
         // Set certificate if available
-        NodeList list = XMLHelper.stringToDom(saml).getElementsByTagNameNS("*", "X509Certificate");
-        if(list.getLength() > 0) {
-            jTextAreaCertificate.setText("-----BEGIN CERTIFICATE-----\n" + list.item(0).getTextContent() + "\n-----END CERTIFICATE-----");
-        } else {
-             jTextAreaCertificate.setText("-----BEGIN CERTIFICATE-----\n" + "\n" + "\n-----END CERTIFICATE-----");
+        try {
+            Document doc = XMLHelper.stringToDom(saml);
+            List<? extends Node> certs = DomUtilities.evaluateXPath(doc, "//xenc:EncryptedData/ds:KeyInfo/ds:X509Data/ds:X509Certificate");
+            if(!certs.isEmpty()) {
+                jTextAreaCertificate.setText("-----BEGIN CERTIFICATE-----\n" + certs.get(0).getTextContent() + "\n-----END CERTIFICATE-----");
+            } else {
+                jTextAreaCertificate.setText("-----BEGIN CERTIFICATE-----\n" + "\n-----END CERTIFICATE-----");
+            }
+        } catch (XPathExpressionException ex) {
+            Logging.getInstance().log(getClass(), ex);
         }
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonEncryptSymmetricKey;
     private javax.swing.JButton jButtonEncryptXML;
+    private javax.swing.JCheckBox jCheckBoxUpdateCertificate;
     private javax.swing.JComboBox<String> jComboBoxPublicAlgo;
     private javax.swing.JComboBox<String> jComboBoxSymmetricAlgo;
     private javax.swing.JLabel jLabel1;
