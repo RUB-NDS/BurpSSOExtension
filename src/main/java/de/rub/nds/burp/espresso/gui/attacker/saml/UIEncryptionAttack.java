@@ -59,6 +59,9 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
     private String saml = "";
     private CodeListenerController listeners = null;
     private XmlEncryptionHelper xmlEncryptionHelper;
+    
+    private String encDataPath = "//xenc:EncryptedData/ds:KeyInfo/ds:X509Data/ds:X509Certificate";
+    private String encKeyPath = "//xenc:EncryptedKey/ds:KeyInfo/ds:X509Data/ds:X509Certificate";
 
     /**
      * Creates new form UIEncryptionAttack
@@ -83,7 +86,8 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         jLabel3 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTextAreaCertificate = new javax.swing.JTextArea();
-        jCheckBoxUpdateCertificate = new javax.swing.JCheckBox();
+        jCheckBoxUpdateCertEncData = new javax.swing.JCheckBox();
+        jCheckBoxUpdateCertEncKey = new javax.swing.JCheckBox();
         jLayeredPane2 = new javax.swing.JLayeredPane();
         jLabel1 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -118,11 +122,14 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         jTextAreaCertificate.setText("-----BEGIN CERTIFICATE-----\n\n-----END CERTIFICATE-----");
         jScrollPane3.setViewportView(jTextAreaCertificate);
 
-        jCheckBoxUpdateCertificate.setText("Update certificate");
+        jCheckBoxUpdateCertEncData.setText("Update certificate in EncrpytedData");
+
+        jCheckBoxUpdateCertEncKey.setText("Update certificate in EncrpytedKey");
 
         jLayeredPane1.setLayer(jLabel3, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jLayeredPane1.setLayer(jScrollPane3, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        jLayeredPane1.setLayer(jCheckBoxUpdateCertificate, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        jLayeredPane1.setLayer(jCheckBoxUpdateCertEncData, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        jLayeredPane1.setLayer(jCheckBoxUpdateCertEncKey, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout jLayeredPane1Layout = new javax.swing.GroupLayout(jLayeredPane1);
         jLayeredPane1.setLayout(jLayeredPane1Layout);
@@ -131,7 +138,9 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
             .addGroup(jLayeredPane1Layout.createSequentialGroup()
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jCheckBoxUpdateCertificate)
+                .addComponent(jCheckBoxUpdateCertEncData)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jCheckBoxUpdateCertEncKey)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(jScrollPane3)
         );
@@ -140,7 +149,8 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
             .addGroup(jLayeredPane1Layout.createSequentialGroup()
                 .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jCheckBoxUpdateCertificate))
+                    .addComponent(jCheckBoxUpdateCertEncData)
+                    .addComponent(jCheckBoxUpdateCertEncKey))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE))
         );
@@ -388,28 +398,31 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         try {
             Document doc = XMLHelper.stringToDom(saml);
             // Set key
-            DomUtilities.evaluateXPath(doc, "//xenc:EncryptedData//xenc:EncryptedKey//xenc:CipherValue").get(0).setTextContent(jTextAreaEncryptedKey.getText());
+            DomUtilities.evaluateXPath(doc, "//xenc:EncryptedKey/xenc:CipherData/xenc:CipherValue").get(0).setTextContent(jTextAreaEncryptedKey.getText());
             // Set cerificate
-            if (jCheckBoxUpdateCertificate.isSelected()) {
+            if (jCheckBoxUpdateCertEncData.isSelected() || jCheckBoxUpdateCertEncKey.isSelected()) {
                 String cert = jTextAreaCertificate.getText();
                 cert = cert.replaceAll("-----BEGIN CERTIFICATE-----\n", "").replaceAll("-----BEGIN CERTIFICATE-----", "");
                 cert = cert.replaceAll("\n-----END CERTIFICATE-----", "").replaceAll("-----END CERTIFICATE-----", "");
-                if (!DomUtilities.evaluateXPath(doc, "//xenc:EncryptedData/ds:KeyInfo/ds:X509Data/ds:X509Certificate").isEmpty()) {
-                    // Replace existing certificate
-                    DomUtilities.evaluateXPath(doc, "//xenc:EncryptedData/ds:KeyInfo/ds:X509Data/ds:X509Certificate").get(0).setTextContent(cert);
-                } else {
-                    // No certificate was aviable, create nodes to add certificate
-                    Node encDataElement = DomUtilities.evaluateXPath(doc, "//xenc:EncryptedData").get(0);
-                    Node keyInfoElement = doc.createElementNS(NamespaceConstants.URI_NS_DS, "ds:KeyInfo");
-                    Node dataElement = doc.createElement("ds:X509Data");
-                    Node certElement = doc.createElement("ds:X509Certificate");
-                    encDataElement.appendChild(keyInfoElement);
-                    keyInfoElement.appendChild(dataElement);
-                    dataElement.appendChild(certElement);
-                    certElement.setTextContent(cert);
+                boolean encDataEmpty = DomUtilities.evaluateXPath(doc, encDataPath).isEmpty();
+                boolean encKeyEmpty = DomUtilities.evaluateXPath(doc, encKeyPath).isEmpty();
+                // Replace or update
+                if (jCheckBoxUpdateCertEncData.isSelected()) {
+                    if(!encDataEmpty) {
+                        DomUtilities.evaluateXPath(doc, encDataPath).get(0).setTextContent(cert);
+                    } else {
+                        createCertNode(doc, "//xenc:EncryptedData", cert);
+                    }
+                }
+                if (jCheckBoxUpdateCertEncKey.isSelected()) {
+                    if(!encKeyEmpty) {
+                        DomUtilities.evaluateXPath(doc, encKeyPath).get(0).setTextContent(cert);
+                    } else {
+                        createCertNode(doc, "//xenc:EncryptedKey", cert);
+                    }
                 }
             }           
-            saml = XMLHelper.docToString(doc);      
+            saml = XMLHelper.docToString(doc);         
             notifyAllTabs(new SamlCodeEvent(this, saml.getBytes()));
             Logging.getInstance().log(getClass(), "Setting new encrypted symmetric key was successfull.", Logging.INFO);
         } catch (XPathExpressionException ex) {
@@ -417,6 +430,27 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         }
     }//GEN-LAST:event_jButtonEncryptSymmetricKeyActionPerformed
 
+    private void createCertNode(Document doc, String nodePath, String cert) {
+        try {
+            Node element = DomUtilities.evaluateXPath(doc, nodePath).get(0);
+            Node keyInfoElement;
+            Node dataElement = doc.createElementNS(NamespaceConstants.URI_NS_DS, "ds:X509Data");
+            Node certElement = doc.createElement("ds:X509Certificate");
+            // Check if <ds:KeyInfo> is present 
+            if(!DomUtilities.evaluateXPath(doc, nodePath + "/ds:KeyInfo").isEmpty()) {
+                keyInfoElement = DomUtilities.evaluateXPath(doc, nodePath + "/ds:KeyInfo").get(0);
+            } else {
+                keyInfoElement = doc.createElementNS(NamespaceConstants.URI_NS_DS, "ds:KeyInfo");
+                element.appendChild(keyInfoElement);
+            }            
+            keyInfoElement.appendChild(dataElement);
+            dataElement.appendChild(certElement);
+            certElement.setTextContent(cert);
+        } catch (XPathExpressionException ex) {
+            Logging.getInstance().log(getClass(), ex);
+        }
+    }    
+    
     private void jButtonEncryptXMLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEncryptXMLActionPerformed
         Logging.getInstance().log(getClass(), "Start ciphertext computation.", Logging.INFO);
         byte[] symmetricKey = ByteArrayHelper.hexStringToByteArray(jTextAreaSymmetricKey.getText());
@@ -464,7 +498,10 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         // Set certificate if available
         try {
             Document doc = XMLHelper.stringToDom(saml);
-            List<? extends Node> certs = DomUtilities.evaluateXPath(doc, "//xenc:EncryptedData/ds:KeyInfo/ds:X509Data/ds:X509Certificate");
+            List<? extends Node> certs = DomUtilities.evaluateXPath(doc, encKeyPath);
+            if(certs.isEmpty()) {
+                certs = DomUtilities.evaluateXPath(doc, encDataPath);
+            }
             if(!certs.isEmpty()) {
                 jTextAreaCertificate.setText("-----BEGIN CERTIFICATE-----\n" + certs.get(0).getTextContent() + "\n-----END CERTIFICATE-----");
             } else {
@@ -479,7 +516,8 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonEncryptSymmetricKey;
     private javax.swing.JButton jButtonEncryptXML;
-    private javax.swing.JCheckBox jCheckBoxUpdateCertificate;
+    private javax.swing.JCheckBox jCheckBoxUpdateCertEncData;
+    private javax.swing.JCheckBox jCheckBoxUpdateCertEncKey;
     private javax.swing.JComboBox<String> jComboBoxPublicAlgo;
     private javax.swing.JComboBox<String> jComboBoxSymmetricAlgo;
     private javax.swing.JLabel jLabel1;
