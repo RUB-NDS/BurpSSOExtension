@@ -29,7 +29,7 @@ import javax.swing.table.AbstractTableModel;
 public class TableModel extends AbstractTableModel{
     
     private ArrayList<TableEntry> list;
-    private String[] columnNames = {"#", "xPath", "Current value", "New value"};
+    private String[] columnNames = {"xPath", "Current value", "New value"};
 
     /**
      * Construct a new Table Helper
@@ -134,12 +134,10 @@ public class TableModel extends AbstractTableModel{
         switch (columnIndex)
         {
             case 0:
-                return entry.getCounter();
-            case 1:
                 return entry.getXPath();
-            case 2:
+            case 1:
                 return entry.getCurrentValue();
-            case 3:
+            case 2:
                 return entry.getNewValue();
             default:
                 return null;

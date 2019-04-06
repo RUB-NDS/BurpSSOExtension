@@ -25,7 +25,6 @@ package de.rub.nds.burp.utilities.table.xsw;
  */
 public class TableEntry {
     
-    private String counter;
     private String xPath;
     private String currentValue;
     private String newValue;
@@ -33,17 +32,12 @@ public class TableEntry {
     /**
      * Construct a new table entry.
      */
-    public TableEntry(int counter, String xPath, String currentValue, String newValue) {
-        this.counter = Integer.toString(counter);
+    public TableEntry(String xPath, String currentValue, String newValue) {
         this.xPath = xPath;
         this.currentValue = currentValue;
         this.newValue = newValue;
     }
-
-    public String getCounter() {
-        return counter;
-    }
-    
+  
     public String getXPath() {
         return xPath;
     }

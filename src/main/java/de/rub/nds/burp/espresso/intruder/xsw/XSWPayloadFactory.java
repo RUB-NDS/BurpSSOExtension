@@ -27,6 +27,7 @@ import burp.IParameter;
 import de.rub.nds.burp.utilities.Compression;
 import de.rub.nds.burp.utilities.Encoding;
 import de.rub.nds.burp.utilities.Logging;
+import de.rub.nds.burp.utilities.XMLHelper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.DataFormatException;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 import wsattacker.library.schemaanalyzer.SchemaAnalyzer;
 import wsattacker.library.schemaanalyzer.SchemaAnalyzerFactory;
 import wsattacker.library.signatureWrapping.option.Payload;
@@ -72,8 +72,8 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
     class XSWPayloadGenerator implements IIntruderPayloadGenerator {
         
         private final String samlRequest = "SAMLRequest";
-        private final String samlResponse = "SAMLResponse";        
-    
+        private final String samlResponse = "SAMLResponse";
+        
         private XSWInputJDialog dialog;
         private IIntruderAttack attack;
         private int payloadIndex = 0;
@@ -88,13 +88,13 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
                 Logging.getInstance().log(getClass(), "No SAML message", Logging.ERROR);
             }
             try {
-                saml = decodeSamlParam(samlContent.getValue().replaceAll("§",""));
+                saml = decodeSamlParam(samlContent.getValue().replace("§",""));
                 dialog = new XSWInputJDialog(saml);
             } catch (IOException | DataFormatException ex) {
                 Logging.getInstance().log(getClass(), "Failed to decode SAML message", Logging.ERROR);
             }
             generatePayloads();
-            replaceValues();
+            //replaceValues();
         } 
 
         @Override
@@ -119,11 +119,9 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
             try {
                 // Init manager
                 SignatureManager signatureManager = new SignatureManager();
-                signatureManager.setDocument(DomUtilities.stringToDom(saml));
+                signatureManager.setDocument(XMLHelper.stringToDom(saml));
                 List<Payload> payloadList = signatureManager.getPayloads();
-                if (payloadList.size() > 0) {
-                    // TODO
-                } else {
+                if (payloadList.isEmpty()) {
                     Logging.getInstance().log(getClass(), "No Payload found", Logging.INFO);
                 }
                 // Init oracle
@@ -131,16 +129,15 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
                 SchemaAnalyzer samlSchemaAnalyser = SchemaAnalyzerFactory.getInstance(SchemaAnalyzerFactory.SAML);
                 WrappingOracle wrappingOracle = new WrappingOracle(samlDoc, payloadList, samlSchemaAnalyser);
                 // Save attack vectors
-                payloads.add(saml); // Remove
                 payloads.add(Integer.toString(wrappingOracle.maxPossibilities())); // Remove
                 for (int i = 0; i < wrappingOracle.maxPossibilities(); i++) {
                     Document attackDoc = wrappingOracle.getPossibility(i);
                     String attackString = DomUtilities.domToString(attackDoc);
                     payloads.add(attackString);
                 }
-            } catch (SAXException | InvalidWeaknessException ex) {
+            } catch (InvalidWeaknessException ex) {
                 Logging.getInstance().log(getClass(), "Failed to generate XSW vectors", Logging.ERROR);
-            }            
+            }         
         }
         
         private void replaceValues() {

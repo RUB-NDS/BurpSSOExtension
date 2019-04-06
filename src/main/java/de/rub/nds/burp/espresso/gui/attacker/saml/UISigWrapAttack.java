@@ -20,6 +20,7 @@ package de.rub.nds.burp.espresso.gui.attacker.saml;
 
 import de.rub.nds.burp.espresso.gui.attacker.IAttack;
 import de.rub.nds.burp.utilities.Logging;
+import de.rub.nds.burp.utilities.XMLHelper;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
 import de.rub.nds.burp.utilities.listeners.events.SamlCodeEvent;
@@ -29,7 +30,6 @@ import org.xml.sax.SAXException;
 import wsattacker.library.schemaanalyzer.SchemaAnalyzer;
 import wsattacker.library.schemaanalyzer.SchemaAnalyzerFactory;
 import wsattacker.library.signatureWrapping.option.Payload;
-import wsattacker.library.signatureWrapping.util.exception.InvalidWeaknessException;
 import wsattacker.library.signatureWrapping.util.signature.SignatureManager;
 import wsattacker.library.signatureWrapping.xpath.wrapping.WrappingOracle;
 import wsattacker.library.xmlutilities.dom.DomUtilities;
@@ -41,7 +41,7 @@ import wsattacker.library.xmlutilities.dom.DomUtilities;
  */
 public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
 
-    private final SchemaAnalyzer samlSchemaAnalyser = SchemaAnalyzerFactory.getInstance(SchemaAnalyzerFactory.SAML);
+    private static final SchemaAnalyzer samlSchemaAnalyser = SchemaAnalyzerFactory.getInstance(SchemaAnalyzerFactory.SAML);
     private WrappingOracle wrappingOracle;
     
     private String code = null;
@@ -66,17 +66,20 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jListSignaturePaths = new javax.swing.JList<>();
         jButtonReload = new javax.swing.JButton();
         jButtonGenerateVectors = new javax.swing.JButton();
         jButtonModify = new javax.swing.JButton();
         jButtonPreview = new javax.swing.JButton();
+        rTextScrollPane = new org.fife.ui.rtextarea.RTextScrollPane();
+        rSyntaxTextArea = new org.fife.ui.rsyntaxtextarea.RSyntaxTextArea();
+        jCheckBoxWrapLines = new javax.swing.JCheckBox();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextAreaAttackDescription = new javax.swing.JTextArea();
+        jLabel2 = new javax.swing.JLabel();
+        jSpinnerSelectedAttack = new javax.swing.JSpinner();
+        jSeparator1 = new javax.swing.JSeparator();
 
-        jLabel1.setText("Select signature:");
-
-        jListSignaturePaths.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane1.setViewportView(jListSignaturePaths);
+        jLabel1.setText("Message:");
 
         jButtonReload.setText("Reload");
         jButtonReload.setToolTipText("Reload original message.");
@@ -108,6 +111,31 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
             }
         });
 
+        rTextScrollPane.setAutoscrolls(true);
+        rTextScrollPane.setLineNumbersEnabled(true);
+
+        rSyntaxTextArea.setEditable(false);
+        rSyntaxTextArea.setColumns(20);
+        rSyntaxTextArea.setRows(5);
+        rSyntaxTextArea.setCodeFoldingEnabled(true);
+        rSyntaxTextArea.setSyntaxEditingStyle("text/xml");
+        rTextScrollPane.setViewportView(rSyntaxTextArea);
+
+        jCheckBoxWrapLines.setText("Softwraps for long lines");
+        jCheckBoxWrapLines.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxWrapLinesActionPerformed(evt);
+            }
+        });
+
+        jTextAreaAttackDescription.setEditable(false);
+        jTextAreaAttackDescription.setColumns(20);
+        jTextAreaAttackDescription.setLineWrap(true);
+        jTextAreaAttackDescription.setRows(5);
+        jScrollPane1.setViewportView(jTextAreaAttackDescription);
+
+        jLabel2.setText("Choose attack vevtor:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -115,20 +143,33 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 692, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButtonReload))
-                            .addComponent(jButtonGenerateVectors)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButtonModify)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButtonPreview)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(jButtonGenerateVectors)
+                        .addGap(323, 594, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jSpinnerSelectedAttack, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(rTextScrollPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jButtonModify)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jButtonPreview))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel1)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jCheckBoxWrapLines)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jButtonReload)))
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -136,12 +177,21 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
+                    .addComponent(jCheckBoxWrapLines)
                     .addComponent(jButtonReload))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(rTextScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonGenerateVectors)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 485, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jSpinnerSelectedAttack, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 303, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonModify)
                     .addComponent(jButtonPreview))
@@ -151,6 +201,7 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
 
     private void jButtonReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReloadActionPerformed
         code = NewCode;
+        rSyntaxTextArea.setText(code);
     }//GEN-LAST:event_jButtonReloadActionPerformed
 
     private void jButtonModifyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonModifyActionPerformed
@@ -159,29 +210,32 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
     }//GEN-LAST:event_jButtonModifyActionPerformed
 
     private void jButtonGenerateVectorsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGenerateVectorsActionPerformed
-        try {
-            // Init manager
-            SignatureManager signatureManager = new SignatureManager();
-            signatureManager.setDocument(DomUtilities.stringToDom(code));
-            List<Payload> payloadList = signatureManager.getPayloads();
-            if (payloadList.size() > 0) {
-
-            } else {
-                Logging.getInstance().log(getClass(), "No Payload found", Logging.INFO);
-            }
-            // Init oracle
-            Document samlDoc = signatureManager.getDocument();
-            wrappingOracle = new WrappingOracle(samlDoc, payloadList, samlSchemaAnalyser);
-            // Save attack vectors
-            
-        } catch (SAXException ex) {
-            Logging.getInstance().log(getClass(), "Failed to generate XSW vectors", Logging.ERROR);
-        } 
+        // Init manager
+        SignatureManager signatureManager = new SignatureManager();
+        signatureManager.setDocument(XMLHelper.stringToDom(code));
+        List<Payload> payloadList = signatureManager.getPayloads();
+        if (payloadList.isEmpty()) {
+            Logging.getInstance().log(getClass(), "No Payload found", Logging.INFO);
+        }
+        // Init oracle
+        Document samlDoc = signatureManager.getDocument();
+        wrappingOracle = new WrappingOracle(samlDoc, payloadList, samlSchemaAnalyser);
+        // TODO: Save attack vectors
+        int max = wrappingOracle.maxPossibilities();
+        jSpinnerSelectedAttack.setValue(max); 
     }//GEN-LAST:event_jButtonGenerateVectorsActionPerformed
 
     private void jButtonPreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPreviewActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButtonPreviewActionPerformed
+
+    private void jCheckBoxWrapLinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxWrapLinesActionPerformed
+        if (jCheckBoxWrapLines.isSelected()) {
+            rSyntaxTextArea.setLineWrap(true);
+        } else {
+            rSyntaxTextArea.setLineWrap(false);
+        }
+    }//GEN-LAST:event_jCheckBoxWrapLinesActionPerformed
 
     /**
      * Is called every time new Code is available.
@@ -191,6 +245,7 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
     public void setCode(AbstractCodeEvent evt) {
         if (firstTime) {
             this.code = new String(evt.getCode());
+            rSyntaxTextArea.setText(code);
             firstTime = false;
         } else {
             this.NewCode = new String(evt.getCode());
@@ -223,8 +278,14 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
     private javax.swing.JButton jButtonModify;
     private javax.swing.JButton jButtonPreview;
     private javax.swing.JButton jButtonReload;
+    private javax.swing.JCheckBox jCheckBoxWrapLines;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JList<String> jListSignaturePaths;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSpinner jSpinnerSelectedAttack;
+    private javax.swing.JTextArea jTextAreaAttackDescription;
+    private org.fife.ui.rsyntaxtextarea.RSyntaxTextArea rSyntaxTextArea;
+    private org.fife.ui.rtextarea.RTextScrollPane rTextScrollPane;
     // End of variables declaration//GEN-END:variables
 }

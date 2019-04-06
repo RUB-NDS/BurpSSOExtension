@@ -43,7 +43,6 @@ public class XSWInputJDialog extends javax.swing.JDialog {
     private HashMap<String, String> valuePairs;
     private TableModel tableModel;
     private JTable table;
-    private int counter = 0;
     
     /**
      * Creates new form XSWInputJDialog
@@ -118,7 +117,6 @@ public class XSWInputJDialog extends javax.swing.JDialog {
 
         jLabel4.setText("Values to be replaced:");
 
-        jCheckBoxWrapLines.setSelected(true);
         jCheckBoxWrapLines.setText("Softwraps for long lines");
         jCheckBoxWrapLines.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -126,6 +124,7 @@ public class XSWInputJDialog extends javax.swing.JDialog {
             }
         });
 
+        rTextScrollPane.setAutoscrolls(true);
         rTextScrollPane.setLineNumbersEnabled(true);
 
         rSyntaxTextArea.setEditable(false);
@@ -141,13 +140,13 @@ public class XSWInputJDialog extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(rTextScrollPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 853, Short.MAX_VALUE)
-                    .addComponent(jButtonOk, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jTextFieldCurrentValue)
-                    .addComponent(jScrollPaneTable)
+                    .addComponent(rTextScrollPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 789, Short.MAX_VALUE)
                     .addComponent(jTextFieldNewValue)
                     .addComponent(jSeparator1)
                     .addComponent(jButtonAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButtonOk, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPaneTable)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
@@ -155,10 +154,10 @@ public class XSWInputJDialog extends javax.swing.JDialog {
                             .addComponent(jLabel2)
                             .addComponent(jLabel3)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel4)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButtonDelete)))
-                        .addGap(0, 600, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -187,7 +186,7 @@ public class XSWInputJDialog extends javax.swing.JDialog {
                     .addComponent(jLabel4)
                     .addComponent(jButtonDelete))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPaneTable, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
+                .addComponent(jScrollPaneTable, javax.swing.GroupLayout.DEFAULT_SIZE, 122, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonOk)
                 .addContainerGap())
@@ -198,19 +197,14 @@ public class XSWInputJDialog extends javax.swing.JDialog {
 
     private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
         ArrayList<String> xPaths = getXPaths(jTextFieldCurrentValue.getText());
-        XSWxPathJDialog dialog;
-        String selection = null;
-        if(xPaths.size() > 1) {
-            dialog = new XSWxPathJDialog(xPaths);
-            selection = dialog.getSelection();
-        } else if (xPaths.size() == 1) {
-            selection = xPaths.get(0);
+        for (int i = 0; i < xPaths.size(); i++) {
+            String selection = xPaths.get(i);
+            if (selection != null && !valuePairs.containsKey(selection)) {
+                valuePairs.put(selection, jTextFieldNewValue.getText());
+                tableModel.addRow(new TableEntry(selection, jTextFieldCurrentValue.getText(), jTextFieldNewValue.getText()));
+            }
         }
-        if (selection != null && !valuePairs.containsKey(selection)) {
-            counter++;
-            valuePairs.put(selection, jTextFieldNewValue.getText());
-            tableModel.addRow(new TableEntry(counter, selection, jTextFieldCurrentValue.getText(), jTextFieldNewValue.getText()));
-        }
+        
     }//GEN-LAST:event_jButtonAddActionPerformed
 
     private void jButtonOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOkActionPerformed
@@ -218,7 +212,7 @@ public class XSWInputJDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jButtonOkActionPerformed
 
     private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
-        valuePairs.remove((String) tableModel.getValueAt(table.getSelectedRow(), 1));
+        valuePairs.remove((String) tableModel.getValueAt(table.getSelectedRow(), 0));
         tableModel.remove(table.getSelectedRow());
     }//GEN-LAST:event_jButtonDeleteActionPerformed
 
@@ -264,6 +258,7 @@ public class XSWInputJDialog extends javax.swing.JDialog {
     
     private void initEditor() {
         rSyntaxTextArea.setText(XMLHelper.format(message, 2));
+        rSyntaxTextArea.setLineWrap(false);
     }
     
     public HashMap<String, String> getValuePairs() {
