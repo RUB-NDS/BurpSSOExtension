@@ -22,6 +22,8 @@ package de.rub.nds.burp.utilities;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -45,6 +47,7 @@ import org.xml.sax.InputSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import wsattacker.library.xmlutilities.dom.DomUtilities;
 /**
  * Help pretty print XML content
  * @author Tim Guenther
@@ -133,5 +136,26 @@ public abstract class XMLHelper {
             Logging.getInstance().log(XMLHelper.class, e);
             return null;
         }
+    }
+    
+    public static ArrayList<String> getXPaths(Document doc, String input) {
+        ArrayList<String> xPaths = new ArrayList<>();
+        // check as node value
+        try {
+            List nodes = DomUtilities.evaluateXPath(doc, "//*[text()='" + input + "']");
+            List nodesPaths = DomUtilities.nodelistToFastXPathList(nodes);
+            xPaths.addAll(nodesPaths);
+        } catch (XPathExpressionException ex) {
+            Logging.getInstance().log(XMLHelper.class, "Incorrect XPath", Logging.ERROR);
+        }
+        // check as attribute value
+        try {
+            List nodes = DomUtilities.evaluateXPath(doc, "//attribute::*[string()='" + input + "']");
+            List nodesPaths = DomUtilities.nodelistToFastXPathList(nodes);
+            xPaths.addAll(nodesPaths);
+        } catch (XPathExpressionException ex) {
+            Logging.getInstance().log(XMLHelper.class, "Incorrect XPath", Logging.ERROR);
+        }
+        return xPaths;
     }
 }

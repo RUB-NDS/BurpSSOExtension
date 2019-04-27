@@ -196,7 +196,7 @@ public class XSWInputJDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
-        ArrayList<String> xPaths = getXPaths(jTextFieldCurrentValue.getText());
+        ArrayList<String> xPaths = XMLHelper.getXPaths(doc, jTextFieldCurrentValue.getText());
         for (int i = 0; i < xPaths.size(); i++) {
             String selection = xPaths.get(i);
             if (selection != null && !valuePairs.containsKey(selection)) {
@@ -233,27 +233,6 @@ public class XSWInputJDialog extends javax.swing.JDialog {
         TableRowSorter<TableModel> sorter = new TableRowSorter<>();
         table.setRowSorter(sorter);
         sorter.setModel(tableModel);
-    }
-    
-    private ArrayList<String> getXPaths(String input) {
-        ArrayList<String> xPaths = new ArrayList<>();
-        // check as node value
-        try {
-            List nodes = DomUtilities.evaluateXPath(doc, "//*[text()='" + jTextFieldCurrentValue.getText() + "']");
-            List nodesPaths = DomUtilities.nodelistToFastXPathList(nodes);
-            xPaths.addAll(nodesPaths);
-        } catch (XPathExpressionException ex) {
-            Logging.getInstance().log(getClass(), "Incorrect XPath", Logging.ERROR);
-        }
-        // check as attribute value
-        try {
-            List nodes = DomUtilities.evaluateXPath(doc, "//attribute::*[string()='" + jTextFieldCurrentValue.getText() + "']");
-            List nodesPaths = DomUtilities.nodelistToFastXPathList(nodes);
-            xPaths.addAll(nodesPaths);
-        } catch (XPathExpressionException ex) {
-            Logging.getInstance().log(getClass(), "Incorrect XPath", Logging.ERROR);
-        }
-        return xPaths;
     }
     
     private void initEditor() {

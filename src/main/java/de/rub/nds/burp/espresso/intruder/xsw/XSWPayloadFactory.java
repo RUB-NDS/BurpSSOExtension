@@ -31,11 +31,15 @@ import de.rub.nds.burp.utilities.XMLHelper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import wsattacker.library.schemaanalyzer.SchemaAnalyzer;
 import wsattacker.library.schemaanalyzer.SchemaAnalyzerFactory;
 import wsattacker.library.signatureWrapping.option.Payload;
@@ -80,7 +84,7 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
         private IParameter samlContent = null;
         private String saml;
         private boolean isDeflated = false;
-        private ArrayList<String> payloads;
+        private ArrayList<byte[]> payloads;
         
         public XSWPayloadGenerator(IIntruderAttack attack) {
             this.attack = attack;
@@ -104,7 +108,7 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
 
         @Override
         public byte[] getNextPayload(byte[] bytes) {
-            byte[] payload = helpers.stringToBytes(payloads.get(payloadIndex));
+            byte[] payload = payloads.get(payloadIndex);
             payloadIndex++;
             return payload;
         }
@@ -121,6 +125,9 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
                 SignatureManager signatureManager = new SignatureManager();
                 signatureManager.setDocument(XMLHelper.stringToDom(saml));
                 List<Payload> payloadList = signatureManager.getPayloads();
+                for (int i = 0; i < payloadList.size(); i++) {
+                    payloadList.get(i).setValue(payloadList.get(i).getValue());
+                }
                 if (payloadList.isEmpty()) {
                     Logging.getInstance().log(getClass(), "No Payload found", Logging.INFO);
                 }
@@ -129,24 +136,21 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
                 SchemaAnalyzer samlSchemaAnalyser = SchemaAnalyzerFactory.getInstance(SchemaAnalyzerFactory.SAML);
                 WrappingOracle wrappingOracle = new WrappingOracle(samlDoc, payloadList, samlSchemaAnalyser);
                 // Save attack vectors
-                payloads.add(Integer.toString(wrappingOracle.maxPossibilities())); // Remove
                 for (int i = 0; i < wrappingOracle.maxPossibilities(); i++) {
+                    // Get vector
                     Document attackDoc = wrappingOracle.getPossibility(i);
+                    // TODO: Replace values
+                    for (Map.Entry pair : dialog.getValuePairs().entrySet()) {
+                        Node node = XMLHelper.getElementByXPath(attackDoc, pair.getKey().toString());
+                        node.setTextContent(pair.getValue().toString());
+                    }
+                    // Encode vector
                     String attackString = DomUtilities.domToString(attackDoc);
-                    payloads.add(attackString);
+                    payloads.add(encodeSamlParam(attackString));
                 }
-            } catch (InvalidWeaknessException ex) {
+            } catch (IOException | DataFormatException | InvalidWeaknessException ex) {
                 Logging.getInstance().log(getClass(), "Failed to generate XSW vectors", Logging.ERROR);
             }         
-        }
-        
-        private void replaceValues() {
-            // TODO
-            Collection collection = dialog.getValuePairs().values();
-            Iterator iterator = collection.iterator();
-            while(iterator.hasNext()) {
-                Map.Entry pair = (Map.Entry)iterator.next();
-            }
         }
         
         private boolean isSAML(byte[] content) {

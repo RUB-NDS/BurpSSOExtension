@@ -35,13 +35,14 @@
         <dependency>
             <groupId>wsattacker.library</groupId>
             <artifactId>XML_Utilities_Library</artifactId>
-            <version>1.7</version>
+            <version>1.9-SNAPSHOT</version>
         </dependency>
         <!-- Signature Wrapping Library -->
         <dependency>
             <groupId>wsattacker.library</groupId>
             <artifactId>Signature_Wrapping_Library</artifactId>
-            <version>1.7</version>
+            <version>1.9-SNAPSHOT</version>
+            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.jdesktop</groupId>
@@ -71,6 +72,12 @@
             <groupId>bouncycastle</groupId>
             <artifactId>bcprov-jdk16</artifactId>
             <version>140</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.9</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
     
