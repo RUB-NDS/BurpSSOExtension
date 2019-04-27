@@ -128,7 +128,8 @@ public class XSWInputJDialog extends javax.swing.JDialog {
         rTextScrollPane.setLineNumbersEnabled(true);
 
         rSyntaxTextArea.setEditable(false);
-        rSyntaxTextArea.setLineWrap(true);
+        rSyntaxTextArea.setColumns(20);
+        rSyntaxTextArea.setRows(5);
         rSyntaxTextArea.setCodeFoldingEnabled(true);
         rSyntaxTextArea.setSyntaxEditingStyle("text/xml");
         rTextScrollPane.setViewportView(rSyntaxTextArea);
@@ -137,27 +138,27 @@ public class XSWInputJDialog extends javax.swing.JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextFieldCurrentValue)
-                    .addComponent(rTextScrollPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 789, Short.MAX_VALUE)
-                    .addComponent(jTextFieldNewValue)
-                    .addComponent(jSeparator1)
-                    .addComponent(jButtonAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButtonOk, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPaneTable)
-                    .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(rTextScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jTextFieldCurrentValue, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTextFieldNewValue, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButtonAdd, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButtonOk, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPaneTable, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
-                            .addComponent(jCheckBoxWrapLines)
                             .addComponent(jLabel2)
                             .addComponent(jLabel3)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButtonDelete)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                                .addComponent(jButtonDelete))
+                            .addComponent(jCheckBoxWrapLines))
+                        .addGap(0, 533, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -238,6 +239,7 @@ public class XSWInputJDialog extends javax.swing.JDialog {
     private void initEditor() {
         rSyntaxTextArea.setText(XMLHelper.format(message, 2));
         rSyntaxTextArea.setLineWrap(false);
+        rTextScrollPane.setLineNumbersEnabled(true);
     }
     
     public HashMap<String, String> getValuePairs() {

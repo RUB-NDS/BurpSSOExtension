@@ -393,8 +393,10 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
     public void setCode(AbstractCodeEvent evt) {
         if (firstTime) {
             this.code = new String(evt.getCode());
+            this.NewCode = new String(evt.getCode());
             rSyntaxTextArea.setText(code);
             rSyntaxTextArea.setCaretPosition(0);
+            rTextScrollPane.setLineNumbersEnabled(true);
                 firstTime = false;
         } else {
             this.NewCode = new String(evt.getCode());
