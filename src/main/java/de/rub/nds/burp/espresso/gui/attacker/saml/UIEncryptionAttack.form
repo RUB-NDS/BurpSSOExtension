@@ -102,12 +102,12 @@
         </Container>
         <Component class="javax.swing.JCheckBox" name="jCheckBoxUpdateCertEncData">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Update certificate in EncrpytedData"/>
+            <Property name="text" type="java.lang.String" value="Update certificate in EncryptedData"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JCheckBox" name="jCheckBoxUpdateCertEncKey">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Update certificate in EncrpytedKey"/>
+            <Property name="text" type="java.lang.String" value="Update certificate in EncryptedKey"/>
           </Properties>
         </Component>
       </SubComponents>

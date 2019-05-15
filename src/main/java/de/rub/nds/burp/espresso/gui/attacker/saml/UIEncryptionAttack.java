@@ -32,6 +32,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.HashMap;
 import java.util.List;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -40,6 +41,8 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.xml.xpath.XPathExpressionException;
+
+import org.apache.ws.security.util.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -63,6 +66,8 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
     private String encDataPath = "//xenc:EncryptedData/ds:KeyInfo/ds:X509Data/ds:X509Certificate";
     private String encKeyPath = "//xenc:EncryptedKey/ds:KeyInfo/ds:X509Data/ds:X509Certificate";
 
+    private HashMap<String, String> nameSpaceMap = new HashMap<>();
+
     /**
      * Creates new form UIEncryptionAttack
      */
@@ -70,6 +75,9 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         xmlEncryptionHelper = new XmlEncryptionHelper();
         initComponents();
         initEditorsAndListener();
+
+        nameSpaceMap.put("ds", NamespaceConstants.URI_NS_DS);
+        nameSpaceMap.put("xenc", "http://www.w3.org/2001/04/xmlenc#");
     }
 
     /**
@@ -122,9 +130,9 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         jTextAreaCertificate.setText("-----BEGIN CERTIFICATE-----\n\n-----END CERTIFICATE-----");
         jScrollPane3.setViewportView(jTextAreaCertificate);
 
-        jCheckBoxUpdateCertEncData.setText("Update certificate in EncrpytedData");
+        jCheckBoxUpdateCertEncData.setText("Update certificate in EncryptedData");
 
-        jCheckBoxUpdateCertEncKey.setText("Update certificate in EncrpytedKey");
+        jCheckBoxUpdateCertEncKey.setText("Update certificate in EncryptedKey");
 
         jLayeredPane1.setLayer(jLabel3, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jLayeredPane1.setLayer(jScrollPane3, javax.swing.JLayeredPane.DEFAULT_LAYER);
@@ -398,25 +406,25 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         try {
             Document doc = XMLHelper.stringToDom(saml);
             // Set key
-            DomUtilities.evaluateXPath(doc, "//xenc:EncryptedKey/xenc:CipherData/xenc:CipherValue").get(0).setTextContent(jTextAreaEncryptedKey.getText());
+            XMLHelper.getElementsByXPath(doc, "//xenc:EncryptedKey/xenc:CipherData/xenc:CipherValue", nameSpaceMap).get(0).setTextContent(jTextAreaEncryptedKey.getText());
             // Set cerificate
             if (jCheckBoxUpdateCertEncData.isSelected() || jCheckBoxUpdateCertEncKey.isSelected()) {
                 String cert = jTextAreaCertificate.getText();
                 cert = cert.replaceAll("-----BEGIN CERTIFICATE-----\n", "").replaceAll("-----BEGIN CERTIFICATE-----", "");
                 cert = cert.replaceAll("\n-----END CERTIFICATE-----", "").replaceAll("-----END CERTIFICATE-----", "");
-                boolean encDataEmpty = DomUtilities.evaluateXPath(doc, encDataPath).isEmpty();
-                boolean encKeyEmpty = DomUtilities.evaluateXPath(doc, encKeyPath).isEmpty();
+                boolean encDataEmpty = XMLHelper.getElementsByXPath(doc, encDataPath, nameSpaceMap).isEmpty();
+                boolean encKeyEmpty = XMLHelper.getElementsByXPath(doc, encKeyPath, nameSpaceMap).isEmpty();
                 // Replace or update
                 if (jCheckBoxUpdateCertEncData.isSelected()) {
                     if(!encDataEmpty) {
-                        DomUtilities.evaluateXPath(doc, encDataPath).get(0).setTextContent(cert);
+                        XMLHelper.getElementsByXPath(doc, encDataPath, nameSpaceMap).get(0).setTextContent(cert);
                     } else {
                         createCertNode(doc, "//xenc:EncryptedData", cert);
                     }
                 }
                 if (jCheckBoxUpdateCertEncKey.isSelected()) {
                     if(!encKeyEmpty) {
-                        DomUtilities.evaluateXPath(doc, encKeyPath).get(0).setTextContent(cert);
+                        XMLHelper.getElementsByXPath(doc, encKeyPath, nameSpaceMap).get(0).setTextContent(cert);
                     } else {
                         createCertNode(doc, "//xenc:EncryptedKey", cert);
                     }
@@ -432,13 +440,13 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
 
     private void createCertNode(Document doc, String nodePath, String cert) {
         try {
-            Node element = DomUtilities.evaluateXPath(doc, nodePath).get(0);
+            Node element = XMLHelper.getElementsByXPath(doc, nodePath, nameSpaceMap).get(0);
             Node keyInfoElement;
             Node dataElement = doc.createElementNS(NamespaceConstants.URI_NS_DS, "ds:X509Data");
             Node certElement = doc.createElement("ds:X509Certificate");
             // Check if <ds:KeyInfo> is present 
-            if(!DomUtilities.evaluateXPath(doc, nodePath + "/ds:KeyInfo").isEmpty()) {
-                keyInfoElement = DomUtilities.evaluateXPath(doc, nodePath + "/ds:KeyInfo").get(0);
+            if(!XMLHelper.getElementsByXPath(doc, nodePath + "/ds:KeyInfo", nameSpaceMap).isEmpty()) {
+                keyInfoElement = XMLHelper.getElementsByXPath(doc, nodePath + "/ds:KeyInfo", nameSpaceMap).get(0);
             } else {
                 keyInfoElement = doc.createElementNS(NamespaceConstants.URI_NS_DS, "ds:KeyInfo");
                 element.appendChild(keyInfoElement);
@@ -471,7 +479,9 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         // Set ciphertext 
         try {
             Document doc = XMLHelper.stringToDom(saml);
-            DomUtilities.evaluateXPath(doc, "//xenc:EncryptedData/xenc:CipherData/xenc:CipherValue").get(0).setTextContent(jTextAreaCipherData.getText());
+            XMLHelper.getElementsByXPath(doc, "//xenc:EncryptedData/xenc:CipherData/xenc:CipherValue", nameSpaceMap).get(0).setTextContent(jTextAreaCipherData.getText());
+            XMLHelper.getElementsByXPath(doc, "//xenc:EncryptedData/xenc:EncryptionMethod/@Algorithm", nameSpaceMap).get(0).setTextContent(algorithmURI);
+
             saml = XMLHelper.docToString(doc);      
             notifyAllTabs(new SamlCodeEvent(this, saml.getBytes()));
             Logging.getInstance().log(getClass(), "Setting new ciphertext was successfull.", Logging.INFO);
@@ -498,9 +508,9 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         // Set certificate if available
         try {
             Document doc = XMLHelper.stringToDom(saml);
-            List<? extends Node> certs = DomUtilities.evaluateXPath(doc, encKeyPath);
+            List<? extends Node> certs = XMLHelper.getElementsByXPath(doc, encKeyPath, nameSpaceMap);
             if(certs.isEmpty()) {
-                certs = DomUtilities.evaluateXPath(doc, encDataPath);
+                certs = XMLHelper.getElementsByXPath(doc, encDataPath, nameSpaceMap);
             }
             if(!certs.isEmpty()) {
                 jTextAreaCertificate.setText("-----BEGIN CERTIFICATE-----\n" + certs.get(0).getTextContent() + "\n-----END CERTIFICATE-----");
@@ -612,7 +622,15 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
     }
 
     private void checkKeyLengthAndFormat() {
-        int requiredSize = SymmetricAlgorithm.getByURI(jComboBoxSymmetricAlgo.getItemAt(jComboBoxSymmetricAlgo.getSelectedIndex())).getKeyLength();
+        AsymmetricAlgorithm as = AsymmetricAlgorithm.getByURI(jComboBoxPublicAlgo.getItemAt(jComboBoxPublicAlgo.getSelectedIndex()));
+        if ("RSA/None/NoPadding".equals(as.getJavaName())) {
+            // skip checks when using textbook RSA
+            jLabelWarningKeySize.setText("");
+            return;
+        }
+
+        SymmetricAlgorithm sa = SymmetricAlgorithm.getByURI(jComboBoxSymmetricAlgo.getItemAt(jComboBoxSymmetricAlgo.getSelectedIndex()));
+        int requiredSize = sa.getKeyLength();
         String key = jTextAreaSymmetricKey.getText().replaceAll("\\s", "");
         int size = requiredSize - key.length()*4; 
         if (size != 0 && !key.matches("[0-9A-Fa-f]+")) {
@@ -661,7 +679,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
     /**
      * Notify all registered listeners with the new code.
      *
-     * @param code The new source code.
+     * @param evt The codeEvent.
      */
     @Override
     public void notifyAllTabs(AbstractCodeEvent evt) {
