@@ -138,23 +138,15 @@ public abstract class XMLHelper {
         }
     }
     
-    public static ArrayList<String> getXPaths(Document doc, String input) {
+    public static ArrayList<String> findNodeByValue(Document doc, String input) {
         ArrayList<String> xPaths = new ArrayList<>();
-        // check as node value
         try {
             List nodes = DomUtilities.evaluateXPath(doc, "//*[text()='" + input + "']");
             List nodesPaths = DomUtilities.nodelistToFastXPathList(nodes);
             xPaths.addAll(nodesPaths);
+            return xPaths;
         } catch (XPathExpressionException ex) {
-            Logging.getInstance().log(XMLHelper.class, "Incorrect XPath", Logging.ERROR);
-        }
-        // check as attribute value
-        try {
-            List nodes = DomUtilities.evaluateXPath(doc, "//attribute::*[string()='" + input + "']");
-            List nodesPaths = DomUtilities.nodelistToFastXPathList(nodes);
-            xPaths.addAll(nodesPaths);
-        } catch (XPathExpressionException ex) {
-            Logging.getInstance().log(XMLHelper.class, "Incorrect XPath", Logging.ERROR);
+            Logging.getInstance().log(XMLHelper.class, "Bad XPath", Logging.ERROR);
         }
         return xPaths;
     }

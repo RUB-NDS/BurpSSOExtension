@@ -30,11 +30,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableRowSorter;
+import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import wsattacker.library.schemaanalyzer.SchemaAnalyzer;
@@ -44,6 +43,7 @@ import wsattacker.library.signatureWrapping.util.exception.InvalidWeaknessExcept
 import wsattacker.library.signatureWrapping.util.signature.SignatureManager;
 import wsattacker.library.signatureWrapping.xpath.weakness.util.WeaknessLog;
 import wsattacker.library.signatureWrapping.xpath.wrapping.WrappingOracle;
+import wsattacker.library.xmlutilities.dom.DomUtilities;
 
 /**
  * The Signature Wrapping Attack
@@ -55,13 +55,14 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
     private static final SchemaAnalyzer samlSchemaAnalyser = SchemaAnalyzerFactory.getInstance(SchemaAnalyzerFactory.SAML);
     private WrappingOracle wrappingOracle;
     
-    private String code = null;
-    private String NewCode = null;
+    private Document doc = null;
+    private Document newDoc = null;
     private CodeListenerController listeners = null;
     private HashMap<String, String> valuePairs;
     private TableModel tableModel;
     private JTable table;
     private boolean firstTime = true;
+    private int max = -1;
     
     /**
      * Creates new form UISigWrapAttack
@@ -87,18 +88,13 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
         jButtonModify = new javax.swing.JButton();
         jButtonPreview = new javax.swing.JButton();
         jCheckBoxWrapLines = new javax.swing.JCheckBox();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextAreaAttackDescription = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
         jSpinnerSelectedAttack = new javax.swing.JSpinner();
-        jSeparator1 = new javax.swing.JSeparator();
-        jLabelInfo = new javax.swing.JLabel();
+        jLabelVectors = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jTextFieldCurrentValue = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jTextFieldNewValue = new javax.swing.JTextField();
         jButtonAdd = new javax.swing.JButton();
-        jSeparator2 = new javax.swing.JSeparator();
         jLabel5 = new javax.swing.JLabel();
         jButtonDelete = new javax.swing.JButton();
         jScrollPaneTable = new javax.swing.JScrollPane();
@@ -106,11 +102,19 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
         jSeparator4 = new javax.swing.JSeparator();
         rTextScrollPane = new org.fife.ui.rtextarea.RTextScrollPane();
         rSyntaxTextArea = new org.fife.ui.rsyntaxtextarea.RSyntaxTextArea();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextAreaAttackDescription = new javax.swing.JTextArea();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextAreaFinal = new javax.swing.JTextArea();
+        jLabel6 = new javax.swing.JLabel();
+        jTextFieldCurrentValue = new javax.swing.JTextField();
+        jLabelNode = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
 
         jLabel1.setText("Message:");
 
         jButtonReload.setText("Reload");
-        jButtonReload.setToolTipText("Reload original message.");
+        jButtonReload.setToolTipText("Load latest message.");
         jButtonReload.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonReloadActionPerformed(evt);
@@ -118,7 +122,6 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
         });
 
         jButtonGenerateVectors.setText("Generate vectors");
-        jButtonGenerateVectors.setToolTipText("");
         jButtonGenerateVectors.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonGenerateVectorsActionPerformed(evt);
@@ -126,6 +129,7 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
         });
 
         jButtonModify.setText("Modify");
+        jButtonModify.setToolTipText("Update of SAML message with attack vector.");
         jButtonModify.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonModifyActionPerformed(evt);
@@ -146,21 +150,17 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
             }
         });
 
-        jTextAreaAttackDescription.setEditable(false);
-        jTextAreaAttackDescription.setColumns(20);
-        jTextAreaAttackDescription.setLineWrap(true);
-        jTextAreaAttackDescription.setRows(5);
-        jScrollPane1.setViewportView(jTextAreaAttackDescription);
-
         jLabel2.setText("Choose attack vevtor:");
 
+        jSpinnerSelectedAttack.setEnabled(false);
         jSpinnerSelectedAttack.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 jSpinnerSelectedAttackStateChanged(evt);
             }
         });
 
-        jLabelInfo.setForeground(new java.awt.Color(255, 0, 0));
+        jLabelVectors.setForeground(new java.awt.Color(255, 0, 0));
+        jLabelVectors.setText("Press Generate vectos to generate vectors.");
 
         jLabel3.setText("Current value:");
 
@@ -173,7 +173,7 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
             }
         });
 
-        jLabel5.setText("Values to be replaced:");
+        jLabel5.setText("Values to be replaced automatically:");
 
         jButtonDelete.setText("Delete");
         jButtonDelete.addActionListener(new java.awt.event.ActionListener() {
@@ -192,6 +192,22 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
         rSyntaxTextArea.setSyntaxEditingStyle("text/xml");
         rTextScrollPane.setViewportView(rSyntaxTextArea);
 
+        jTextAreaAttackDescription.setEditable(false);
+        jTextAreaAttackDescription.setColumns(20);
+        jTextAreaAttackDescription.setRows(3);
+        jScrollPane1.setViewportView(jTextAreaAttackDescription);
+
+        jTextAreaFinal.setColumns(20);
+        jTextAreaFinal.setRows(5);
+        jScrollPane2.setViewportView(jTextAreaFinal);
+
+        jLabel6.setText("Attack vector:");
+
+        jLabelNode.setForeground(new java.awt.Color(255, 0, 0));
+        jLabelNode.setText("Only node values can be replaced automatically.");
+
+        jLabel7.setText("Overview:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -200,43 +216,51 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButtonModify)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonPreview)
+                        .addGap(820, 820, 820))
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButtonGenerateVectors)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButtonDelete))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButtonGenerateVectors)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabelVectors))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jSpinnerSelectedAttack, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabelInfo))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jCheckBoxWrapLines)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButtonReload))
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel3)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButtonModify)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButtonPreview)))
+                                .addComponent(jSpinnerSelectedAttack, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel6))
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(rTextScrollPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButtonDelete)
-                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jSeparator4, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSeparator3)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 768, Short.MAX_VALUE)
-                            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButtonAdd, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jTextFieldNewValue, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jTextFieldCurrentValue, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextFieldNewValue, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButtonAdd, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(rTextScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jSeparator3)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addComponent(jLabel1)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jCheckBoxWrapLines)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jButtonReload))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addComponent(jLabel5)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabelNode)))
+                                .addGap(0, 0, Short.MAX_VALUE))
                             .addComponent(jScrollPaneTable, javax.swing.GroupLayout.Alignment.LEADING))
                         .addContainerGap())))
         );
@@ -249,20 +273,13 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
                     .addComponent(jCheckBoxWrapLines)
                     .addComponent(jButtonReload))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(rTextScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(rTextScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButtonGenerateVectors)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jSpinnerSelectedAttack, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelInfo))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabelNode))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -273,17 +290,29 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
                 .addComponent(jTextFieldNewValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonAdd)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
+                    .addComponent(jLabel7)
                     .addComponent(jButtonDelete))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPaneTable, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPaneTable, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonGenerateVectors)
+                    .addComponent(jLabelVectors))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jSpinnerSelectedAttack, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 223, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonModify)
                     .addComponent(jButtonPreview))
@@ -303,42 +332,49 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
     }
     
     private void jButtonReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReloadActionPerformed
-        code = NewCode;
-        rSyntaxTextArea.setText(code);
+        doc = newDoc;
+        rSyntaxTextArea.setText(XMLHelper.docToString(doc));
         rSyntaxTextArea.setCaretPosition(0);
-        // Clean textfields
-        jLabelInfo.setText("");
-        jSpinnerSelectedAttack.setValue(0);
+        // Clean up
+        jTextFieldCurrentValue.setText("");
+        jTextFieldNewValue.setText("");
+        jSpinnerSelectedAttack.setValue(-1);
+        jSpinnerSelectedAttack.setEnabled(false);
+        jLabelNode.setText("Only node values can be replaced automatically.");
+        jLabelVectors.setText("Press Generate vectos to get attack vectors.");
+        valuePairs.clear();
+        tableModel.clearAll();
+        jTextAreaAttackDescription.setText("");
+        jTextAreaFinal.setText("");
     }//GEN-LAST:event_jButtonReloadActionPerformed
 
     private void jButtonModifyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonModifyActionPerformed
         Logging.getInstance().log(getClass(), "Signature Wrapping successfull", Logging.INFO);
-        notifyAllTabs(new SamlCodeEvent(this, "".getBytes()));
+        notifyAllTabs(new SamlCodeEvent(this, jTextAreaFinal.getText().getBytes()));
     }//GEN-LAST:event_jButtonModifyActionPerformed
 
     private void jButtonGenerateVectorsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGenerateVectorsActionPerformed
         // Init manager
         SignatureManager signatureManager = new SignatureManager();
-        signatureManager.setDocument(XMLHelper.stringToDom(code));
+        signatureManager.setDocument(doc);
         List<Payload> payloadList = signatureManager.getPayloads();
         if (payloadList.isEmpty()) {
-            Logging.getInstance().log(getClass(), "No Payload found", Logging.INFO);
-            jLabelInfo.setText("No signatures available!");
+            jLabelVectors.setText("No signatures available!");
             return;
         }
         for (int i = 0; i < payloadList.size(); i++) {
             payloadList.get(i).setValue(payloadList.get(i).getValue());
         }
         // Init oracle
-        Document samlDoc = signatureManager.getDocument();
-        wrappingOracle = new WrappingOracle(samlDoc, payloadList, samlSchemaAnalyser);
-        int max = wrappingOracle.maxPossibilities();
+        wrappingOracle = new WrappingOracle(signatureManager.getDocument(), payloadList, samlSchemaAnalyser);
+        max = wrappingOracle.maxPossibilities();
+        jSpinnerSelectedAttack.setEnabled(true);
         jSpinnerSelectedAttack.setValue(max-1);
-        jLabelInfo.setText(max + " possible vectors!");
+        jLabelVectors.setText(max + " possible vectors!");
     }//GEN-LAST:event_jButtonGenerateVectorsActionPerformed
 
     private void jButtonPreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPreviewActionPerformed
-
+        new UIPreview(jTextAreaFinal.getText());
     }//GEN-LAST:event_jButtonPreviewActionPerformed
 
     private void jCheckBoxWrapLinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxWrapLinesActionPerformed
@@ -351,33 +387,47 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
 
     private void jSpinnerSelectedAttackStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSpinnerSelectedAttackStateChanged
         int selection = (Integer) jSpinnerSelectedAttack.getValue();
-        if (selection >= 0 && selection < wrappingOracle.maxPossibilities()) {
+        if (selection >= 0 && selection < max) {
             try {
                 Document attackDoc = wrappingOracle.getPossibility(selection);
+                // Set attack description
                 jTextAreaAttackDescription.setText(WeaknessLog.representation());
-                // Set text
-                
-                // TODO: Replace values
+                jTextAreaAttackDescription.setCaretPosition(0);
+                // Replace values
                 for (Map.Entry pair : valuePairs.entrySet()) {
-                    Node node = XMLHelper.getElementByXPath(attackDoc, pair.getKey().toString());
+                    Node node = DomUtilities.evaluateXPath(attackDoc, pair.getKey().toString()).get(0);
                     node.setTextContent(pair.getValue().toString());
-                }
+                }  
+                jTextAreaFinal.setText(XMLHelper.docToString(attackDoc));
+                jTextAreaFinal.setCaretPosition(0);
             } catch (InvalidWeaknessException ex) {
-                Logging.getInstance().log(getClass(), ex);
+                jTextAreaAttackDescription.setText("Error: " + ex);
+                jTextAreaFinal.setText("");
+            } catch (XPathExpressionException ex) {
+                jTextAreaFinal.setText("Could not replace values!");
             }
+        } else {
+            jTextAreaAttackDescription.setText("Selected vector must be in interval [0," + max + "]!");
+            jTextAreaFinal.setText("");
         }
     }//GEN-LAST:event_jSpinnerSelectedAttackStateChanged
 
     private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
-        ArrayList<String> xPaths = XMLHelper.getXPaths(XMLHelper.stringToDom(code), jTextFieldCurrentValue.getText());
+        ArrayList<String> xPaths = XMLHelper.findNodeByValue(doc, jTextFieldCurrentValue.getText());
+        if(xPaths.isEmpty()) {
+            jLabelNode.setText("No node found with provided value!");
+            return;
+        }
         for (int i = 0; i < xPaths.size(); i++) {
             String selection = xPaths.get(i);
             if (selection != null && !valuePairs.containsKey(selection)) {
+                jLabelNode.setText("");
                 valuePairs.put(selection, jTextFieldNewValue.getText());
                 tableModel.addRow(new TableEntry(selection, jTextFieldCurrentValue.getText(), jTextFieldNewValue.getText()));
+            } else {
+                jLabelNode.setText("New value for '" + jTextFieldCurrentValue.getText() + "' already added. Delete existing entry to replace it!");
             }
         }
-
     }//GEN-LAST:event_jButtonAddActionPerformed
 
     private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
@@ -392,14 +442,14 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
     @Override
     public void setCode(AbstractCodeEvent evt) {
         if (firstTime) {
-            this.code = new String(evt.getCode());
-            this.NewCode = new String(evt.getCode());
-            rSyntaxTextArea.setText(code);
+            this.doc = XMLHelper.stringToDom(new String(evt.getCode()));
+            this.newDoc = XMLHelper.stringToDom(new String(evt.getCode()));         
+            rSyntaxTextArea.setText(XMLHelper.docToString(doc));
             rSyntaxTextArea.setCaretPosition(0);
             rTextScrollPane.setLineNumbersEnabled(true);
-                firstTime = false;
+            firstTime = false;
         } else {
-            this.NewCode = new String(evt.getCode());
+            this.newDoc = XMLHelper.stringToDom(new String(evt.getCode()));    
         }
     }
         
@@ -437,15 +487,18 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabelInfo;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabelNode;
+    private javax.swing.JLabel jLabelVectors;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPaneTable;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSpinner jSpinnerSelectedAttack;
     private javax.swing.JTextArea jTextAreaAttackDescription;
+    private javax.swing.JTextArea jTextAreaFinal;
     private javax.swing.JTextField jTextFieldCurrentValue;
     private javax.swing.JTextField jTextFieldNewValue;
     private org.fife.ui.rsyntaxtextarea.RSyntaxTextArea rSyntaxTextArea;

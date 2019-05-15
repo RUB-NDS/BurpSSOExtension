@@ -24,22 +24,21 @@ import burp.IIntruderAttack;
 import burp.IIntruderPayloadGenerator;
 import burp.IIntruderPayloadGeneratorFactory;
 import burp.IParameter;
+import de.rub.nds.burp.espresso.gui.attacker.saml.UIPreview;
 import de.rub.nds.burp.utilities.Compression;
 import de.rub.nds.burp.utilities.Encoding;
 import de.rub.nds.burp.utilities.Logging;
-import de.rub.nds.burp.utilities.XMLHelper;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
+import javax.swing.JOptionPane;
+import javax.xml.xpath.XPathExpressionException;
+import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 import wsattacker.library.schemaanalyzer.SchemaAnalyzer;
 import wsattacker.library.schemaanalyzer.SchemaAnalyzerFactory;
 import wsattacker.library.signatureWrapping.option.Payload;
@@ -74,31 +73,46 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
     }
     
     class XSWPayloadGenerator implements IIntruderPayloadGenerator {
-        
-        private final String samlRequest = "SAMLRequest";
-        private final String samlResponse = "SAMLResponse";
-        
+                
         private XSWInputJDialog dialog;
         private IIntruderAttack attack;
         private int payloadIndex = 0;
-        private IParameter samlContent = null;
-        private String saml;
-        private boolean isDeflated = false;
+        private String xmlMessage;
+        private Document xmlDoc;
         private ArrayList<byte[]> payloads;
         
         public XSWPayloadGenerator(IIntruderAttack attack) {
             this.attack = attack;
-            if (!isSAML(attack.getRequestTemplate())) {
-                Logging.getInstance().log(getClass(), "No SAML message", Logging.ERROR);
+            payloads = new ArrayList<>();
+            // Try to get payload
+            String template = helpers.bytesToString(attack.getRequestTemplate());
+            if(StringUtils.countMatches(template,"§") != 2) {
+                JOptionPane.showMessageDialog(null, 
+                    "More than one payload is selected! Select only one.\n Attack vectors cannot be generated.", 
+                    "Error",
+                    JOptionPane.WARNING_MESSAGE);
+                return;
             }
+            xmlMessage = template.substring(template.indexOf("§")+1, template.lastIndexOf("§"));
+            // Try to decode payload if possible
             try {
-                saml = decodeSamlParam(samlContent.getValue().replace("§",""));
-                dialog = new XSWInputJDialog(saml);
+                xmlMessage = decode(xmlMessage);
             } catch (IOException | DataFormatException ex) {
-                Logging.getInstance().log(getClass(), "Failed to decode SAML message", Logging.ERROR);
+                Logging.getInstance().log(getClass(), "Failed to decode payload", Logging.ERROR);
             }
-            generatePayloads();
-            //replaceValues();
+            // Try to transform payload to document to check if is valid xml and generate attack vectors
+            try {
+                xmlDoc = DomUtilities.stringToDom(xmlMessage);
+                dialog = new XSWInputJDialog(xmlMessage);
+                generatePayloads();
+            } catch (SAXException ex) {
+                Logging.getInstance().log(getClass(), "Failed to transform payload to document", Logging.ERROR);
+                JOptionPane.showMessageDialog(null, 
+                        "Selected message is not valid xml!\n Attack vectors cannot be generated.", 
+                        "Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
         } 
 
         @Override
@@ -119,53 +133,42 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
         }
         
         private void generatePayloads() {
-            payloads = new ArrayList<>();
-            try {
-                // Init manager
-                SignatureManager signatureManager = new SignatureManager();
-                signatureManager.setDocument(XMLHelper.stringToDom(saml));
-                List<Payload> payloadList = signatureManager.getPayloads();
-                for (int i = 0; i < payloadList.size(); i++) {
-                    payloadList.get(i).setValue(payloadList.get(i).getValue());
-                }
-                if (payloadList.isEmpty()) {
-                    Logging.getInstance().log(getClass(), "No Payload found", Logging.INFO);
-                }
-                // Init oracle
-                Document samlDoc = signatureManager.getDocument();
-                SchemaAnalyzer samlSchemaAnalyser = SchemaAnalyzerFactory.getInstance(SchemaAnalyzerFactory.SAML);
-                WrappingOracle wrappingOracle = new WrappingOracle(samlDoc, payloadList, samlSchemaAnalyser);
-                // Save attack vectors
-                for (int i = 0; i < wrappingOracle.maxPossibilities(); i++) {
+            // Init manager
+            SignatureManager signatureManager = new SignatureManager();
+            signatureManager.setDocument(xmlDoc);
+            List<Payload> payloadList = signatureManager.getPayloads();
+            // Checks if signature exits to attack
+            if (payloadList.isEmpty()) {
+                Logging.getInstance().log(getClass(), "No Payload found", Logging.INFO);
+                return;
+            }
+            for (int i = 0; i < payloadList.size(); i++) {
+                payloadList.get(i).setValue(payloadList.get(i).getValue());
+            }
+            // Init oracle
+            Document samlDoc = signatureManager.getDocument();
+            SchemaAnalyzer samlSchemaAnalyser = SchemaAnalyzerFactory.getInstance(SchemaAnalyzerFactory.SAML);
+            WrappingOracle wrappingOracle = new WrappingOracle(samlDoc, payloadList, samlSchemaAnalyser);
+            // Save attack vectors
+            for (int i = 0; i < wrappingOracle.maxPossibilities(); i++) {
+                try {
                     // Get vector
                     Document attackDoc = wrappingOracle.getPossibility(i);
-                    // TODO: Replace values
+                    // Replace values
                     for (Map.Entry pair : dialog.getValuePairs().entrySet()) {
-                        Node node = XMLHelper.getElementByXPath(attackDoc, pair.getKey().toString());
+                        Node node = DomUtilities.evaluateXPath(attackDoc, pair.getKey().toString()).get(0);
                         node.setTextContent(pair.getValue().toString());
-                    }
+                    }               
                     // Encode vector
                     String attackString = DomUtilities.domToString(attackDoc);
-                    payloads.add(encodeSamlParam(attackString));
+                    payloads.add(encode(attackString).getBytes());
+                } catch (XPathExpressionException | InvalidWeaknessException ex) {
+                    Logging.getInstance().log(getClass(), "Failed to generate XSW vector: " + i, Logging.ERROR);
                 }
-            } catch (IOException | DataFormatException | InvalidWeaknessException ex) {
-                Logging.getInstance().log(getClass(), "Failed to generate XSW vectors", Logging.ERROR);
-            }         
+            }
         }
         
-        private boolean isSAML(byte[] content) {
-            samlContent = helpers.getRequestParameter(content, samlRequest);
-            if (null != samlContent){
-                return true;
-            }
-            samlContent = helpers.getRequestParameter(content, samlResponse);
-            if (null != samlContent){
-                return true;
-            }
-            return false;
-        }
-        
-        private String decodeSamlParam(String samlParam) throws IOException, DataFormatException {
+        private String decode(String samlParam) throws IOException, DataFormatException {
             byte [] tmp;
             if(Encoding.isURLEncoded(samlParam)) {
                 samlParam = helpers.urlDecode(samlParam);
@@ -175,22 +178,28 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
             } else {
                 tmp = samlParam.getBytes();
             }
-            isDeflated = false;
             if (Encoding.isDeflated(tmp)) {
                 tmp = Compression.decompress(tmp);
-                isDeflated = true;
             }
             return new String(tmp);
         }
-        
-        private byte[] encodeSamlParam(String samlParam) throws IOException, DataFormatException {
-            byte[] tmp = samlParam.getBytes();
-            if (isDeflated == true) {
-                tmp = Compression.compress(tmp);
+              
+        private String encode(String vector) {
+            byte[] tmp = vector.getBytes();
+            if (dialog.getEnflateChoice()) {
+                try {
+                    tmp = Compression.compress(tmp);
+                } catch (IOException ex) {
+                    Logging.getInstance().log(getClass(), "Failed to compress parameter", Logging.ERROR);
+                }
             }
-            tmp = helpers.base64Encode(tmp).getBytes();
-            tmp = helpers.urlEncode(tmp);
-            return tmp;
+            if (dialog.getBase64Choice()) {
+                tmp = helpers.base64Encode(tmp).getBytes();
+            }
+            if (dialog.getUrlChoice()) {
+                tmp = helpers.urlEncode(tmp);
+            }
+            return new String(tmp);
         }
     }
 }
