@@ -82,13 +82,15 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
         private ArrayList<byte[]> payloads;
         
         public XSWPayloadGenerator(IIntruderAttack attack) {
+            Logging.getInstance().log(getClass(), "Start signature wrapping.", Logging.INFO);
             this.attack = attack;
             payloads = new ArrayList<>();
             // Try to get payload
             String template = helpers.bytesToString(attack.getRequestTemplate());
             if(StringUtils.countMatches(template,"§") != 2) {
+                Logging.getInstance().log(getClass(), "More than one payload is selected", Logging.ERROR);
                 JOptionPane.showMessageDialog(null, 
-                    "More than one payload is selected! Select only one.\n Attack vectors cannot be generated.", 
+                    "More than one payload is selected! Select only one.\nAttack vectors cannot be generated.", 
                     "Error",
                     JOptionPane.WARNING_MESSAGE);
                 return;
@@ -108,7 +110,7 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
             } catch (SAXException ex) {
                 Logging.getInstance().log(getClass(), "Failed to transform payload to document", Logging.ERROR);
                 JOptionPane.showMessageDialog(null, 
-                        "Selected message is not valid xml!\n Attack vectors cannot be generated.", 
+                        "Selected message is not valid xml!\nAttack vectors cannot be generated.", 
                         "Error",
                         JOptionPane.WARNING_MESSAGE);
                 return;
@@ -139,7 +141,11 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
             List<Payload> payloadList = signatureManager.getPayloads();
             // Checks if signature exits to attack
             if (payloadList.isEmpty()) {
-                Logging.getInstance().log(getClass(), "No Payload found", Logging.INFO);
+                Logging.getInstance().log(getClass(), "No Payload found", Logging.ERROR);
+                JOptionPane.showMessageDialog(null, 
+                        "No signature found for wrapping!\nAttack vectors cannot be generated.", 
+                        "Error",
+                        JOptionPane.WARNING_MESSAGE);
                 return;
             }
             for (int i = 0; i < payloadList.size(); i++) {
@@ -149,8 +155,10 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
             Document samlDoc = signatureManager.getDocument();
             SchemaAnalyzer samlSchemaAnalyser = SchemaAnalyzerFactory.getInstance(SchemaAnalyzerFactory.SAML);
             WrappingOracle wrappingOracle = new WrappingOracle(samlDoc, payloadList, samlSchemaAnalyser);
+            int max = wrappingOracle.maxPossibilities();
+            Logging.getInstance().log(getClass(), "Wrapping oracle could generate " + max + " attack vectors.", Logging.INFO);
             // Save attack vectors
-            for (int i = 0; i < wrappingOracle.maxPossibilities(); i++) {
+            for (int i = 0; i < max; i++) {
                 try {
                     // Get vector
                     Document attackDoc = wrappingOracle.getPossibility(i);
@@ -166,6 +174,7 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
                     Logging.getInstance().log(getClass(), "Failed to generate XSW vector: " + i, Logging.ERROR);
                 }
             }
+            Logging.getInstance().log(getClass(), "Signature wrapping successfull.", Logging.INFO);
         }
         
         private String decode(String samlParam) throws IOException, DataFormatException {

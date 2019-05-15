@@ -349,7 +349,7 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
     }//GEN-LAST:event_jButtonReloadActionPerformed
 
     private void jButtonModifyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonModifyActionPerformed
-        Logging.getInstance().log(getClass(), "Signature Wrapping successfull", Logging.INFO);
+        Logging.getInstance().log(getClass(), "Signature wrapping successfull", Logging.INFO);
         notifyAllTabs(new SamlCodeEvent(this, jTextAreaFinal.getText().getBytes()));
     }//GEN-LAST:event_jButtonModifyActionPerformed
 
