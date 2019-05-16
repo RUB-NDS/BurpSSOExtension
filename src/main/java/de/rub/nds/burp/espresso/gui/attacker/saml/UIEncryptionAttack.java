@@ -400,8 +400,6 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         try {
             String encryptedKey = xmlEncryptionHelper.encryptKey(certificate, algorithm);
             jTextAreaEncryptedKey.setText(encryptedKey);
-            jTextAreaEncryptedKey.selectAll();
-            jTextAreaEncryptedKey.copy();
         } catch (InvalidKeyException | NoSuchAlgorithmException | CertificateException | BadPaddingException
                 | IllegalBlockSizeException | NoSuchPaddingException ex) {
             Logging.getInstance().log(getClass(), ex);
@@ -477,8 +475,6 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         try {
             String result = xmlEncryptionHelper.encryptData(data, algorithm);
             jTextAreaCipherData.setText(result);
-            jTextAreaCipherData.selectAll();
-            jTextAreaCipherData.copy();
         } catch (InvalidKeyException | NoSuchAlgorithmException | BadPaddingException
                 | IllegalBlockSizeException | InvalidAlgorithmParameterException | NoSuchPaddingException ex) {
             Logging.getInstance().log(getClass(), ex);
