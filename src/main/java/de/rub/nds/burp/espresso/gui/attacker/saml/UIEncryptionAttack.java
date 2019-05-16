@@ -18,6 +18,7 @@
  */
 package de.rub.nds.burp.espresso.gui.attacker.saml;
 
+import burp.IBurpExtenderCallbacks;
 import de.rub.nds.burp.espresso.gui.attacker.IAttack;
 import de.rub.nds.burp.utilities.ByteArrayHelper;
 import de.rub.nds.burp.utilities.Logging;
@@ -59,6 +60,7 @@ import wsattacker.library.xmlutilities.namespace.NamespaceConstants;
  */
 public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
 
+    private IBurpExtenderCallbacks extenderCallbacks;
     private String saml = "";
     private CodeListenerController listeners = null;
     private XmlEncryptionHelper xmlEncryptionHelper;
@@ -71,10 +73,11 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
     /**
      * Creates new form UIEncryptionAttack
      */
-    public UIEncryptionAttack() {
+    public UIEncryptionAttack(IBurpExtenderCallbacks callbacks) {
         xmlEncryptionHelper = new XmlEncryptionHelper();
         initComponents();
         initEditorsAndListener();
+        this.extenderCallbacks = callbacks;
 
         nameSpaceMap.put("ds", NamespaceConstants.URI_NS_DS);
         nameSpaceMap.put("xenc", "http://www.w3.org/2001/04/xmlenc#");
@@ -389,7 +392,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
 
     private void jButtonEncryptSymmetricKeyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEncryptSymmetricKeyActionPerformed
         Logging.getInstance().log(getClass(), "Start encryption of symmetric key.", Logging.INFO);
-        String certificate = jTextAreaCertificate.getText();
+        String certificate = jTextAreaCertificate.getText().trim();
         byte[] symmetricKey = ByteArrayHelper.hexStringToByteArray(jTextAreaSymmetricKey.getText());
         xmlEncryptionHelper.setSymmetricKey(symmetricKey);
         String algorithmURI = jComboBoxPublicAlgo.getItemAt(jComboBoxPublicAlgo.getSelectedIndex());
@@ -402,11 +405,15 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         } catch (InvalidKeyException | NoSuchAlgorithmException | CertificateException | BadPaddingException
                 | IllegalBlockSizeException | NoSuchPaddingException ex) {
             Logging.getInstance().log(getClass(), ex);
+            extenderCallbacks.issueAlert(ex.toString());
         }
         try {
             Document doc = XMLHelper.stringToDom(saml);
             // Set key
             XMLHelper.getElementsByXPath(doc, "//xenc:EncryptedKey/xenc:CipherData/xenc:CipherValue", nameSpaceMap).get(0).setTextContent(jTextAreaEncryptedKey.getText());
+            // Set encryption algorithm, use PKCS#1 if plain RSA has been selected
+            algorithmURI = (algorithm == AsymmetricAlgorithm.RSA) ? AsymmetricAlgorithm.RSA_PKCS1_15.getUri() : algorithmURI;
+            XMLHelper.getElementsByXPath(doc, "//xenc:EncryptedKey/xenc:EncryptionMethod/@Algorithm", nameSpaceMap).get(0).setTextContent(algorithmURI);
             // Set cerificate
             if (jCheckBoxUpdateCertEncData.isSelected() || jCheckBoxUpdateCertEncKey.isSelected()) {
                 String cert = jTextAreaCertificate.getText();
@@ -475,6 +482,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         } catch (InvalidKeyException | NoSuchAlgorithmException | BadPaddingException
                 | IllegalBlockSizeException | InvalidAlgorithmParameterException | NoSuchPaddingException ex) {
             Logging.getInstance().log(getClass(), ex);
+            extenderCallbacks.issueAlert(ex.toString());
         }
         // Set ciphertext 
         try {
@@ -505,6 +513,11 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
     @Override
     public void setCode(AbstractCodeEvent evt) {
         this.saml = new String(evt.getCode());
+
+        if (evt.getSource().equals(this)) {
+            // do not override certificate, if code event was self-issued by encryption attacker
+            return;
+        }
         // Set certificate if available
         try {
             Document doc = XMLHelper.stringToDom(saml);
