@@ -273,7 +273,7 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
                     .addComponent(jCheckBoxWrapLines)
                     .addComponent(jButtonReload))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(rTextScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(rTextScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -362,14 +362,17 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
             jLabelVectors.setText("No signatures available!");
             return;
         }
+        // For the WS-Attacker
         for (int i = 0; i < payloadList.size(); i++) {
             payloadList.get(i).setValue(payloadList.get(i).getValue());
         }
         // Init oracle
         wrappingOracle = new WrappingOracle(signatureManager.getDocument(), payloadList, samlSchemaAnalyser);
         max = wrappingOracle.maxPossibilities();
-        jSpinnerSelectedAttack.setEnabled(true);
-        jSpinnerSelectedAttack.setValue(max-1);
+        if(max != 0) {
+            jSpinnerSelectedAttack.setEnabled(true);
+            jSpinnerSelectedAttack.setValue(max-1);
+        }
         jLabelVectors.setText(max + " possible vectors!");
     }//GEN-LAST:event_jButtonGenerateVectorsActionPerformed
 
