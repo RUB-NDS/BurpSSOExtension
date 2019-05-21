@@ -68,11 +68,8 @@ public abstract class XMLHelper {
             Source xmlInput = new StreamSource(new StringReader(input));
             StringWriter stringWriter = new StringWriter();
             StreamResult xmlOutput = new StreamResult(stringWriter);
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET,"");
-            Transformer transformer = transformerFactory.newTransformer();
+
+            Transformer transformer = getSecureTransformer();
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, input.startsWith("<?xml") ? "yes" : "no");
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -90,20 +87,28 @@ public abstract class XMLHelper {
             Source docInput = new DOMSource(doc);
             StringWriter stringWriter = new StringWriter();
             StreamResult xmlOutput = new StreamResult(stringWriter);
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET,"");
-            Transformer transformer = transformerFactory.newTransformer();
+
+            Transformer transformer = getSecureTransformer();
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             transformer.transform(docInput, xmlOutput);
             return xmlOutput.getWriter().toString();
-        } catch (IllegalArgumentException | TransformerException e) {
-            Logging.getInstance().log(XMLHelper.class, e);
-            return "<error>Failed to transform document</error>";
+        } catch (TransformerConfigurationException ex ) {
+            return "<error>Failed to configure TransformerFactory:" + ex.getMessage() + "</error>";
+        } catch (TransformerException ex) {
+            return "<error>Failed to transform document.</error>";
         }
-    }    
-    
+    }
+
+    private static Transformer getSecureTransformer() throws TransformerConfigurationException {
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+		transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+
+		Transformer transformer = transformerFactory.newTransformer();
+		return transformer;
+    } 
+
     public static Document stringToDom (String xmlString) {
         try {
             InputSource input = new InputSource(new StringReader(xmlString));
@@ -118,7 +123,7 @@ public abstract class XMLHelper {
             return stringToDom("<error>Failed to parse input XML</error>");
         }
     }
-    
+
     public static Node getElementByXPath (Document doc, String xPath) {
         try {
             XPathFactory xPathfactory = XPathFactory.newInstance();
