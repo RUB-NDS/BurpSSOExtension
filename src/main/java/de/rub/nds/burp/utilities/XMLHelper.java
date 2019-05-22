@@ -83,14 +83,27 @@ public abstract class XMLHelper {
     }
 
     public static String docToString(Document doc) {
+        Source docInput = new DOMSource(doc);
+        return sourceToString(docInput, false);
+    }
+
+    public static String nodeToString(Node node) {
+        Source docInput = new DOMSource(node);
+        return sourceToString(docInput, true);
+    }
+
+    private static String sourceToString(Source domSource, boolean omitPreamble) {
         try {
-            Source docInput = new DOMSource(doc);
             StringWriter stringWriter = new StringWriter();
             StreamResult xmlOutput = new StreamResult(stringWriter);
 
             Transformer transformer = getSecureTransformer();
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            transformer.transform(docInput, xmlOutput);
+            if (omitPreamble) {
+                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            }
+
+            transformer.transform(domSource, xmlOutput);
             return xmlOutput.getWriter().toString();
         } catch (TransformerConfigurationException ex ) {
             return "<error>Failed to configure TransformerFactory:" + ex.getMessage() + "</error>";
