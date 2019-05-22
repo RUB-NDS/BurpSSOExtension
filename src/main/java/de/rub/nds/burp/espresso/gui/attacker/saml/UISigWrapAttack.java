@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.TableRowSorter;
 import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.Document;
@@ -63,6 +65,7 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
     private JTable table;
     private boolean firstTime = true;
     private int max = -1;
+    private List<Payload> payloadList;
     
     /**
      * Creates new form UISigWrapAttack
@@ -122,6 +125,7 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
         });
 
         jButtonGenerateVectors.setText("Generate vectors");
+        jButtonGenerateVectors.setEnabled(false);
         jButtonGenerateVectors.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonGenerateVectorsActionPerformed(evt);
@@ -329,12 +333,25 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
         TableRowSorter<TableModel> sorter = new TableRowSorter<>();
         table.setRowSorter(sorter);
         sorter.setModel(tableModel);
+        // Set event listener
+        tableModel.addTableModelListener(new TableModelListener() {
+                @Override
+                public void tableChanged(TableModelEvent e) {
+                    if (e.getType() == TableModelEvent.INSERT || e.getType() == TableModelEvent.DELETE) {
+                        if(tableModel.getRowCount() > 0) {
+                            jButtonGenerateVectors.setEnabled(true);
+                        } else {
+                            jButtonGenerateVectors.setEnabled(false);
+                        }
+                    }
+                }
+        });
     }
     
     private void jButtonReloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReloadActionPerformed
         doc = newDoc;
-        rSyntaxTextArea.setText(XMLHelper.docToString(doc));
-        rSyntaxTextArea.setCaretPosition(0);
+        // Init manager and set message
+        initSigManager();
         // Clean up
         jTextFieldCurrentValue.setText("");
         jTextFieldNewValue.setText("");
@@ -346,6 +363,7 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
         tableModel.clearAll();
         jTextAreaAttackDescription.setText("");
         jTextAreaFinal.setText("");
+        jButtonGenerateVectors.setEnabled(false);
     }//GEN-LAST:event_jButtonReloadActionPerformed
 
     private void jButtonModifyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonModifyActionPerformed
@@ -354,20 +372,25 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
     }//GEN-LAST:event_jButtonModifyActionPerformed
 
     private void jButtonGenerateVectorsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGenerateVectorsActionPerformed
-        // Init manager
-        SignatureManager signatureManager = new SignatureManager();
-        signatureManager.setDocument(doc);
-        List<Payload> payloadList = signatureManager.getPayloads();
         if (payloadList.isEmpty()) {
             jLabelVectors.setText("No signatures available!");
             return;
         }
-        // For the WS-Attacker
+        // Repalce values
         for (int i = 0; i < payloadList.size(); i++) {
-            payloadList.get(i).setValue(payloadList.get(i).getValue());
+            Document payload = XMLHelper.stringToDom(payloadList.get(i).getValue());
+            for (Map.Entry pair : valuePairs.entrySet()) {
+                try {
+                    Node node = DomUtilities.evaluateXPath(payload, pair.getKey().toString()).get(0);
+                    node.setTextContent(pair.getValue().toString());
+                } catch (XPathExpressionException ex) {
+                    Logging.getInstance().log(getClass(), "Could not replace value.", Logging.ERROR);
+                }
+            }
+            payloadList.get(i).setPayloadElement(payload.getDocumentElement());
         }
         // Init oracle
-        wrappingOracle = new WrappingOracle(signatureManager.getDocument(), payloadList, samlSchemaAnalyser);
+        wrappingOracle = new WrappingOracle(doc, payloadList, samlSchemaAnalyser);
         max = wrappingOracle.maxPossibilities();
         if(max != 0) {
             jSpinnerSelectedAttack.setEnabled(true);
@@ -396,18 +419,12 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
                 // Set attack description
                 jTextAreaAttackDescription.setText(WeaknessLog.representation());
                 jTextAreaAttackDescription.setCaretPosition(0);
-                // Replace values
-                for (Map.Entry pair : valuePairs.entrySet()) {
-                    Node node = DomUtilities.evaluateXPath(attackDoc, pair.getKey().toString()).get(0);
-                    node.setTextContent(pair.getValue().toString());
-                }  
+                // Set attack vector 
                 jTextAreaFinal.setText(XMLHelper.docToString(attackDoc));
                 jTextAreaFinal.setCaretPosition(0);
             } catch (InvalidWeaknessException ex) {
                 jTextAreaAttackDescription.setText("Error: " + ex);
                 jTextAreaFinal.setText("");
-            } catch (XPathExpressionException ex) {
-                jTextAreaFinal.setText("Could not replace values!");
             }
         } else {
             jTextAreaAttackDescription.setText("Selected vector must be in interval [0," + max + "]!");
@@ -416,20 +433,27 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
     }//GEN-LAST:event_jSpinnerSelectedAttackStateChanged
 
     private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
-        ArrayList<String> xPaths = XMLHelper.findNodeByValue(doc, jTextFieldCurrentValue.getText());
+        ArrayList<String> xPaths = new ArrayList<>();
+        // Search only in signed elements
+        for (int i = 0; i < payloadList.size(); i++) {
+            Document payload = XMLHelper.stringToDom(payloadList.get(i).getValue());
+            xPaths.addAll(XMLHelper.findNodeByValue(payload, jTextFieldCurrentValue.getText()));
+        }
         if(xPaths.isEmpty()) {
             jLabelNode.setText("No node found with provided value!");
             return;
         }
         for (int i = 0; i < xPaths.size(); i++) {
             String selection = xPaths.get(i);
-            if (selection != null && !valuePairs.containsKey(selection)) {
+            // Add pair
+            if (!selection.equals("")  && !valuePairs.containsKey(selection)) {
                 jLabelNode.setText("");
+                //selection = selection.substring(selection.indexOf(start)+selection.length());
                 valuePairs.put(selection, jTextFieldNewValue.getText());
                 tableModel.addRow(new TableEntry(selection, jTextFieldCurrentValue.getText(), jTextFieldNewValue.getText()));
             } else {
                 jLabelNode.setText("New value for '" + jTextFieldCurrentValue.getText() + "' already added. Delete existing entry to replace it!");
-            }
+            } 
         }
     }//GEN-LAST:event_jButtonAddActionPerformed
 
@@ -438,6 +462,21 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
         tableModel.remove(table.getSelectedRow());
     }//GEN-LAST:event_jButtonDeleteActionPerformed
 
+    private void initSigManager() {
+        SignatureManager sigManager = new SignatureManager();
+        sigManager.setDocument(doc);
+        payloadList = sigManager.getPayloads();
+        // Set message
+        if (payloadList.isEmpty()) {
+            rSyntaxTextArea.setText("<Error>No signatures available. Attack can't be executed!</Error>");
+        } else if (payloadList.size() != 1) {
+            rSyntaxTextArea.setText("<Error>Attacker works only for messages with one signature!</Error>");
+        } else {
+            rSyntaxTextArea.setText(XMLHelper.docToString(doc));
+        }
+        rSyntaxTextArea.setCaretPosition(0);
+    }
+    
     /**
      * Is called every time new Code is available.
      * @param evt {@link de.rub.nds.burp.utilities.listeners.AbstractCodeEvent} The new source code.
@@ -447,10 +486,11 @@ public class UISigWrapAttack extends javax.swing.JPanel implements IAttack {
         if (firstTime) {
             this.doc = XMLHelper.stringToDom(new String(evt.getCode()));
             this.newDoc = XMLHelper.stringToDom(new String(evt.getCode()));         
-            rSyntaxTextArea.setText(XMLHelper.docToString(doc));
-            rSyntaxTextArea.setCaretPosition(0);
+            // Init manager and set message
+            initSigManager();
             rTextScrollPane.setLineNumbersEnabled(true);
             firstTime = false;
+            
         } else {
             this.newDoc = XMLHelper.stringToDom(new String(evt.getCode()));    
         }

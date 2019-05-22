@@ -23,11 +23,15 @@ import de.rub.nds.burp.utilities.table.xsw.TableEntry;
 import de.rub.nds.burp.utilities.table.xsw.TableModel;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.TableRowSorter;
 import org.w3c.dom.Document;
+import wsattacker.library.signatureWrapping.option.Payload;
 
 /**
  * @author Nurullah Erinola
@@ -39,16 +43,19 @@ public class XSWInputJDialog extends javax.swing.JDialog {
     private HashMap<String, String> valuePairs;
     private TableModel tableModel;
     private JTable table;
+    private List<Payload> payloadList;
     
     /**
      * Creates new form XSWInputJDialog
      * @param message Message to be show
+     * @param payloadList Signature elements of the message
      */
-    public XSWInputJDialog(String message) {
+    public XSWInputJDialog(String message, List<Payload> payloadList) {
         super(new JFrame(), true);
         initComponents();
         // Init variables
         this.message = message;
+        this.payloadList = payloadList;
         doc = XMLHelper.stringToDom(message);
         valuePairs = new HashMap<>();
         // Init table and editor
@@ -93,6 +100,7 @@ public class XSWInputJDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jButtonOk.setText("Ok");
+        jButtonOk.setEnabled(false);
         jButtonOk.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonOkActionPerformed(evt);
@@ -244,20 +252,27 @@ public class XSWInputJDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
-        ArrayList<String> xPaths = XMLHelper.findNodeByValue(doc, jTextFieldCurrentValue.getText());
+        ArrayList<String> xPaths = new ArrayList<>();
+        // Search only in signed elements
+        for (int i = 0; i < payloadList.size(); i++) {
+            Document payload = XMLHelper.stringToDom(payloadList.get(i).getValue());
+            xPaths.addAll(XMLHelper.findNodeByValue(payload, jTextFieldCurrentValue.getText()));
+        }
         if(xPaths.isEmpty()) {
             jLabelNode.setText("No node found with provided value!");
             return;
         }
         for (int i = 0; i < xPaths.size(); i++) {
             String selection = xPaths.get(i);
-            if (selection != null && !valuePairs.containsKey(selection)) {
+            // Add pair
+            if (!selection.equals("") && !valuePairs.containsKey(selection)) {
                 jLabelNode.setText("");
+                //selection = selection.substring(selection.indexOf(start)+selection.length());
                 valuePairs.put(selection, jTextFieldNewValue.getText());
                 tableModel.addRow(new TableEntry(selection, jTextFieldCurrentValue.getText(), jTextFieldNewValue.getText()));
             } else {
                 jLabelNode.setText("New value for '" + jTextFieldCurrentValue.getText() + "' already added. Delete existing entry to replace it!");
-            }
+            } 
         }
     }//GEN-LAST:event_jButtonAddActionPerformed
 
@@ -287,6 +302,19 @@ public class XSWInputJDialog extends javax.swing.JDialog {
         TableRowSorter<TableModel> sorter = new TableRowSorter<>();
         table.setRowSorter(sorter);
         sorter.setModel(tableModel);
+        // Set event listener
+        tableModel.addTableModelListener(new TableModelListener() {
+                @Override
+                public void tableChanged(TableModelEvent e) {
+                    if (e.getType() == TableModelEvent.INSERT || e.getType() == TableModelEvent.DELETE) {
+                        if(tableModel.getRowCount() > 0) {
+                            jButtonOk.setEnabled(true);
+                        } else {
+                            jButtonOk.setEnabled(false);
+                        }
+                    }
+                }
+        });
     }
     
     private void initEditor() {

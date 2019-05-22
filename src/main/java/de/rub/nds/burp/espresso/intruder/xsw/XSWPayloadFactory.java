@@ -23,11 +23,10 @@ import burp.IExtensionHelpers;
 import burp.IIntruderAttack;
 import burp.IIntruderPayloadGenerator;
 import burp.IIntruderPayloadGeneratorFactory;
-import burp.IParameter;
-import de.rub.nds.burp.espresso.gui.attacker.saml.UIPreview;
 import de.rub.nds.burp.utilities.Compression;
 import de.rub.nds.burp.utilities.Encoding;
 import de.rub.nds.burp.utilities.Logging;
+import de.rub.nds.burp.utilities.XMLHelper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +41,7 @@ import org.xml.sax.SAXException;
 import wsattacker.library.schemaanalyzer.SchemaAnalyzer;
 import wsattacker.library.schemaanalyzer.SchemaAnalyzerFactory;
 import wsattacker.library.signatureWrapping.option.Payload;
+import wsattacker.library.signatureWrapping.util.exception.InvalidPayloadException;
 import wsattacker.library.signatureWrapping.util.exception.InvalidWeaknessException;
 import wsattacker.library.signatureWrapping.util.signature.SignatureManager;
 import wsattacker.library.signatureWrapping.xpath.wrapping.WrappingOracle;
@@ -80,6 +80,7 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
         private String xmlMessage;
         private Document xmlDoc;
         private ArrayList<byte[]> payloads;
+        private List<Payload> payloadList;
         
         public XSWPayloadGenerator(IIntruderAttack attack) {
             Logging.getInstance().log(getClass(), "Start signature wrapping.", Logging.INFO);
@@ -105,8 +106,6 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
             // Try to transform payload to document to check if is valid xml and generate attack vectors
             try {
                 xmlDoc = DomUtilities.stringToDom(xmlMessage);
-                dialog = new XSWInputJDialog(xmlMessage);
-                generatePayloads();
             } catch (SAXException ex) {
                 Logging.getInstance().log(getClass(), "Failed to transform payload to document", Logging.ERROR);
                 JOptionPane.showMessageDialog(null, 
@@ -115,6 +114,8 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
                         JOptionPane.WARNING_MESSAGE);
                 return;
             }
+            getSignatures();
+            generatePayloads();
         } 
 
         @Override
@@ -134,11 +135,13 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
             payloadIndex = 0;
         }
         
-        private void generatePayloads() {
-            // Init manager
+        private void getSignatures() {
             SignatureManager signatureManager = new SignatureManager();
             signatureManager.setDocument(xmlDoc);
-            List<Payload> payloadList = signatureManager.getPayloads();
+            payloadList = signatureManager.getPayloads();
+        }
+        
+        private void generatePayloads() {
             // Checks if signature exits to attack
             if (payloadList.isEmpty()) {
                 Logging.getInstance().log(getClass(), "No Payload found", Logging.ERROR);
@@ -147,31 +150,52 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
                         "Error",
                         JOptionPane.WARNING_MESSAGE);
                 return;
+            } else if (payloadList.size() != 1) {
+                Logging.getInstance().log(getClass(), "Multiple Payloads found.", Logging.ERROR);
+                JOptionPane.showMessageDialog(null, 
+                        "Message contains multiple signature!\nAttacker works only for messages with one signature.", 
+                        "Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
             }
+            // Open new window
+            dialog = new XSWInputJDialog(xmlMessage, payloadList);
+            if (dialog.getValuePairs().size() <= 0) {
+                Logging.getInstance().log(getClass(), "", Logging.ERROR);
+                JOptionPane.showMessageDialog(null, 
+                        "No values to replace entered!\nThe attacker need at least one value.", 
+                        "Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            // Repalce values
             for (int i = 0; i < payloadList.size(); i++) {
-                payloadList.get(i).setValue(payloadList.get(i).getValue());
+                Document payload = XMLHelper.stringToDom(payloadList.get(i).getValue());
+                for (Map.Entry pair : dialog.getValuePairs().entrySet()) {
+                    try {
+                        Node node = DomUtilities.evaluateXPath(payload, pair.getKey().toString()).get(0);
+                        node.setTextContent(pair.getValue().toString());
+                    } catch (XPathExpressionException ex) {
+                        Logging.getInstance().log(getClass(), "Could not replace value.", Logging.ERROR);
+                    }
+                } 
+                payloadList.get(i).setPayloadElement(payload.getDocumentElement());
             }
             // Init oracle
-            Document samlDoc = signatureManager.getDocument();
             SchemaAnalyzer samlSchemaAnalyser = SchemaAnalyzerFactory.getInstance(SchemaAnalyzerFactory.SAML);
-            WrappingOracle wrappingOracle = new WrappingOracle(samlDoc, payloadList, samlSchemaAnalyser);
+            WrappingOracle wrappingOracle = new WrappingOracle(xmlDoc, payloadList, samlSchemaAnalyser);
             int max = wrappingOracle.maxPossibilities();
             Logging.getInstance().log(getClass(), "Wrapping oracle could generate " + max + " attack vectors.", Logging.INFO);
             // Save attack vectors
             for (int i = 0; i < max; i++) {
                 try {
                     // Get vector
-                    Document attackDoc = wrappingOracle.getPossibility(i);
-                    // Replace values
-                    for (Map.Entry pair : dialog.getValuePairs().entrySet()) {
-                        Node node = DomUtilities.evaluateXPath(attackDoc, pair.getKey().toString()).get(0);
-                        node.setTextContent(pair.getValue().toString());
-                    }               
+                    Document attackDoc = wrappingOracle.getPossibility(i);            
                     // Encode vector
                     String attackString = DomUtilities.domToString(attackDoc);
                     payloads.add(encode(attackString).getBytes());
-                } catch (XPathExpressionException | InvalidWeaknessException ex) {
-                    Logging.getInstance().log(getClass(), "Failed to generate XSW vector: " + i, Logging.ERROR);
+                } catch (InvalidWeaknessException ex) {
+                    Logging.getInstance().log(getClass(), "Failed to get XSW vector: " + i, Logging.ERROR);
                 }
             }
             Logging.getInstance().log(getClass(), "Signature wrapping successfull.", Logging.INFO);
