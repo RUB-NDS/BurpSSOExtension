@@ -31,18 +31,11 @@
             <artifactId>json-simple</artifactId>
             <version>1.1.1</version>
         </dependency>
-        <!-- XML Utilities Library -->
-        <dependency>
-            <groupId>wsattacker.library</groupId>
-            <artifactId>XML_Utilities_Library</artifactId>
-            <version>1.9-SNAPSHOT</version>
-        </dependency>
         <!-- Signature Wrapping Library -->
         <dependency>
-            <groupId>wsattacker.library</groupId>
-            <artifactId>Signature_Wrapping_Library</artifactId>
-            <version>1.9-SNAPSHOT</version>
-            <type>jar</type>
+            <groupId>com.github.rub-nds</groupId>
+            <artifactId>WS-Attacker-Library_Signature_Wrapping</artifactId>
+            <version>1.10</version>
         </dependency>
         <dependency>
             <groupId>org.jdesktop</groupId>
@@ -82,17 +75,9 @@
     </dependencies>
     
     <repositories>
-        <!-- WS-Attacker Repository -->
         <repository>
-            <id>wsattacker-repos</id>
-            <name>wsattacker</name>
-            <url>https://repo.nds.rub.de/repository/wsattacker-repos/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
     
