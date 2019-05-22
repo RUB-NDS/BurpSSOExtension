@@ -31,6 +31,7 @@ import de.rub.nds.burp.utilities.protocols.xmlenc.SymmetricAlgorithm;
 import de.rub.nds.burp.utilities.protocols.xmlenc.XmlEncryptionHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import wsattacker.library.xmlutilities.namespace.NamespaceConstants;
 
 import javax.crypto.BadPaddingException;
@@ -58,9 +59,10 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
 
     private IBurpExtenderCallbacks extenderCallbacks;
     private String saml = "";
+    private String encryptXMLTooltip = "";
     private CodeListenerController listeners = null;
     private XmlEncryptionHelper xmlEncryptionHelper;
-    
+
     private final String XPATH_ENC_DATA_CERT = "//xenc:EncryptedData/ds:KeyInfo/ds:X509Data/ds:X509Certificate";
     private final String XPATH_ENC_KEY_CERT = "//xenc:EncryptedKey/ds:KeyInfo/ds:X509Data/ds:X509Certificate";
     private final String XPATH_ENC_KEY_VAL = "//xenc:EncryptedKey/xenc:CipherData/xenc:CipherValue";
@@ -69,6 +71,13 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
     private final String XPATH_ENC_DATA_ALG = "//xenc:EncryptedData/xenc:EncryptionMethod/@Algorithm";
 
     private HashMap<String, String> nameSpaceMap = new HashMap<>();
+
+    private final String encryptedAssertionTemplate = "<saml:EncryptedAssertion xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\">\n" +
+            "<xenc:EncryptedData xmlns:xenc=\"http://www.w3.org/2001/04/xmlenc#\" xmlns:dsig=\"http://www.w3.org/2000/09/xmldsig#\" Type=\"http://www.w3.org/2001/04/xmlenc#Element\">" +
+            "<xenc:EncryptionMethod Algorithm=\"http://www.w3.org/2001/04/xmlenc#aes128-cbc\"/><dsig:KeyInfo xmlns:dsig=\"http://www.w3.org/2000/09/xmldsig#\">" +
+            "<xenc:EncryptedKey><xenc:EncryptionMethod Algorithm=\"http://www.w3.org/2001/04/xmlenc#rsa-1_5\"/><xenc:CipherData>" +
+            "<xenc:CipherValue></xenc:CipherValue></xenc:CipherData></xenc:EncryptedKey></dsig:KeyInfo><xenc:CipherData>" +
+            "<xenc:CipherValue></xenc:CipherValue></xenc:CipherData></xenc:EncryptedData></saml:EncryptedAssertion>";
 
     /**
      * Creates new form UIEncryptionAttack
@@ -473,7 +482,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
             Logging.getInstance().log(getClass(), ex);
         }
     }    
-    
+
     private void jButtonEncryptXMLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEncryptXMLActionPerformed
         Logging.getInstance().log(getClass(), "Start ciphertext computation.", Logging.INFO);
         byte[] symmetricKey = ByteArrayHelper.hexStringToByteArray(jTextAreaSymmetricKey.getText());
@@ -518,8 +527,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
      */
     @Override
     public void setCode(AbstractCodeEvent evt) {
-        this.saml = new String(evt.getCode());
-
+        setSaml(evt.getCode());
         if (evt.getSource().equals(this)) {
             // do not override certificate if code event was self-issued by encryption attacker
             return;
@@ -538,6 +546,43 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
             jTextAreaCertificate.setText(sb.toString());
         } catch (XPathExpressionException ex) {
             Logging.getInstance().log(getClass(), ex);
+        }
+    }
+
+    private void setSaml(byte[] code) {
+        Document doc = XMLHelper.stringToDom(new String(code));
+        NodeList assertions = doc.getElementsByTagNameNS(NamespaceConstants.URI_NS_SAML20, "Assertion");
+        NodeList encryptedAssertions = doc.getElementsByTagNameNS(NamespaceConstants.URI_NS_SAML20, "EncryptedAssertion");
+
+        // check if saml response contains an unencrypted assertion
+        if (assertions.getLength() == 1) {
+            Node assertion = assertions.item(0);
+            // set assertion in xml data
+            String assertionStriong = XMLHelper.nodeToString(assertion);
+            jTextAreaXmlData.setText(assertionStriong);
+
+            // remove plain assertion from saml response and add EncryptedAssertion template
+            Node encAssertion = XMLHelper.stringToDom(encryptedAssertionTemplate).getDocumentElement();
+            Node newEncAssertion = doc.importNode(encAssertion, true);
+            assertion.getParentNode().appendChild(newEncAssertion);
+            assertion.getParentNode().removeChild(assertion);
+
+        } else if (encryptedAssertions.getLength() != 1) {
+            if (encryptXMLTooltip.isEmpty()) {
+                // store original tooltip text
+                encryptXMLTooltip = jButtonEncryptXML.getToolTipText();
+            }
+            String message = "SAML Response must contain exactly one assertion.";
+            extenderCallbacks.issueAlert(message);
+            jButtonEncryptXML.setEnabled(false);
+            jButtonEncryptXML.setToolTipText(message);
+            return;
+        }
+
+        this.saml = XMLHelper.docToString(doc);
+        jButtonEncryptXML.setEnabled(true);
+        if (!encryptXMLTooltip.isEmpty()) {
+            jButtonEncryptXML.setToolTipText(encryptXMLTooltip);
         }
     }
 
@@ -661,7 +706,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
             jLabelWarningKeySize.setText("");
         }
     }
-    
+
     private void checkBlocksize() {
         SymmetricAlgorithm algorithm = SymmetricAlgorithm.getByURI(jComboBoxSymmetricAlgo.getItemAt(jComboBoxSymmetricAlgo.getSelectedIndex()));
         int blocksize = algorithm.getBlockSize();
@@ -672,7 +717,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
                 jLabelWarningBlockSize.setText("");
         }
     }
-    
+
     private void updateHexData() {
         String algorithmURI = jComboBoxSymmetricAlgo.getItemAt(jComboBoxSymmetricAlgo.getSelectedIndex());
         SymmetricAlgorithm algorithm = SymmetricAlgorithm.getByURI(algorithmURI);
@@ -681,7 +726,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         byte[] data = ByteArrayHelper.concatenate(xml, padding);
         jTextAreaXmlHex.setText(ByteArrayHelper.bytesToHexString(data));        
     }
-    
+
     /**
      * Set the listener for the editor.
      *
