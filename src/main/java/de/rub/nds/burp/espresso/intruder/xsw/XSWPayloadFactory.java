@@ -81,6 +81,9 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
         private Document xmlDoc;
         private ArrayList<byte[]> payloads;
         private List<Payload> payloadList;
+        private boolean isDeflate = false;
+        private boolean isBase64 = false;
+        private boolean isURL = false;
         
         public XSWPayloadGenerator(IIntruderAttack attack) {
             Logging.getInstance().log(getClass(), "Start signature wrapping.", Logging.INFO);
@@ -159,7 +162,7 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
                 return;
             }
             // Open new window
-            dialog = new XSWInputJDialog(xmlMessage, payloadList);
+            dialog = new XSWInputJDialog(xmlMessage, payloadList, isDeflate, isBase64, isURL);
             if (dialog.getValuePairs().size() <= 0) {
                 Logging.getInstance().log(getClass(), "", Logging.ERROR);
                 JOptionPane.showMessageDialog(null, 
@@ -182,7 +185,7 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
                 payloadList.get(i).setPayloadElement(payload.getDocumentElement());
             }
             // Init oracle
-            SchemaAnalyzer samlSchemaAnalyser = SchemaAnalyzerFactory.getInstance(SchemaAnalyzerFactory.SAML);
+            SchemaAnalyzer samlSchemaAnalyser = SchemaAnalyzerFactory.getInstance(dialog.getSchema());
             WrappingOracle wrappingOracle = new WrappingOracle(xmlDoc, payloadList, samlSchemaAnalyser);
             int max = wrappingOracle.maxPossibilities();
             Logging.getInstance().log(getClass(), "Wrapping oracle could generate " + max + " attack vectors.", Logging.INFO);
@@ -205,14 +208,17 @@ public class XSWPayloadFactory implements IIntruderPayloadGeneratorFactory {
             byte [] tmp;
             if(Encoding.isURLEncoded(samlParam)) {
                 samlParam = helpers.urlDecode(samlParam);
+                isURL = true;
             }
             if(Encoding.isBase64Encoded(samlParam)) {
                 tmp = helpers.base64Decode(samlParam);
+                isBase64 = true;
             } else {
                 tmp = samlParam.getBytes();
             }
             if (Encoding.isDeflated(tmp)) {
                 tmp = Compression.decompress(tmp);
+                isDeflate = true;
             }
             return new String(tmp);
         }

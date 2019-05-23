@@ -24,6 +24,7 @@ import de.rub.nds.burp.utilities.table.xsw.TableModel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -31,6 +32,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableRowSorter;
 import org.w3c.dom.Document;
+import wsattacker.library.schemaanalyzer.SchemaAnalyzerFactory;
 import wsattacker.library.signatureWrapping.option.Payload;
 
 /**
@@ -50,7 +52,7 @@ public class XSWInputJDialog extends javax.swing.JDialog {
      * @param message Message to be show
      * @param payloadList Signature elements of the message
      */
-    public XSWInputJDialog(String message, List<Payload> payloadList) {
+    public XSWInputJDialog(String message, List<Payload> payloadList, boolean isDeflate, boolean isBase64, boolean isURL) {
         super(new JFrame(), true);
         initComponents();
         // Init variables
@@ -61,6 +63,8 @@ public class XSWInputJDialog extends javax.swing.JDialog {
         // Init table and editor
         initTable();
         initEditor();
+        initSchemaComboBox();
+        initEncoding(isDeflate, isBase64, isURL);
         setLocationRelativeTo(null);
         setVisible(true);
     }
@@ -96,6 +100,8 @@ public class XSWInputJDialog extends javax.swing.JDialog {
         jSeparator3 = new javax.swing.JSeparator();
         jLabelNode = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jComboBoxSchema = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -159,6 +165,10 @@ public class XSWInputJDialog extends javax.swing.JDialog {
 
         jLabel6.setText("Overwiew:");
 
+        jLabel7.setText("Schema Analyzer:");
+
+        jComboBoxSchema.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -172,8 +182,8 @@ public class XSWInputJDialog extends javax.swing.JDialog {
                     .addComponent(jTextFieldCurrentValue)
                     .addComponent(jTextFieldNewValue)
                     .addComponent(jButtonAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButtonOk, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButtonOk, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jSeparator3)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -188,17 +198,21 @@ public class XSWInputJDialog extends javax.swing.JDialog {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButtonDelete))
                             .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabelNode))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jComboBoxSchema, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jCheckBoxEnflate)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jCheckBoxBase64)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jCheckBoxUrl))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabelNode)))
+                                .addComponent(jCheckBoxUrl)))
                         .addGap(0, 208, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -210,7 +224,7 @@ public class XSWInputJDialog extends javax.swing.JDialog {
                     .addComponent(jLabel1)
                     .addComponent(jCheckBoxWrapLines))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(rTextScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)
+                .addComponent(rTextScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 358, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -237,6 +251,10 @@ public class XSWInputJDialog extends javax.swing.JDialog {
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(jComboBoxSchema, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(2, 2, 2)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(jCheckBoxEnflate)
                     .addComponent(jCheckBoxBase64)
@@ -245,7 +263,7 @@ public class XSWInputJDialog extends javax.swing.JDialog {
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonOk)
-                .addContainerGap())
+                .addGap(24, 24, 24))
         );
 
         pack();
@@ -317,10 +335,34 @@ public class XSWInputJDialog extends javax.swing.JDialog {
         });
     }
     
+    private void initSchemaComboBox() {
+        ArrayList<String> schemas = new ArrayList<>();
+        schemas.add(SchemaAnalyzerFactory.ALL);
+        schemas.add(SchemaAnalyzerFactory.NULL);
+        schemas.add(SchemaAnalyzerFactory.EMPTY);
+        schemas.add(SchemaAnalyzerFactory.MINIMAL);
+        schemas.add(SchemaAnalyzerFactory.SAML);
+        schemas.add(SchemaAnalyzerFactory.SAML11);
+        schemas.add(SchemaAnalyzerFactory.SAML20);
+        schemas.add(SchemaAnalyzerFactory.WEBSERVICE);
+        jComboBoxSchema.setModel(new DefaultComboBoxModel(schemas.toArray()));
+    }
+    
     private void initEditor() {
         rSyntaxTextArea.setText(XMLHelper.format(message, 2));
         rSyntaxTextArea.setLineWrap(false);
         rTextScrollPane.setLineNumbersEnabled(true);
+    }
+    
+    
+    private void initEncoding(boolean isDeflate, boolean isBase64, boolean isURL) {
+        jCheckBoxEnflate.setSelected(isDeflate);
+        jCheckBoxBase64.setSelected(isBase64);
+        jCheckBoxUrl.setSelected(isURL);
+    }
+    
+    public String getSchema() {
+        return (String) jComboBoxSchema.getSelectedItem();
     }
     
     public HashMap<String, String> getValuePairs() {
@@ -347,12 +389,14 @@ public class XSWInputJDialog extends javax.swing.JDialog {
     private javax.swing.JCheckBox jCheckBoxEnflate;
     private javax.swing.JCheckBox jCheckBoxUrl;
     private javax.swing.JCheckBox jCheckBoxWrapLines;
+    private javax.swing.JComboBox<String> jComboBoxSchema;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabelNode;
     private javax.swing.JScrollPane jScrollPaneTable;
     private javax.swing.JSeparator jSeparator1;
