@@ -59,7 +59,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
 
     private IBurpExtenderCallbacks extenderCallbacks;
     private String saml = "";
-    private String encryptXMLTooltip = "";
+    private String encryptTooltip = "";
     private CodeListenerController listeners = null;
     private XmlEncryptionHelper xmlEncryptionHelper;
 
@@ -568,21 +568,25 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
             assertion.getParentNode().removeChild(assertion);
 
         } else if (encryptedAssertions.getLength() != 1) {
-            if (encryptXMLTooltip.isEmpty()) {
+            if (encryptTooltip.isEmpty()) {
                 // store original tooltip text
-                encryptXMLTooltip = jButtonEncryptXML.getToolTipText();
+                encryptTooltip = jButtonEncryptXML.getToolTipText();
             }
             String message = "SAML Response must contain exactly one assertion.";
             extenderCallbacks.issueAlert(message);
             jButtonEncryptXML.setEnabled(false);
             jButtonEncryptXML.setToolTipText(message);
+            jButtonEncryptSymmetricKey.setEnabled(false);
+            jButtonEncryptSymmetricKey.setToolTipText(message);
             return;
         }
 
         this.saml = XMLHelper.docToString(doc);
         jButtonEncryptXML.setEnabled(true);
-        if (!encryptXMLTooltip.isEmpty()) {
-            jButtonEncryptXML.setToolTipText(encryptXMLTooltip);
+        jButtonEncryptSymmetricKey.setEnabled(true);
+        if (!encryptTooltip.isEmpty()) {
+            jButtonEncryptXML.setToolTipText(encryptTooltip);
+            jButtonEncryptSymmetricKey.setToolTipText(saml);
         }
     }
 
