@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.TableModelEvent;
@@ -64,6 +66,8 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
     private int max = -1;
     private List<Payload> payloadList;
     private UISigWrapExec uiExec;
+    private Consumer<Integer> switchTabFunc;
+    private final Integer EXEC_ATTACK_TAB_INDEX = 1;
     
     /**
      * Creates new form UISigWrapAttack
@@ -313,6 +317,7 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
         // Update tab
         uiExec.initOracle(wrappingOracle);
         uiExec.enableObjects(max > 0);
+        switchTabFunc.accept(EXEC_ATTACK_TAB_INDEX);
     }//GEN-LAST:event_jButtonGenerateVectorsActionPerformed
 
     private void jCheckBoxWrapLinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxWrapLinesActionPerformed
@@ -395,6 +400,10 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
     public void setListener(CodeListenerController listeners) {
         this.listeners = listeners;
         this.listeners.addCodeListener(this);
+    }
+
+    public void setSwitchTabFunc(Consumer<Integer> selectTab) {
+        this.switchTabFunc = selectTab;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

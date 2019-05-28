@@ -46,6 +46,7 @@ public class UISigWrapAttackNew extends JTabbedPane {
     private void initComponents() {
         uiExec = new UISigWrapExec();
         uiInit = new UISigWrapAttackInit(uiExec);
+        uiInit.setSwitchTabFunc((Integer i) -> selectTab(i));
         // Add to pane
         this.add(INIT, uiInit);
         this.add(EXECUTE, uiExec);
@@ -58,5 +59,9 @@ public class UISigWrapAttackNew extends JTabbedPane {
     public void setListeners(CodeListenerController listeners){
         uiInit.setListener(listeners);
         uiExec.setListener(listeners);
-    }    
+    }
+
+    private void selectTab(int index) {
+        this.setSelectedIndex(index);
+    }
 }
