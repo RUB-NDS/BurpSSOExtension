@@ -39,6 +39,7 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
     // The attack options.
     private final String NO_ATTACK = "No Attack";
     private final String SIGNATURE_WRAPPING = "Signature Wrapping";
+    private final String SIGNATURE_WRAPPING_NEW = "Signature Wrapping New";
     private final String SIGNATURE_EXCLUSION = "Signature Exclusion";
     private final String SIGNATURE_FAKING = "Signature Faking";
     private final String DTD = "DTD";
@@ -53,6 +54,7 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
     private UIDTDAttack uiDTDAttack = null;
     private UIEncryptionAttack uiEncryptionAttack = null;
     private UISigWrapAttack uiSigWrapAttack = null;
+    private UISigWrapAttackNew uiSigWrapAttackNew = null;
     
     /**
      * Create a new Attacker.
@@ -79,7 +81,7 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
 
         attackComboBox = new JComboBox();
         attackComboBox.setFont(new Font("Dialog", 0, 12));
-        String[] attackArray = {NO_ATTACK, SIGNATURE_EXCLUSION, SIGNATURE_FAKING, SIGNATURE_WRAPPING, DTD, ENCRYPTION};
+        String[] attackArray = {NO_ATTACK, SIGNATURE_EXCLUSION, SIGNATURE_FAKING, SIGNATURE_WRAPPING, SIGNATURE_WRAPPING_NEW, DTD, ENCRYPTION};
         attackComboBox.setModel(new DefaultComboBoxModel(attackArray));
         attackComboBox.addItemListener(this);
 
@@ -91,6 +93,8 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
         settingsContainer.add(uiSigFakeAttack, SIGNATURE_FAKING);
         uiSigWrapAttack = new UISigWrapAttack();
 	settingsContainer.add(uiSigWrapAttack, SIGNATURE_WRAPPING);
+        uiSigWrapAttackNew = new UISigWrapAttackNew();
+        settingsContainer.add(uiSigWrapAttackNew, SIGNATURE_WRAPPING_NEW);
         uiDTDAttack = new UIDTDAttack();
 	settingsContainer.add(uiDTDAttack, DTD);
         uiEncryptionAttack = new UIEncryptionAttack();
@@ -145,6 +149,7 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
         uiSigExcAttack.setListener(listeners);
         uiSigFakeAttack.setListener(listeners);
         uiSigWrapAttack.setListener(listeners);
+        uiSigWrapAttackNew.setListeners(listeners);
         uiDTDAttack.setListener(listeners);
         uiEncryptionAttack.setListener(listeners);
     }
