@@ -98,14 +98,15 @@ public abstract class Encoding {
     }
     
     /**
-     * Check for Base64 encoding.<br>
+     * Check for Base64 encoding. Checks used alphabet and length, ignores linefeeds ("CR" (\r, 0x0D) and "LF" (\n, 0x0A)).<br>
      * Source for pattern see: {@code http://stackoverflow.com/questions/8571501/how-to-check-whether-the-string-is-base64-encoded-or-not}
      * @param data The encoded data.
      * @return True if the encoding is Base 64 Encoding, otherwise false.
      */
     public static boolean isBase64Encoded(String data){
         String pattern = "^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$";
-        return regex_contains(pattern, data);
+        String noNewlines = data.replaceAll("(\\r|\\n)", "");
+        return regex_contains(pattern, noNewlines);
     }
     
     /**
