@@ -26,6 +26,7 @@ import de.rub.nds.burp.utilities.listeners.ICodeListener;
 import de.rub.nds.burp.utilities.table.xsw.TableEntry;
 import de.rub.nds.burp.utilities.table.xsw.TableModel;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +65,7 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
     private JTable table;
     private boolean firstTime = true;
     private int max = -1;
-    private List<Payload> payloadList;
+    private ArrayList<Payload> payloadList;
     private UISigWrapExec uiExec;
     private Consumer<Integer> switchTabFunc;
     private final Integer EXEC_ATTACK_TAB_INDEX = 1;
@@ -74,6 +75,7 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
      */
     public UISigWrapAttackInit(UISigWrapExec uiExec) {
         initComponents();
+        jLabelNode.setText("");
         valuePairs = new HashMap<>();
         initTable();
         this.uiExec = uiExec;
@@ -134,7 +136,7 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
         });
 
         jLabelVectors.setForeground(new java.awt.Color(255, 0, 0));
-        jLabelVectors.setText("Press button to generate vectors.");
+        jLabelVectors.setText("Minimum one textnode pair necessary!");
 
         jLabel3.setText("Current value:");
 
@@ -147,7 +149,7 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
             }
         });
 
-        jLabel5.setText("Values to be replaced:");
+        jLabel5.setText("Textnodes to be replaced automatically:");
 
         jButtonDelete.setText("Delete");
         jButtonDelete.addActionListener(new java.awt.event.ActionListener() {
@@ -165,7 +167,7 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
         rTextScrollPane.setViewportView(rSyntaxTextArea);
 
         jLabelNode.setForeground(new java.awt.Color(255, 0, 0));
-        jLabelNode.setText("Only node values can be replaced automatically.");
+        jLabelNode.setText("Error");
 
         jLabel7.setText("Overview:");
 
@@ -209,7 +211,7 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
                                 .addComponent(jButtonGenerateVectors)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabelVectors)))
-                        .addGap(0, 105, Short.MAX_VALUE)))
+                        .addGap(0, 171, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -221,7 +223,7 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
                     .addComponent(jCheckBoxWrapLines)
                     .addComponent(jButtonReload))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(rTextScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                .addComponent(rTextScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -229,11 +231,12 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
                     .addComponent(jLabel5)
                     .addComponent(jLabelNode))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4)
-                    .addComponent(jTextFieldCurrentValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextFieldNewValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel3)
+                        .addComponent(jTextFieldCurrentValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jTextFieldNewValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonAdd)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -241,7 +244,7 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
                     .addComponent(jLabel7)
                     .addComponent(jButtonDelete))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPaneTable, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPaneTable, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -268,9 +271,12 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
                     if (e.getType() == TableModelEvent.INSERT || e.getType() == TableModelEvent.DELETE) {
                         if(tableModel.getRowCount() > 0) {
                             jButtonGenerateVectors.setEnabled(true);
+                            jLabelVectors.setText("Press button to generate vectors.");
                         } else {
                             jButtonGenerateVectors.setEnabled(false);
+                            jLabelVectors.setText("Minimum one textnode pair necessary!");
                         }
+                        uiExec.enableObjects(false);
                     }
                 }
         });
@@ -283,8 +289,8 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
         // Clean up
         jTextFieldCurrentValue.setText("");
         jTextFieldNewValue.setText("");
-        jLabelNode.setText("Only node values can be replaced automatically.");
-        jLabelVectors.setText("Press Generate vectos to get attack vectors.");
+        jLabelNode.setText("");
+        jLabelVectors.setText("Minimum one textnode pair necessary!");
         valuePairs.clear();
         tableModel.clearAll();
         jButtonGenerateVectors.setEnabled(false);
@@ -332,7 +338,7 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
         ArrayList<String> xPaths = new ArrayList<>();
         // Search only in signed elements
         for (int i = 0; i < payloadList.size(); i++) {
-            Document payload = XMLHelper.stringToDom(payloadList.get(i).getValue());
+            Document payload = payloadList.get(i).getSignedElement().getOwnerDocument();
             xPaths.addAll(XMLHelper.findNodeByValue(payload, jTextFieldCurrentValue.getText()));
         }
         if(xPaths.isEmpty()) {
@@ -354,14 +360,16 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
     }//GEN-LAST:event_jButtonAddActionPerformed
 
     private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
-        valuePairs.remove((String) tableModel.getValueAt(table.getSelectedRow(), 0));
-        tableModel.remove(table.getSelectedRow());
+        if (table.getSelectedRow() != -1) {
+            valuePairs.remove((String) tableModel.getValueAt(table.getSelectedRow(), 0));
+            tableModel.remove(table.getSelectedRow());
+        }
     }//GEN-LAST:event_jButtonDeleteActionPerformed
     
     private void initSigManager() {
         SignatureManager sigManager = new SignatureManager();
         sigManager.setDocument(doc);
-        payloadList = sigManager.getPayloads();
+        payloadList = (ArrayList<Payload>) sigManager.getPayloads();
         // Set message
         if (payloadList.isEmpty()) {
             rSyntaxTextArea.setText("<Error>No signatures available. Attack can't be executed!</Error>");
