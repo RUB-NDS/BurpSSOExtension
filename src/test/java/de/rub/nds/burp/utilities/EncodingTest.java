@@ -59,7 +59,11 @@ public class EncodingTest extends TestCase {
         String data = "VGhpcyBpcyBhIHRlc3Qgc3RyaW5nIHdpdGggc3BlY2lhbCBjaGFycyBsaWtlIHRoczogL0BeJiooKCl7fXs6Ow==";
         boolean result = Encoding.isBase64Encoded(data);
         assertTrue(result);
-        
+
+        String base64WithNewlines = "VGhpcyBpcyBhIHRlc3Qgc3RyaW5nIHdpd\r\nGggc3BlY2lhbCBjaGFycyBsaWtlIHRoczogL0BeJiooKCl\n7fXs6Ow==";
+        boolean resultBase64WithNewlines = Encoding.isBase64Encoded(base64WithNewlines);
+        assertTrue(resultBase64WithNewlines);
+
         String data1 = "This is a test string with special chars like ths: /@^&*((){}{:;";
         boolean result1 = Encoding.isBase64Encoded(data1);
         assertFalse(result1);
