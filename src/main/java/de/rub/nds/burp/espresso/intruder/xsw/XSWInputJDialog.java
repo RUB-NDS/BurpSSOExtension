@@ -289,7 +289,6 @@ public class XSWInputJDialog extends javax.swing.JDialog {
             // Add pair
             if (!selection.equals("") && !valuePairs.containsKey(selection)) {
                 jLabelNode.setText("");
-                //selection = selection.substring(selection.indexOf(start)+selection.length());
                 valuePairs.put(selection, jTextFieldNewValue.getText());
                 tableModel.addRow(new TableEntry(selection, jTextFieldCurrentValue.getText(), jTextFieldNewValue.getText()));
             } else {

@@ -338,7 +338,7 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
         ArrayList<String> xPaths = new ArrayList<>();
         // Search only in signed elements
         for (int i = 0; i < payloadList.size(); i++) {
-            Document payload = payloadList.get(i).getSignedElement().getOwnerDocument();
+            Document payload = DomUtilities.createNewDomFromNode(payloadList.get(i).getSignedElement());
             xPaths.addAll(XMLHelper.findNodeByValue(payload, jTextFieldCurrentValue.getText()));
         }
         if(xPaths.isEmpty()) {
@@ -350,7 +350,6 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
             // Add pair
             if (!selection.equals("")  && !valuePairs.containsKey(selection)) {
                 jLabelNode.setText("");
-                //selection = selection.substring(selection.indexOf(start)+selection.length());
                 valuePairs.put(selection, jTextFieldNewValue.getText());
                 tableModel.addRow(new TableEntry(selection, jTextFieldCurrentValue.getText(), jTextFieldNewValue.getText()));
             } else {

@@ -162,8 +162,8 @@ public class UISigWrapExec extends javax.swing.JPanel implements IAttack {
     
     private void jButtonModifyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonModifyActionPerformed
         Logging.getInstance().log(getClass(), "Signature wrapping successfull", Logging.INFO);
-        jTextAreaFinal.setText("Attack vector successfully transmitted.\nSee the Source code or SAMLResponse/SAMLRequest tab.");
         notifyAllTabs(new SamlCodeEvent(this, jTextAreaFinal.getText().getBytes()));
+        jTextAreaFinal.setText("Attack vector successfully transmitted.\nSee the Source code or SAMLResponse/SAMLRequest tab.");
     }//GEN-LAST:event_jButtonModifyActionPerformed
 
     private void jButtonPreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPreviewActionPerformed
