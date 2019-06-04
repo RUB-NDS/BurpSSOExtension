@@ -60,6 +60,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
     private IBurpExtenderCallbacks extenderCallbacks;
     private String saml = "";
     private String encryptTooltip = "";
+    private String encryptKeyTooltip = "";
     private CodeListenerController listeners = null;
     private XmlEncryptionHelper xmlEncryptionHelper;
 
@@ -571,6 +572,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
             if (encryptTooltip.isEmpty()) {
                 // store original tooltip text
                 encryptTooltip = jButtonEncryptXML.getToolTipText();
+                encryptKeyTooltip = jButtonEncryptSymmetricKey.getToolTipText();
             }
             String message = "SAML Response must contain exactly one assertion.";
             extenderCallbacks.issueAlert(message);
@@ -586,7 +588,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         jButtonEncryptSymmetricKey.setEnabled(true);
         if (!encryptTooltip.isEmpty()) {
             jButtonEncryptXML.setToolTipText(encryptTooltip);
-            jButtonEncryptSymmetricKey.setToolTipText(saml);
+            jButtonEncryptSymmetricKey.setToolTipText(encryptKeyTooltip);
         }
     }
 
