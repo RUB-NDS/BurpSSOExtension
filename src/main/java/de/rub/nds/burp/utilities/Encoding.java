@@ -104,8 +104,9 @@ public abstract class Encoding {
      * @return True if the encoding is Base 64 Encoding, otherwise false.
      */
     public static boolean isBase64Encoded(String data){
+        String dataWithoutBreaks = data.replace("\n", "").replace("\r", "");
         String pattern = "^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$";
-        return regex_contains(pattern, data);
+        return regex_contains(pattern, dataWithoutBreaks);
     }
     
     /**
