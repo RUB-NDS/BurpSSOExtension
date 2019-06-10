@@ -618,12 +618,39 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
                 checkBlocksize();
             }
         });
+        jTextAreaCertificate.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                checkCertificate();
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                checkCertificate();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent arg0) {
+                checkCertificate();
+            }
+        });
         // Update jLabels and jTextareas
         checkKeyLengthAndFormat();
         checkBlocksize();
         updateHexData();
+        checkCertificate();
     }
 
+    private void checkCertificate() {
+        String certificate = jTextAreaCertificate.getText().trim();
+        try {
+            XmlEncryptionHelper.getPublicKey(certificate);
+            jButtonEncryptSymmetricKey.setEnabled(true);
+        } catch (CertificateException ex) {
+            jButtonEncryptSymmetricKey.setEnabled(false);
+        }  
+    }
+    
     private void checkKeyLengthAndFormat() {
         AsymmetricAlgorithm as = AsymmetricAlgorithm.getByURI(jComboBoxPublicAlgo.getItemAt(jComboBoxPublicAlgo.getSelectedIndex()));
         if ("RSA/None/NoPadding".equals(as.getJavaName())) {
