@@ -19,13 +19,23 @@
 package de.rub.nds.burp.espresso.intruder.xsw;
 
 import de.rub.nds.burp.utilities.XMLHelper;
+import de.rub.nds.burp.utilities.table.ssoHistory.TableMouseListener;
 import de.rub.nds.burp.utilities.table.xsw.TableEntry;
 import de.rub.nds.burp.utilities.table.xsw.TableModel;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.TableModelEvent;
@@ -80,7 +90,6 @@ public class XSWInputJDialog extends javax.swing.JDialog {
     private void initComponents() {
 
         jButtonOk = new javax.swing.JButton();
-        jButtonDelete = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -115,13 +124,6 @@ public class XSWInputJDialog extends javax.swing.JDialog {
             }
         });
 
-        jButtonDelete.setText("Delete");
-        jButtonDelete.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonDeleteActionPerformed(evt);
-            }
-        });
-
         jLabel1.setText("Message:");
 
         jLabel2.setText("Current value:");
@@ -135,9 +137,9 @@ public class XSWInputJDialog extends javax.swing.JDialog {
             }
         });
 
-        jLabel4.setText("Textnodes to be replaced automatically:");
+        jLabel4.setText("Textnodes to be replaced:");
 
-        jCheckBoxWrapLines.setText("Softwraps for long lines");
+        jCheckBoxWrapLines.setText("Enable Softwraps");
         jCheckBoxWrapLines.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxWrapLinesActionPerformed(evt);
@@ -165,7 +167,7 @@ public class XSWInputJDialog extends javax.swing.JDialog {
         jLabelNode.setForeground(new java.awt.Color(255, 0, 0));
         jLabelNode.setText("Error");
 
-        jLabel6.setText("Overwiew:");
+        jLabel6.setText("Modifications Table:");
 
         jLabel7.setText("Schema Analyzer:");
 
@@ -196,17 +198,10 @@ public class XSWInputJDialog extends javax.swing.JDialog {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jCheckBoxWrapLines))
-                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel4)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabelNode))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButtonDelete))
+                            .addComponent(jLabel6)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel7)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -219,7 +214,11 @@ public class XSWInputJDialog extends javax.swing.JDialog {
                                 .addComponent(jCheckBoxBase64)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jCheckBoxUrl)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jCheckBoxWrapLines)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -230,7 +229,7 @@ public class XSWInputJDialog extends javax.swing.JDialog {
                     .addComponent(jLabel1)
                     .addComponent(jCheckBoxWrapLines))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(rTextScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
+                .addComponent(rTextScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -246,9 +245,7 @@ public class XSWInputJDialog extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonAdd)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(jButtonDelete))
+                .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPaneTable, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -281,7 +278,7 @@ public class XSWInputJDialog extends javax.swing.JDialog {
             xPaths.addAll(XMLHelper.findNodeByValue(payload, jTextFieldCurrentValue.getText()));
         }
         if(xPaths.isEmpty()) {
-            jLabelNode.setText("No node found with provided value!");
+            jLabelNode.setText("'" + jTextFieldCurrentValue.getText() + "'" + " not found in the signed element!");
             return;
         }
         for (int i = 0; i < xPaths.size(); i++) {
@@ -301,13 +298,6 @@ public class XSWInputJDialog extends javax.swing.JDialog {
         this.dispose();
     }//GEN-LAST:event_jButtonOkActionPerformed
 
-    private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
-        if (table.getSelectedRow() != -1) {
-            valuePairs.remove((String) tableModel.getValueAt(table.getSelectedRow(), 0));
-            tableModel.remove(table.getSelectedRow());
-        }
-    }//GEN-LAST:event_jButtonDeleteActionPerformed
-
     private void jCheckBoxWrapLinesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxWrapLinesActionPerformed
         if (jCheckBoxWrapLines.isSelected()) {
             rSyntaxTextArea.setLineWrap(true);
@@ -325,18 +315,65 @@ public class XSWInputJDialog extends javax.swing.JDialog {
         TableRowSorter<TableModel> sorter = new TableRowSorter<>();
         table.setRowSorter(sorter);
         sorter.setModel(tableModel);
-        // Set event listener
-        tableModel.addTableModelListener(new TableModelListener() {
-                @Override
-                public void tableChanged(TableModelEvent e) {
-                    if (e.getType() == TableModelEvent.INSERT || e.getType() == TableModelEvent.DELETE) {
-                        if(tableModel.getRowCount() > 0) {
-                            jButtonOk.setEnabled(true);
-                        } else {
-                            jButtonOk.setEnabled(false);
-                        }
+        // Set popup menu
+        JPopupMenu menu = new JPopupMenu();
+        JMenuItem item = new JMenuItem("Remove current row");
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                if (table.getSelectedRow() != -1) {
+                    valuePairs.remove((String) tableModel.getValueAt(table.getSelectedRow(), 0));
+                    tableModel.remove(table.getSelectedRow());
+                }
+            }
+        });
+        menu.add(item);
+        item = new JMenuItem("Delete all rows");
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                valuePairs.clear();
+                tableModel.clearAll();
+            }
+        });
+        menu.add(item);
+        table.setComponentPopupMenu(menu);
+        // Set event listener 
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent me) {
+                super.mouseClicked(me);
+                // selects the row at which point the mouse is clicked
+                Point point = me.getPoint();
+                int currentRow = table.rowAtPoint(point);
+                table.setRowSelectionInterval(currentRow, currentRow);         
+            }
+            
+        });
+        // Set event listener 
+        table.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent ke) {
+                super.keyPressed(ke);
+                if(ke.getKeyCode() == KeyEvent.VK_DELETE) {
+                    if (table.getSelectedRow() != -1) {
+                        valuePairs.remove((String) tableModel.getValueAt(table.getSelectedRow(), 0));
+                        tableModel.remove(table.getSelectedRow());
                     }
                 }
+            }
+            
+        });
+        // Set event listener
+        tableModel.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                if(tableModel.getRowCount() > 0) {
+                    jButtonOk.setEnabled(true);
+                } else {
+                    jButtonOk.setEnabled(false);
+                }
+            }
         });
     }
     
@@ -388,7 +425,6 @@ public class XSWInputJDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAdd;
-    private javax.swing.JButton jButtonDelete;
     private javax.swing.JButton jButtonOk;
     private javax.swing.JCheckBox jCheckBoxBase64;
     private javax.swing.JCheckBox jCheckBoxEnflate;

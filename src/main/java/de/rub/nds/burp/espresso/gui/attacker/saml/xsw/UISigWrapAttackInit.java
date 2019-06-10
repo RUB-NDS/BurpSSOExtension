@@ -23,15 +23,22 @@ import de.rub.nds.burp.utilities.XMLHelper;
 import de.rub.nds.burp.utilities.listeners.AbstractCodeEvent;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
 import de.rub.nds.burp.utilities.listeners.ICodeListener;
+import de.rub.nds.burp.utilities.table.ssoHistory.TableMouseListener;
 import de.rub.nds.burp.utilities.table.xsw.TableEntry;
 import de.rub.nds.burp.utilities.table.xsw.TableModel;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.TableModelEvent;
@@ -100,7 +107,6 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
         jTextFieldNewValue = new javax.swing.JTextField();
         jButtonAdd = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
-        jButtonDelete = new javax.swing.JButton();
         jScrollPaneTable = new javax.swing.JScrollPane();
         jSeparator3 = new javax.swing.JSeparator();
         jSeparator4 = new javax.swing.JSeparator();
@@ -128,7 +134,7 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
             }
         });
 
-        jCheckBoxWrapLines.setText("Softwraps for long lines");
+        jCheckBoxWrapLines.setText("Enable Softwraps");
         jCheckBoxWrapLines.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxWrapLinesActionPerformed(evt);
@@ -149,14 +155,7 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
             }
         });
 
-        jLabel5.setText("Textnodes to be replaced automatically:");
-
-        jButtonDelete.setText("Delete");
-        jButtonDelete.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonDeleteActionPerformed(evt);
-            }
-        });
+        jLabel5.setText("Textnodes to be replaced:");
 
         rTextScrollPane.setAutoscrolls(true);
         rTextScrollPane.setLineNumbersEnabled(true);
@@ -169,7 +168,8 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
         jLabelNode.setForeground(new java.awt.Color(255, 0, 0));
         jLabelNode.setText("Error");
 
-        jLabel7.setText("Overview:");
+        jLabel7.setText("Modifications Table:");
+        jLabel7.setToolTipText("");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -178,10 +178,9 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(rTextScrollPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(rTextScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButtonAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPaneTable)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -191,39 +190,37 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jTextFieldNewValue))
                     .addComponent(jSeparator4)
+                    .addComponent(jScrollPaneTable)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jCheckBoxWrapLines)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButtonReload))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabelNode))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel7)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButtonDelete))
+                            .addComponent(jLabel7)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jButtonGenerateVectors)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabelVectors)))
-                        .addGap(0, 171, Short.MAX_VALUE)))
+                                .addComponent(jLabelVectors))
+                            .addComponent(jButtonReload))
+                        .addGap(0, 171, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jCheckBoxWrapLines)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(jButtonReload)
+                .addGap(4, 4, 4)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jCheckBoxWrapLines)
-                    .addComponent(jButtonReload))
+                    .addComponent(jCheckBoxWrapLines))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(rTextScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
+                .addComponent(rTextScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -240,9 +237,7 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonAdd)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(jButtonDelete))
+                .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPaneTable, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -264,20 +259,67 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
         TableRowSorter<TableModel> sorter = new TableRowSorter<>();
         table.setRowSorter(sorter);
         sorter.setModel(tableModel);
+        // Set popup menu
+        JPopupMenu menu = new JPopupMenu();
+        JMenuItem item = new JMenuItem("Remove current row");
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                if (table.getSelectedRow() != -1) {
+                    valuePairs.remove((String) tableModel.getValueAt(table.getSelectedRow(), 0));
+                    tableModel.remove(table.getSelectedRow());
+                }
+            }
+        });
+        menu.add(item);
+        item = new JMenuItem("Delete all rows");
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                valuePairs.clear();
+                tableModel.clearAll();
+            }
+        });
+        menu.add(item);
+        table.setComponentPopupMenu(menu);
+        // Set event listenr 
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent me) {
+                super.mouseClicked(me);
+                // selects the row at which point the mouse is clicked
+                Point point = me.getPoint();
+                int currentRow = table.rowAtPoint(point);
+                table.setRowSelectionInterval(currentRow, currentRow);         
+            }
+            
+        });
+        // Set event listener 
+        table.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent ke) {
+                super.keyPressed(ke);
+                if(ke.getKeyCode() == KeyEvent.VK_DELETE) {
+                    if (table.getSelectedRow() != -1) {
+                        valuePairs.remove((String) tableModel.getValueAt(table.getSelectedRow(), 0));
+                        tableModel.remove(table.getSelectedRow());
+                    }
+                }
+            }
+            
+        });
         // Set event listener
         tableModel.addTableModelListener(new TableModelListener() {
                 @Override
                 public void tableChanged(TableModelEvent e) {
-                    if (e.getType() == TableModelEvent.INSERT || e.getType() == TableModelEvent.DELETE) {
-                        if(tableModel.getRowCount() > 0) {
-                            jButtonGenerateVectors.setEnabled(true);
-                            jLabelVectors.setText("Press button to generate vectors.");
-                        } else {
-                            jButtonGenerateVectors.setEnabled(false);
-                            jLabelVectors.setText("Minimum one textnode pair necessary!");
-                        }
-                        uiExec.enableObjects(false);
+                    if(tableModel.getRowCount() > 0) {
+                        jButtonGenerateVectors.setEnabled(true);
+                        jLabelVectors.setText("Press button to generate vectors.");
+                    } else {
+                        jButtonGenerateVectors.setEnabled(false);
+                        jLabelVectors.setText("Minimum one textnode pair necessary!");
                     }
+                    uiExec.enableObjects(false);
                 }
         });
     }
@@ -342,7 +384,7 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
             xPaths.addAll(XMLHelper.findNodeByValue(payload, jTextFieldCurrentValue.getText()));
         }
         if(xPaths.isEmpty()) {
-            jLabelNode.setText("No node found with provided value!");
+            jLabelNode.setText(jTextFieldCurrentValue.getText() + " not found in the signed element!");
             return;
         }
         for (int i = 0; i < xPaths.size(); i++) {
@@ -357,13 +399,6 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
             } 
         }
     }//GEN-LAST:event_jButtonAddActionPerformed
-
-    private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
-        if (table.getSelectedRow() != -1) {
-            valuePairs.remove((String) tableModel.getValueAt(table.getSelectedRow(), 0));
-            tableModel.remove(table.getSelectedRow());
-        }
-    }//GEN-LAST:event_jButtonDeleteActionPerformed
     
     private void initSigManager() {
         SignatureManager sigManager = new SignatureManager();
@@ -415,7 +450,6 @@ public class UISigWrapAttackInit extends javax.swing.JPanel implements ICodeList
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAdd;
-    private javax.swing.JButton jButtonDelete;
     private javax.swing.JButton jButtonGenerateVectors;
     private javax.swing.JButton jButtonReload;
     private javax.swing.JCheckBox jCheckBoxWrapLines;

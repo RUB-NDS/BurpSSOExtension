@@ -56,7 +56,6 @@ public class UISigWrapExec extends javax.swing.JPanel implements IAttack {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButtonModify = new javax.swing.JButton();
         jButtonPreview = new javax.swing.JButton();
         jCheckBoxWrapLines = new javax.swing.JCheckBox();
         jLabel2 = new javax.swing.JLabel();
@@ -67,16 +66,7 @@ public class UISigWrapExec extends javax.swing.JPanel implements IAttack {
         jTextAreaFinal = new javax.swing.JTextArea();
         jLabel6 = new javax.swing.JLabel();
 
-        jButtonModify.setText("Modify");
-        jButtonModify.setToolTipText("Update of SAML message with attack vector.");
-        jButtonModify.setEnabled(false);
-        jButtonModify.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonModifyActionPerformed(evt);
-            }
-        });
-
-        jButtonPreview.setText("Preview");
+        jButtonPreview.setText("Pretty printed");
         jButtonPreview.setEnabled(false);
         jButtonPreview.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -84,7 +74,7 @@ public class UISigWrapExec extends javax.swing.JPanel implements IAttack {
             }
         });
 
-        jCheckBoxWrapLines.setText("Softwraps for long lines");
+        jCheckBoxWrapLines.setText("Enable Softwraps");
         jCheckBoxWrapLines.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxWrapLinesActionPerformed(evt);
@@ -115,27 +105,23 @@ public class UISigWrapExec extends javax.swing.JPanel implements IAttack {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 293, Short.MAX_VALUE)
+                                .addComponent(jCheckBoxWrapLines))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING))
+                        .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jSpinnerSelectedAttack, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jCheckBoxWrapLines)))
-                        .addGap(0, 252, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jButtonModify)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButtonPreview)
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addContainerGap())))
+                            .addComponent(jButtonPreview))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -153,19 +139,11 @@ public class UISigWrapExec extends javax.swing.JPanel implements IAttack {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButtonModify)
-                    .addComponent(jButtonPreview))
+                .addComponent(jButtonPreview)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
     
-    private void jButtonModifyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonModifyActionPerformed
-        Logging.getInstance().log(getClass(), "Signature wrapping successfull", Logging.INFO);
-        notifyAllTabs(new SamlCodeEvent(this, jTextAreaFinal.getText().getBytes()));
-        jTextAreaFinal.setText("Attack vector successfully transmitted.\nSee the Source code or SAMLResponse/SAMLRequest tab.");
-    }//GEN-LAST:event_jButtonModifyActionPerformed
-
     private void jButtonPreviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonPreviewActionPerformed
         new UIPreview(jTextAreaFinal.getText());
     }//GEN-LAST:event_jButtonPreviewActionPerformed
@@ -190,14 +168,20 @@ public class UISigWrapExec extends javax.swing.JPanel implements IAttack {
                 // Set attack vector 
                 jTextAreaFinal.setText(XMLHelper.docToString(attackDoc));
                 jTextAreaFinal.setCaretPosition(0);
+                // Notify all
+                Logging.getInstance().log(getClass(), "Signature wrapping successfull", Logging.INFO);
+                notifyAllTabs(new SamlCodeEvent(this, jTextAreaFinal.getText().getBytes()));
             } catch (InvalidWeaknessException ex) {
                 jTextAreaAttackDescription.setText("Error: " + ex);
                 jTextAreaFinal.setText("");
             }
         } else {
-            max -=1;
-            jTextAreaAttackDescription.setText("Selected vector must be in interval [0," + max + "]!");
-            jTextAreaFinal.setText("");
+            int res = selection % max;
+            if (res < 0) {
+                res += max;
+            }
+            jSpinnerSelectedAttack.setValue(res);
+            jSpinnerSelectedAttackStateChanged(null);
         }
     }//GEN-LAST:event_jSpinnerSelectedAttackStateChanged
     
@@ -207,7 +191,6 @@ public class UISigWrapExec extends javax.swing.JPanel implements IAttack {
     
     public void enableObjects(boolean bln) {
         jSpinnerSelectedAttack.setEnabled(bln);
-        jButtonModify.setEnabled(bln);
         jButtonPreview.setEnabled(bln);
         // Clear textfields
         jTextAreaAttackDescription.setText("");
@@ -248,7 +231,6 @@ public class UISigWrapExec extends javax.swing.JPanel implements IAttack {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonModify;
     private javax.swing.JButton jButtonPreview;
     private javax.swing.JCheckBox jCheckBoxWrapLines;
     private javax.swing.JLabel jLabel2;

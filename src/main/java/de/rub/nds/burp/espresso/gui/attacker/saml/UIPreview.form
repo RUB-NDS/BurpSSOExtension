@@ -27,12 +27,11 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jButtonExit" max="32767" attributes="0"/>
-                  <Component id="rTextScrollPane" max="32767" attributes="0"/>
+                  <Component id="rTextScrollPane" pref="972" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                       <Component id="jCheckBoxWrapLines" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="636" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -91,7 +90,7 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="jCheckBoxWrapLines">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Softwraps for long lines"/>
+        <Property name="text" type="java.lang.String" value="Enable Softwraps"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jCheckBoxWrapLinesActionPerformed"/>

@@ -83,7 +83,7 @@ public class UISourceViewer extends JPanel implements ICodeListener{
         }
         sp = new RTextScrollPane(textArea);
         sp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        checkBox = new JCheckBox("Softwraps for long lines");
+        checkBox = new JCheckBox("Enable Softwraps");
         checkBox.setSelected(false);
         checkBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
