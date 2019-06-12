@@ -429,7 +429,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="18" style="1"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="EsPReSSO v3.2"/>
+                <Property name="text" type="java.lang.String" value="EsPReSSO v3.3"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel3">

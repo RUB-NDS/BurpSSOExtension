@@ -1,7 +1,7 @@
 # EsPReSSO
 [![Build Status](https://travis-ci.org/RUB-NDS/BurpSSOExtension.svg?branch=master)](https://travis-ci.org/RUB-NDS/BurpSSOExtension)
 ![licence](https://img.shields.io/badge/License-GPLv2-brightgreen.svg)
-[![release](https://img.shields.io/badge/Release-v3.2-blue.svg)](https://github.com/RUB-NDS/BurpSSOExtension/releases)
+[![release](https://img.shields.io/badge/Release-v3.3-blue.svg)](https://github.com/RUB-NDS/BurpSSOExtension/releases)
 ![status](https://img.shields.io/badge/Status-beta-yellow.svg)
 
 ## Extension for Processing and Recognition of Single Sign-On Protocols
@@ -25,6 +25,7 @@ Supported Protocols:
 ### Attacking
 - [x] WS-Attacker integration while intercepting SAML messages
 - [x] DTD-Attacker integration while intercepting SAML messages
+- [x] XML-Encryption-Attacker integration while intercepting SAML messages
 
 ### Beautifier
 - [x] Syntax Highlight
