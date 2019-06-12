@@ -66,7 +66,7 @@ public class UISigWrapExec extends javax.swing.JPanel implements IAttack {
         jTextAreaFinal = new javax.swing.JTextArea();
         jLabel6 = new javax.swing.JLabel();
 
-        jButtonPreview.setText("Pretty printed");
+        jButtonPreview.setText("Pretty print");
         jButtonPreview.setEnabled(false);
         jButtonPreview.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
