@@ -644,8 +644,11 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
     private void checkCertificate() {
         String certificate = jTextAreaCertificate.getText().trim();
         try {
-            XmlEncryptionHelper.getPublicKey(certificate);
-            jButtonEncryptSymmetricKey.setEnabled(true);
+            if(XmlEncryptionHelper.getPublicKey(certificate) != null) {
+                jButtonEncryptSymmetricKey.setEnabled(true);
+            } else {
+                jButtonEncryptSymmetricKey.setEnabled(false);
+            }
         } catch (CertificateException ex) {
             jButtonEncryptSymmetricKey.setEnabled(false);
         }  
