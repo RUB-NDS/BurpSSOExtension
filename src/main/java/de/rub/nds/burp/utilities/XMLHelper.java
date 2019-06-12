@@ -18,36 +18,29 @@
  */
 package de.rub.nds.burp.utilities;
 
-
+import org.w3c.dom.NodeList;
+import wsattacker.library.xmlutilities.namespace.NamespaceResolver;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.xpath.*;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.*;
-import javax.xml.XMLConstants;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
+import java.util.Map;
 import org.xml.sax.SAXException;
 import org.xml.sax.InputSource;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import wsattacker.library.xmlutilities.dom.DomUtilities;
+
 /**
  * Help pretty print XML content
  * @author Tim Guenther
@@ -74,11 +67,8 @@ public abstract class XMLHelper {
             Source xmlInput = new StreamSource(new StringReader(input));
             StringWriter stringWriter = new StringWriter();
             StreamResult xmlOutput = new StreamResult(stringWriter);
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET,"");
-            Transformer transformer = transformerFactory.newTransformer();
+
+            Transformer transformer = getSecureTransformer();
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, input.startsWith("<?xml") ? "yes" : "no");
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -92,24 +82,45 @@ public abstract class XMLHelper {
     }
 
     public static String docToString(Document doc) {
+        Source docInput = new DOMSource(doc);
+        return sourceToString(docInput, false);
+    }
+
+    public static String nodeToString(Node node) {
+        Source docInput = new DOMSource(node);
+        return sourceToString(docInput, true);
+    }
+
+    private static String sourceToString(Source domSource, boolean omitPreamble) {
         try {
-            Source docInput = new DOMSource(doc);
             StringWriter stringWriter = new StringWriter();
             StreamResult xmlOutput = new StreamResult(stringWriter);
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET,"");
-            Transformer transformer = transformerFactory.newTransformer();
+
+            Transformer transformer = getSecureTransformer();
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            transformer.transform(docInput, xmlOutput);
+            if (omitPreamble) {
+                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            }
+
+            transformer.transform(domSource, xmlOutput);
             return xmlOutput.getWriter().toString();
-        } catch (IllegalArgumentException | TransformerException e) {
-            Logging.getInstance().log(XMLHelper.class, e);
-            return "<error>Failed to transform document</error>";
+        } catch (TransformerConfigurationException ex ) {
+            return "<error>Failed to configure TransformerFactory:" + ex.getMessage() + "</error>";
+        } catch (TransformerException ex) {
+            return "<error>Failed to transform document.</error>";
         }
-    }    
-    
+    }
+
+    private static Transformer getSecureTransformer() throws TransformerConfigurationException {
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+		transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+
+		Transformer transformer = transformerFactory.newTransformer();
+		return transformer;
+    } 
+
     public static Document stringToDom (String xmlString) {
         try {
             InputSource input = new InputSource(new StringReader(xmlString));
@@ -124,7 +135,7 @@ public abstract class XMLHelper {
             return stringToDom("<error>Failed to parse input XML</error>");
         }
     }
-    
+
     public static Node getElementByXPath (Document doc, String xPath) {
         try {
             XPathFactory xPathfactory = XPathFactory.newInstance();
@@ -137,7 +148,7 @@ public abstract class XMLHelper {
             return null;
         }
     }
-    
+   
     public static ArrayList<String> findNodeByValue(Document doc, String input) {
         ArrayList<String> xPaths = new ArrayList<>();
         try {
@@ -149,5 +160,25 @@ public abstract class XMLHelper {
             Logging.getInstance().log(XMLHelper.class, "Bad XPath", Logging.ERROR);
         }
         return xPaths;
+    }
+    
+    public static List<Node> getElementsByXPath (Document doc, String xPath, Map<String, String> nsMap) throws XPathExpressionException {
+        XPathFactory xPathfactory = XPathFactory.newInstance();
+        XPath xpath = xPathfactory.newXPath();
+
+        NamespaceResolver nsr = new NamespaceResolver(doc);
+        if (nsMap != null) {
+            nsMap.forEach((k,v) -> nsr.addNamespace(k,v));
+        }
+        xpath.setNamespaceContext(nsr);
+
+        XPathExpression expr = xpath.compile(xPath);
+        NodeList nodes = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
+        List<Node> nodelist = new ArrayList();
+        for(int i = 0; i < nodes.getLength(); ++i) {
+            nodelist.add(nodes.item(i));
+        }
+
+        return nodelist;
     }
 }
