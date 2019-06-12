@@ -18,6 +18,7 @@
  */
 package de.rub.nds.burp.espresso.gui.attacker.saml;
 
+import burp.IBurpExtenderCallbacks;
 import de.rub.nds.burp.utilities.listeners.CodeListenerController;
 import java.awt.CardLayout;
 import java.awt.Font;
@@ -35,6 +36,7 @@ import javax.swing.JPanel;
  * @version 1.0
  */
 public class UISAMLAttacker extends JPanel implements ItemListener{
+    private IBurpExtenderCallbacks extenderCallbacks;
 
     // The attack options.
     private final String NO_ATTACK = "No Attack";
@@ -57,7 +59,8 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
     /**
      * Create a new Attacker.
      */
-    public UISAMLAttacker(){
+    public UISAMLAttacker(IBurpExtenderCallbacks callbacks) {
+        this.extenderCallbacks = callbacks;
         initComponents();
     }
     
@@ -93,7 +96,7 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
 	settingsContainer.add(uiSigWrapAttack, SIGNATURE_WRAPPING);
         uiDTDAttack = new UIDTDAttack();
 	settingsContainer.add(uiDTDAttack, DTD);
-        uiEncryptionAttack = new UIEncryptionAttack();
+        uiEncryptionAttack = new UIEncryptionAttack(extenderCallbacks);
         settingsContainer.add(uiEncryptionAttack, ENCRYPTION);
               
         GroupLayout layout = new GroupLayout(this);

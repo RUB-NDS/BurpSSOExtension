@@ -133,7 +133,7 @@ public class SAMLEditor implements IMessageEditorTabFactory{
             guiContainer.addTab("Certificates", certificateViewer);
 
             // create the attacker
-            samlAttacker = new UISAMLAttacker();
+            samlAttacker = new UISAMLAttacker(callbacks);
             samlAttacker.setListeners(listeners);
             samlAttacker.setListenersSignature(listenersSignature);
             guiContainer.addTab("Attacker", samlAttacker);
