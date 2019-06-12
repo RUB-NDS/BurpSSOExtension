@@ -50,11 +50,11 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
     private JLabel descriptionLabel;
     private JPanel settingsContainer;
     
-    private UISigWrapAttack uiSigWrapAttack = null;
     private UISigFakeAttack uiSigFakeAttack = null;
     private UISigExcAttack uiSigExcAttack = null;
     private UIDTDAttack uiDTDAttack = null;
     private UIEncryptionAttack uiEncryptionAttack = null;
+    private UISigWrapAttack uiSigWrapAttack = null;
     
     /**
      * Create a new Attacker.
@@ -118,8 +118,8 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
                 .addComponent(descriptionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(attackComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(settingsContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(10, 10, 10)
+                .addComponent(settingsContainer, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 }
     
@@ -147,7 +147,7 @@ public class UISAMLAttacker extends JPanel implements ItemListener{
     public void setListeners(CodeListenerController listeners){
         uiSigExcAttack.setListener(listeners);
         uiSigFakeAttack.setListener(listeners);
-        uiSigWrapAttack.setListener(listeners);
+        uiSigWrapAttack.setListeners(listeners);
         uiDTDAttack.setListener(listeners);
         uiEncryptionAttack.setListener(listeners);
     }

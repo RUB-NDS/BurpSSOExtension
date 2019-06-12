@@ -22,9 +22,9 @@ import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IHttpRequestResponse;
 import de.rub.nds.burp.utilities.Logging;
-import de.rub.nds.burp.utilities.table.Table;
-import de.rub.nds.burp.utilities.table.TableEntry;
-import de.rub.nds.burp.utilities.table.TableHelper;
+import de.rub.nds.burp.utilities.table.ssoHistory.Table;
+import de.rub.nds.burp.utilities.table.ssoHistory.TableEntry;
+import de.rub.nds.burp.utilities.table.ssoHistory.TableHelper;
 import java.util.ArrayList;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -326,18 +326,18 @@ public abstract class SSOProtocol {
     }
     
     /**
-     * Covert SSOProtocol to {@link de.rub.nds.burp.utilities.table.TableEntry}.
-     * @return {@link de.rub.nds.burp.utilities.table.TableEntry}
+     * Covert SSOProtocol to {@link de.rub.nds.burp.utilities.table.ssoHistory.TableEntry}.
+     * @return {@link de.rub.nds.burp.utilities.table.ssoHistory.TableEntry}
      */
     public TableEntry toTableEntry(){
         return new TableEntry(this, callbacks);
     }
     
     /**
-     * Covert SSOProtocol to {@link de.rub.nds.burp.utilities.table.Table}.
+     * Covert SSOProtocol to {@link de.rub.nds.burp.utilities.table.ssoHistory.Table}.
      * @param tableName The name of the table.
      * @param id The table id.
-     * @return {@link de.rub.nds.burp.utilities.table.Table}
+     * @return {@link de.rub.nds.burp.utilities.table.ssoHistory.Table}
      */
     public Table toTable(String tableName, String id){
         Table t = new Table(new TableHelper(new ArrayList<TableEntry>()),tableName,id);

@@ -23,7 +23,8 @@ import de.rub.nds.burp.espresso.scanner.ScanAndMarkSSO;
 import de.rub.nds.burp.espresso.editor.JSONEditor;
 import de.rub.nds.burp.espresso.editor.JWTEditor;
 import de.rub.nds.burp.espresso.editor.saml.SAMLEditor;
-import de.rub.nds.burp.espresso.intruder.DTDPayloadFactory;
+import de.rub.nds.burp.espresso.intruder.dtd.DTDPayloadFactory;
+import de.rub.nds.burp.espresso.intruder.xsw.XSWPayloadFactory;
 import de.rub.nds.burp.utilities.Logging;
 import java.io.PrintWriter;
 import java.time.LocalTime;
@@ -90,6 +91,7 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener{
         
         //register Intruder payload generator
         callbacks.registerIntruderPayloadGeneratorFactory(new DTDPayloadFactory(callbacks));
+        callbacks.registerIntruderPayloadGeneratorFactory(new XSWPayloadFactory(callbacks));
         
         //Start logging
         Logging.getInstance().log(getClass(), "Init. complete.", Logging.INFO);

@@ -18,14 +18,8 @@
  */
 package de.rub.nds.burp.utilities;
 
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 import wsattacker.library.xmlutilities.namespace.NamespaceResolver;
-
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -41,6 +35,11 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.xml.sax.SAXException;
+import org.xml.sax.InputSource;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import wsattacker.library.xmlutilities.dom.DomUtilities;
 
 /**
  * Help pretty print XML content
@@ -149,24 +148,37 @@ public abstract class XMLHelper {
             return null;
         }
     }
-
+   
+    public static ArrayList<String> findNodeByValue(Document doc, String input) {
+        ArrayList<String> xPaths = new ArrayList<>();
+        try {
+            List nodes = DomUtilities.evaluateXPath(doc, "//*[text()='" + input + "']");
+            List nodesPaths = DomUtilities.nodelistToFastXPathList(nodes);
+            xPaths.addAll(nodesPaths);
+            return xPaths;
+        } catch (XPathExpressionException ex) {
+            Logging.getInstance().log(XMLHelper.class, "Bad XPath", Logging.ERROR);
+        }
+        return xPaths;
+    }
+    
     public static List<Node> getElementsByXPath (Document doc, String xPath, Map<String, String> nsMap) throws XPathExpressionException {
-            XPathFactory xPathfactory = XPathFactory.newInstance();
-            XPath xpath = xPathfactory.newXPath();
+        XPathFactory xPathfactory = XPathFactory.newInstance();
+        XPath xpath = xPathfactory.newXPath();
 
-            NamespaceResolver nsr = new NamespaceResolver(doc);
-            if (nsMap != null) {
-                nsMap.forEach((k,v) -> nsr.addNamespace(k,v));
-            }
-            xpath.setNamespaceContext(nsr);
+        NamespaceResolver nsr = new NamespaceResolver(doc);
+        if (nsMap != null) {
+            nsMap.forEach((k,v) -> nsr.addNamespace(k,v));
+        }
+        xpath.setNamespaceContext(nsr);
 
-            XPathExpression expr = xpath.compile(xPath);
-            NodeList nodes = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
-            List<Node> nodelist = new ArrayList();
-            for(int i = 0; i < nodes.getLength(); ++i) {
-                nodelist.add(nodes.item(i));
-            }
+        XPathExpression expr = xpath.compile(xPath);
+        NodeList nodes = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
+        List<Node> nodelist = new ArrayList();
+        for(int i = 0; i < nodes.getLength(); ++i) {
+            nodelist.add(nodes.item(i));
+        }
 
-            return nodelist;
+        return nodelist;
     }
 }

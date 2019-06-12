@@ -16,7 +16,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package de.rub.nds.burp.espresso.intruder;
+package de.rub.nds.burp.espresso.intruder.dtd;
 
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
@@ -65,7 +65,7 @@ public class DTDPayloadFactory implements IIntruderPayloadGeneratorFactory {
         private final String listenURL = "§tf_listenURL§";
         private final String helperURL = "§tf_helperURL§";
 
-        private InputJDialog dialog;
+        private DTDInputJDialog dialog;
         private IIntruderAttack attack;
         private ArrayList<String> rawDtds;
         private ArrayList<String> dtds;
@@ -75,7 +75,7 @@ public class DTDPayloadFactory implements IIntruderPayloadGeneratorFactory {
             this.attack = attack;
             // setd dtds to raw vectors (no protocol handlers)
             parseVectors();
-            dialog = new InputJDialog(rawDtds.size());
+            dialog = new DTDInputJDialog(rawDtds.size());
             // fill in selected protcol handlers and listeners
             generateDTDs();
         }

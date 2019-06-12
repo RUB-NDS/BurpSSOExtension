@@ -16,7 +16,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package de.rub.nds.burp.espresso.intruder;
+package de.rub.nds.burp.espresso.intruder.dtd;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,14 +28,14 @@ import javax.swing.event.DocumentListener;
 /**
  * @author Nurullah Erinola
  */
-public class InputJDialog extends javax.swing.JDialog {
+public class DTDInputJDialog extends javax.swing.JDialog {
 
     private int dtdVectorCount;
     
     /**
-     * Creates new form InputJDialog
+     * Creates new form DTDInputJDialog
      */
-    public InputJDialog(int vectorCount) {
+    public DTDInputJDialog(int vectorCount) {
         super(new JFrame(), true);
         this.dtdVectorCount = vectorCount;
         initComponents();
