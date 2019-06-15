@@ -63,6 +63,8 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
     private String encryptKeyTooltip = "";
     private CodeListenerController listeners = null;
     private XmlEncryptionHelper xmlEncryptionHelper;
+    private boolean encSymKeyButtonEnabled = false;
+    private boolean encXmlButtonEnabled = false;
 
     private final String XPATH_ENC_DATA_CERT = "//xenc:EncryptedData/ds:KeyInfo/ds:X509Data/ds:X509Certificate";
     private final String XPATH_ENC_KEY_CERT = "//xenc:EncryptedKey/ds:KeyInfo/ds:X509Data/ds:X509Certificate";
@@ -476,6 +478,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
             // do not override certificate if code event was self-issued by encryption attacker
             return;
         }
+        jButtonEncryptXML.setEnabled(encXmlButtonEnabled);
         // Set certificate if available
         try {
             Document doc = XMLHelper.stringToDom(saml);
@@ -519,16 +522,16 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
             }
             String message = "SAML Response must contain exactly one assertion.";
             extenderCallbacks.issueAlert(message);
-            jButtonEncryptXML.setEnabled(false);
+            encXmlButtonEnabled = false;
             jButtonEncryptXML.setToolTipText(message);
-            jButtonEncryptSymmetricKey.setEnabled(false);
+            encSymKeyButtonEnabled = false;
             jButtonEncryptSymmetricKey.setToolTipText(message);
             return;
         }
 
         this.saml = XMLHelper.docToString(doc);
-        jButtonEncryptXML.setEnabled(true);
-        jButtonEncryptSymmetricKey.setEnabled(true);
+        encXmlButtonEnabled = true;
+        encSymKeyButtonEnabled = true;
         if (!encryptTooltip.isEmpty()) {
             jButtonEncryptXML.setToolTipText(encryptTooltip);
             jButtonEncryptSymmetricKey.setToolTipText(encryptKeyTooltip);
@@ -645,15 +648,18 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
 
     private void checkCertificate() {
         String certificate = jTextAreaCertificate.getText().trim();
+        boolean btnEnabled;
         try {
             if(XmlEncryptionHelper.getPublicKey(certificate) != null) {
-                jButtonEncryptSymmetricKey.setEnabled(true);
+                btnEnabled = true;
             } else {
-                jButtonEncryptSymmetricKey.setEnabled(false);
+                btnEnabled = false;
             }
         } catch (CertificateException ex) {
-            jButtonEncryptSymmetricKey.setEnabled(false);
-        }  
+            btnEnabled = false;
+        }
+        boolean flag = btnEnabled & encSymKeyButtonEnabled; // dont enable button if SAML contains multiple assertions
+        SwingUtilities.invokeLater(() -> jButtonEncryptSymmetricKey.setEnabled(flag));
     }
     
     private void checkKeyLengthAndFormat() {
