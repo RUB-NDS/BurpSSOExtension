@@ -379,7 +379,9 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
         }
         try {
             String cert = jTextAreaCertificate.getText();
-            cert = cert.replaceAll("-----BEGIN CERTIFICATE-----\n?", "").replaceAll("\n?-----END CERTIFICATE-----", "");
+            cert = cert.replaceAll("-----BEGIN CERTIFICATE-----\n?", "")
+                    .replaceAll("\n?-----END CERTIFICATE-----", "")
+                    .trim();
 
             boolean encDataEmpty = XMLHelper.getElementsByXPath(doc, XPATH_ENC_DATA_CERT, nameSpaceMap).isEmpty();
             boolean encKeyEmpty = XMLHelper.getElementsByXPath(doc, XPATH_ENC_KEY_CERT, nameSpaceMap).isEmpty();
@@ -482,7 +484,7 @@ public class UIEncryptionAttack extends javax.swing.JPanel implements IAttack {
             StringBuilder sb = new StringBuilder();
             sb.append("-----BEGIN CERTIFICATE-----\n");
             if(!certs.isEmpty()) {
-                sb.append(certs.get(0).getTextContent());
+                sb.append(certs.get(0).getTextContent().trim());
             }
             sb.append("\n-----END CERTIFICATE-----");
             jTextAreaCertificate.setText(sb.toString());
