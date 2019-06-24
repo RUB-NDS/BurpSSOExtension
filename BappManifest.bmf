@@ -3,10 +3,10 @@ ExtensionType: 1
 Name: EsPReSSO
 RepoName: espresso
 ScreenVersion: 3.3.1
-SerialVersion: 4
+SerialVersion: 5
 MinPlatformVersion: 0
 ProOnly: False
-Author: Tim Guenther, Christian Mainka and Vladislav Mladenov
+Author: Tim Guenther, Christian Mainka, Vladislav Mladenov, Nurullah Erinola, Juraj Somorovsky, Nils Engelbertz, David Herring
 ShortDescription: Processes and recognizes single sign-on protocols.
 EntryPoint: target/EsPReSSO-3.3.1-jar-with-dependencies.jar
 BuildCommand: mvn package -DskipTests=true -Dmaven.javadoc.skip=true -B
