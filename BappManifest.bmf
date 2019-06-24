@@ -2,11 +2,11 @@ Uuid: e1d08d4ab1ea4c17be3431d7d2b20b30
 ExtensionType: 1
 Name: EsPReSSO
 RepoName: espresso
-ScreenVersion: 3.3
-SerialVersion: 3
+ScreenVersion: 3.3.1
+SerialVersion: 4
 MinPlatformVersion: 0
 ProOnly: False
 Author: Tim Guenther, Christian Mainka and Vladislav Mladenov
 ShortDescription: Processes and recognizes single sign-on protocols.
-EntryPoint: target/EsPReSSO-3.3-jar-with-dependencies.jar
+EntryPoint: target/EsPReSSO-3.3.1-jar-with-dependencies.jar
 BuildCommand: mvn package -DskipTests=true -Dmaven.javadoc.skip=true -B
