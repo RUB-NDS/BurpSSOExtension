@@ -122,7 +122,13 @@ public class TableHelper extends AbstractTableModel{
     @Override
     public Class<?> getColumnClass(int columnIndex)
     {
-        return String.class;
+        switch (columnIndex)
+        {
+            case 0:
+                return Integer.class;
+            default:
+                return String.class;
+        }
     }
 
     /**

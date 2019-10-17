@@ -31,7 +31,7 @@ import java.util.ArrayList;
  * @version 1.0
  */
 public class TableEntry {
-    private String counter = "";
+    private Integer counter = 0;
     private String protocol = "";
     private String host = "";
     private String method = "";
@@ -54,7 +54,7 @@ public class TableEntry {
      * @param requestResponse The content of the request/response.
      * @param callbacks Helper provided by the Burp Suite api.
      */
-    public TableEntry(String counter, String protocol, String token, IHttpRequestResponsePersisted requestResponse, IBurpExtenderCallbacks callbacks) {
+    public TableEntry(Integer counter, String protocol, String token, IHttpRequestResponsePersisted requestResponse, IBurpExtenderCallbacks callbacks) {
         this.callbacks = callbacks;
         this.helpers = callbacks.getHelpers();
         
@@ -81,7 +81,7 @@ public class TableEntry {
         this.callbacks = callbacks;
         this.helpers = callbacks.getHelpers();
         
-        this.counter = ""+ssoProtocol.getCounter();
+        this.counter = ssoProtocol.getCounter();
         this.protocol = ssoProtocol.getProtocol();
         this.fullMessage = callbacks.saveBuffersToTempFiles(ssoProtocol.getMessage());
         this.host = helpers.analyzeRequest(this.fullMessage ).getUrl().getHost();
@@ -102,7 +102,7 @@ public class TableEntry {
      * Get the index of the message.
      * @return The count.
      */
-        public String getCounter() {
+        public Integer getCounter() {
         return counter;
     }
 
@@ -221,6 +221,6 @@ public class TableEntry {
      * @param i The index.
      */
     public void setCounter(int i){
-        this.counter = (new Integer(i)).toString();
+        this.counter = (new Integer(i));
     }
 }
