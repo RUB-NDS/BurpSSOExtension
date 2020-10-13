@@ -52,7 +52,7 @@
         <dependency>
             <artifactId>junit</artifactId>
             <groupId>junit</groupId>
-            <version>4.12</version>
+            <version>4.13.1</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.beetstra.jutf7/jutf7 -->
         <dependency>
